@@ -1,5 +1,9 @@
 package com.procergs.rsp.post;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +19,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+
 import com.procergs.rsp.post.ed.PostED;
 import com.procergs.rsp.user.ed.UserRequestED;
 
@@ -27,10 +41,23 @@ public class PostService {
 	EntityManager em;
 
 	PostBD postBD;
-
+	
+	Directory directory; 
+	
+	
 	@PostConstruct
 	public void init() {
 		postBD = new PostBD(em);
+		try {
+			directory = FSDirectory.open(Paths.get(new URI("file:///C:/temp/post.rsp")));
+//			directory.create();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	  
     @POST
@@ -41,6 +68,23 @@ public class PostService {
     	postED.setUserEd(((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd());
     	postED.setData(Calendar.getInstance());
     	postBD.inclui(postED);
+    	
+    	Document d = new Document();
+    	FieldType type = new FieldType();
+    	type.setStored(true);
+    	type.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
+    	
+		d.add(new Field("name", texto, type));
+    	d.add(new Field("id", postED.getIdPost().toString(), Field.Store.YES, Field.Index.NO));
+    	
+    	try {
+    		IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(new PortugueseAnalyzer()));
+			writer.addDocument(d);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	
 		return true;
 	}
 

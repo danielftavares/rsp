@@ -4,7 +4,10 @@ import Dialog from 'material-ui/lib/dialog';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import LightRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme';
 import Colors from 'material-ui/lib/styles/colors';
+import AppBar from 'material-ui/lib/app-bar';
 import PostArea from './PostArea';
+import SearchBar from './SearchBar';
+
 
 const containerStyle = {
   textAlign: 'center',
@@ -58,17 +61,12 @@ const Home = React.createClass({
   render() {
     return (
       <div style={containerStyle}>
-        <Dialog
-          open={this.state.open}
-          title="Super Secret Password"
-          actions={standardActions}
-          onRequestClose={this._handleRequestClose}
-        >
-          1-2-3-4-5
-        </Dialog>
-        <h1>material-ui</h1>
-        <h2>example project</h2>
-        <RaisedButton label="Super Secret Password" primary={true} onTouchTap={this._handleTouchTap} />
+          <AppBar
+    		title="RSP"
+    		iconClassNameRight="muidocs-icon-navigation-expand-more"
+    		 />
+    		
+    	<SearchBar />
         <PostArea />
       </div>
     );
