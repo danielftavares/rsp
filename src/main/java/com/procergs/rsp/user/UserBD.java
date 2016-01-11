@@ -1,5 +1,7 @@
 package com.procergs.rsp.user;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -17,6 +19,10 @@ public class UserBD {
 		q.setParameter("nome", usuario);
 		q.setParameter("senha", senha);
 		return (UserEd)q.getSingleResult();
+	}
+
+	public Collection<UserEd> listUser(String username) {
+		return (Collection<UserEd>) em.createQuery("SELECT u FROM UserEd u").getResultList();
 	}
 
 }
