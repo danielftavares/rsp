@@ -1,8 +1,9 @@
 import reqwest from 'reqwest';
+import LoginStore from '../stores/LoginStore'
 
 class PostService {
 
-  post(text, user) {
+  post(text) {
     return reqwest({
       url: '/rsp/apiv1/post',
       method: 'POST',
@@ -12,10 +13,26 @@ class PostService {
     	  t: text
       },
       headers: {
-    	  'Authorization': 'RSPUT '+ user.userEd.idUsuario + ':' + user.token
+    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
       success: function (userlogin) {
     	 alert('OK!')
+      }
+    });
+  }
+  
+  
+  list(callback, comp) {
+    return reqwest({
+      url: '/rsp/apiv1/post',
+      method: 'GET',
+      crossOrigin: true,
+      type: 'json',
+      headers: {
+    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function (posts) {
+    	 callback.call(comp, posts);
       }
     });
   }

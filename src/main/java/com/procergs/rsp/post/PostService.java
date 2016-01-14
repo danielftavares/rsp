@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Calendar;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -13,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -30,6 +32,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import com.procergs.rsp.post.ed.PostED;
+import com.procergs.rsp.user.ed.UserEd;
 import com.procergs.rsp.user.ed.UserRequestED;
 
 @Stateless
@@ -86,6 +89,18 @@ public class PostService {
 		}
     	
 		return true;
+	}
+    
+    /**
+     * list timeline
+     * @param httpRequest
+     * @return
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+	public Collection<PostED> list(@Context HttpServletRequest httpRequest){
+    	UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+    	return postBD.list(user);
 	}
 
 }

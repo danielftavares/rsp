@@ -16,7 +16,7 @@ class PostArea extends React.Component {
 
   post(e) {
     e.preventDefault();
-    PostService.post(this.state.posth, this.props.user);
+    PostService.post(this.state.posth);
   }
   
   render() {

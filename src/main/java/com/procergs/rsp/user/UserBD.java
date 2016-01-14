@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import com.procergs.rsp.user.ed.FollowED;
 import com.procergs.rsp.user.ed.UserEd;
 
 public class UserBD {
@@ -23,6 +24,14 @@ public class UserBD {
 
 	public Collection<UserEd> listUser(String username) {
 		return (Collection<UserEd>) em.createQuery("SELECT u FROM UserEd u").getResultList();
+	}
+
+	public UserEd find(Long idUser) {
+		return em.find(UserEd.class, idUser);
+	}
+
+	public void insertFollow(FollowED f) {
+		em.persist(f);
 	}
 
 }

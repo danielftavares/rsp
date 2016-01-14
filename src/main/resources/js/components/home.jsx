@@ -7,6 +7,9 @@ import Colors from 'material-ui/lib/styles/colors';
 import AppBar from 'material-ui/lib/app-bar';
 import PostArea from './PostArea';
 import SearchBar from './SearchBar';
+import TimeLine from './TimeLine';
+import UserLists from './UserLists';
+
 
 
 const containerStyle = {
@@ -68,6 +71,8 @@ const Home = React.createClass({
     		
     	<SearchBar />
         <PostArea />
+        <TimeLine />
+        <UserLists />
       </div>
     );
   },

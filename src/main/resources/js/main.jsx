@@ -2,8 +2,9 @@ import React from 'react';
 import ReactDOM, { render } from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import Router, {Route} from 'react-router';
-import Home from './components/home'; // Our custom react component
-import Login from './components/login'; // Our custom react component 
+import Home from './components/home';
+import Login from './components/login';
+import User from './components/user'; 
 import LoginStore from './stores/LoginStore'
 import RouterContainer from './services/RouterContainer';
 
@@ -22,8 +23,9 @@ injectTapEventPlugin();
 
 var routes = (
 		  <Route>
-		  	<Route name="home" path="/" handler={Home}/>
-		    <Route name="login" path="/login" handler={Login}/>
+		  	<Route name="home" 	path="/" 			handler={Home}/>
+		    <Route name="login" path="/login" 		handler={Login}/>
+		    <Route name="user" 	path="/u/:userId" 	handler={User}/>
 		  </Route>
 		);
 

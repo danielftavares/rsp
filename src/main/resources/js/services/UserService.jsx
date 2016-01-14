@@ -1,8 +1,23 @@
 import reqwest from 'reqwest';
-
+import LoginStore from '../stores/LoginStore'
 class UserService {
 
-  lista(text, user) {
+  findUserById(idUser, callback, comp){
+  	return reqwest({
+      url: '/rsp/apiv1/user/'+idUser,
+      method: 'GET',
+      crossOrigin: true,
+      type: 'json',
+      headers: {
+    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function (lista) {
+    	 callback.call(comp, lista);
+      }
+    });
+  }
+
+  lista(text, user, callback, comp) {
     return reqwest({
       url: '/rsp/apiv1/user/l',
       method: 'GET',
@@ -12,13 +27,26 @@ class UserService {
     	  l: text
       },
       headers: {
-    	  'Authorization': 'RSPUT '+ user.userEd.idUsuario + ':' + user.token
+    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
       success: function (lista) {
-    	 alert(lista)
+    	 callback(lista, comp);
       }
     });
   }
+  
+  
+   follow(user){
+  	return reqwest({
+      url: '/rsp/apiv1/user/f/'+user.idUsuario,
+      method: 'GET',
+      crossOrigin: true,
+      headers: {
+    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      }
+    });
+  }
+  
 }
 
 export default new UserService()
