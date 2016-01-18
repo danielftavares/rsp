@@ -4,7 +4,8 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import Router, {Route} from 'react-router';
 import Home from './components/home';
 import Login from './components/login';
-import User from './components/user'; 
+import User from './components/user';
+import List from './components/list';  
 import LoginStore from './stores/LoginStore'
 import RouterContainer from './services/RouterContainer';
 
@@ -26,6 +27,7 @@ var routes = (
 		  	<Route name="home" 	path="/" 			handler={Home}/>
 		    <Route name="login" path="/login" 		handler={Login}/>
 		    <Route name="user" 	path="/u/:userId" 	handler={User}/>
+		    <Route name="list" 	path="/l/:listId" 	handler={List}/>
 		  </Route>
 		);
 

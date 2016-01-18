@@ -10,13 +10,14 @@ class PostArea extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      posth: ''
+      posth: '',
+      list : props.list
     };
   }
 
   post(e) {
     e.preventDefault();
-    PostService.post(this.state.posth);
+    PostService.post(this.state.posth, this.state.list);
   }
   
   render() {

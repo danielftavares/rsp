@@ -3,15 +3,19 @@ import LoginStore from '../stores/LoginStore'
 
 class PostService {
 
-  post(text) {
+  post(text, list) {
+  	var postData = {};
+  	postData["t"] =  text;
+  	if(list){
+  		postData["l"] =  list.idList;
+  	}
+  
     return reqwest({
       url: '/rsp/apiv1/post',
       method: 'POST',
       crossOrigin: true,
       type: 'json',
-      data: {
-    	  t: text
-      },
+      data: postData,
       headers: {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },

@@ -30,4 +30,8 @@ public class ListBD {
 		return q.getResultList();
 	}
 
+	public ListED find(Long idlist) {
+		return em.find(ListED.class, idlist);
+	}
+
 }

@@ -19,6 +19,13 @@ public class ListED {
 	@Column(name = "NAME")
 	private String name;
 
+	public ListED() {
+	}
+	
+	public ListED(Long idList) {
+		this.idList = idList;
+	}
+
 	public Long getIdList() {
 		return idList;
 	}

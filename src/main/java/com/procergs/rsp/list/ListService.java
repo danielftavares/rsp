@@ -12,6 +12,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -53,9 +54,16 @@ public class ListService {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
 	public List<ListED> list(@Context HttpServletRequest httpRequest){
-    	
     	UserEd userED = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
-    	
     	return listBD.list(userED);
 	}
+    
+	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/{idlist}")
+	public ListED find(@PathParam("idlist") Long idlist){
+		return listBD.find(idlist);
+	}
+	
 }

@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.procergs.rsp.list.ed.ListED;
 import com.procergs.rsp.user.ed.UserEd;
 
 @Entity
@@ -34,6 +35,10 @@ public class PostED {
 	@ManyToOne
 	@JoinColumn(name="ID_USUARIO")
 	private UserEd userEd;
+	
+	@ManyToOne
+	@JoinColumn(name="ID_LIST")
+	private ListED listED;
 
 	public Long getIdPost() {
 		return idPost;
@@ -66,5 +71,14 @@ public class PostED {
 	public void setUserEd(UserEd userEd) {
 		this.userEd = userEd;
 	}
+
+	public ListED getListED() {
+		return listED;
+	}
+
+	public void setListED(ListED listED) {
+		this.listED = listED;
+	}
+	
 	
 }

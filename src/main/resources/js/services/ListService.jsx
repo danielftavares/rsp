@@ -36,6 +36,22 @@ class ListService {
       }
     });
   }
+  
+  
+  findListById(idList, callback, comp){
+  	return reqwest({
+      url: '/rsp/apiv1/list/'+idList,
+      method: 'GET',
+      crossOrigin: true,
+      type: 'json',
+      headers: {
+    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function (list) {
+    	 callback.call(comp, list);
+      }
+    });
+  }
 }
 
 export default new ListService()

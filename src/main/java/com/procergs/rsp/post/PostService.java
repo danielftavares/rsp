@@ -31,6 +31,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import com.procergs.rsp.list.ed.ListED;
 import com.procergs.rsp.post.ed.PostED;
 import com.procergs.rsp.user.ed.UserEd;
 import com.procergs.rsp.user.ed.UserRequestED;
@@ -65,11 +66,14 @@ public class PostService {
 	  
     @POST
     @Produces({ MediaType.APPLICATION_JSON })
-	public boolean post(@Context HttpServletRequest httpRequest, @FormParam("t") String texto){
+	public boolean post(@Context HttpServletRequest httpRequest, @FormParam("t") String texto, @FormParam("l") Long idList){
     	PostED postED = new PostED();
     	postED.setTexto(texto);
     	postED.setUserEd(((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd());
     	postED.setData(Calendar.getInstance());
+    	if(idList != null){
+    		postED.setListED(new ListED(idList));
+    	}
     	postBD.inclui(postED);
     	
     	Document d = new Document();
