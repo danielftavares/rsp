@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.procergs.rsp.list.ed.ListED;
+
 
 @Entity
 @Table(name = "FOLLOW")
@@ -26,6 +28,25 @@ public class FollowED {
 	@ManyToOne
 	@JoinColumn(name="ID_FOLLOWED", referencedColumnName = "ID_USUARIO")
 	private UserEd followed;
+	
+	
+	@ManyToOne
+	@JoinColumn(name="ID_LIST_FOLLOWED", referencedColumnName = "ID_LIST")
+	private ListED listFollowed;
+
+	public FollowED(UserEd follower, ListED listED) {
+		this.follower = follower;
+		this.listFollowed = listED;
+	}
+
+	public FollowED(UserEd follower, UserEd followed) {
+		this.follower = follower;
+		this.followed = followed;
+	}
+	
+	public FollowED(){
+		
+	}
 
 	public Long getIdFollow() {
 		return idFollow;

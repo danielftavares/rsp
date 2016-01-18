@@ -930,15 +930,21 @@ module.exports = focusNode;
  * @typechecks
  */
 
+/* eslint-disable fb-www/typeof-undefined */
+
 /**
  * Same as document.activeElement but wraps in a try-catch block. In IE it is
  * not safe to call document.activeElement if there is nothing focused.
  *
- * The activeElement will be null only if the document body is not yet defined.
+ * The activeElement will be null only if the document or document body is not
+ * yet defined.
  */
-"use strict";
+'use strict';
 
 function getActiveElement() /*?DOMElement*/{
+  if (typeof document === 'undefined') {
+    return null;
+  }
   try {
     return document.activeElement || document.body;
   } catch (e) {
@@ -35059,7 +35065,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.5';
+module.exports = '0.14.6';
 },{}],292:[function(require,module,exports){
 (function (process){
 /**
@@ -39996,7 +40002,7 @@ exports['default'] = function (ComposedComponent) {
 
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":357,"react":340}],345:[function(require,module,exports){
+},{"../stores/LoginStore":358,"react":340}],345:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40077,7 +40083,7 @@ var PostArea = (function (_React$Component) {
 exports['default'] = (0, _AuthenticatedComponent2['default'])(PostArea);
 module.exports = exports['default'];
 
-},{"../services/PostService":354,"./AuthenticatedComponent":344,"material-ui/lib/flat-button":82,"material-ui/lib/text-field":127,"react-mixin":155,"react/addons":195}],346:[function(require,module,exports){
+},{"../services/PostService":355,"./AuthenticatedComponent":344,"material-ui/lib/flat-button":82,"material-ui/lib/text-field":127,"react-mixin":155,"react/addons":195}],346:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40210,7 +40216,7 @@ var SearchBar = (function (_React$Component) {
 exports['default'] = (0, _AuthenticatedComponent2['default'])(SearchBar);
 module.exports = exports['default'];
 
-},{"../services/RouterContainer":355,"../services/UserService":356,"./AuthenticatedComponent":344,"material-ui/lib/auto-complete":70,"material-ui/lib/lists/list-item":85,"material-ui/lib/menus/menu":89,"material-ui/lib/menus/menu-item":88,"material-ui/lib/refresh-indicator":101,"react":340,"react-mixin":155}],347:[function(require,module,exports){
+},{"../services/RouterContainer":356,"../services/UserService":357,"./AuthenticatedComponent":344,"material-ui/lib/auto-complete":70,"material-ui/lib/lists/list-item":85,"material-ui/lib/menus/menu":89,"material-ui/lib/menus/menu-item":88,"material-ui/lib/refresh-indicator":101,"react":340,"react-mixin":155}],347:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40323,11 +40329,11 @@ var TimeLine = (function (_React$Component) {
 exports['default'] = (0, _AuthenticatedComponent2['default'])(TimeLine);
 module.exports = exports['default'];
 
-},{"../services/PostService":354,"./AuthenticatedComponent":344,"material-ui/lib/card/card":77,"material-ui/lib/card/card-actions":73,"material-ui/lib/card/card-header":75,"material-ui/lib/card/card-text":76,"material-ui/lib/flat-button":82,"react-mixin":155,"react/addons":195}],348:[function(require,module,exports){
+},{"../services/PostService":355,"./AuthenticatedComponent":344,"material-ui/lib/card/card":77,"material-ui/lib/card/card-actions":73,"material-ui/lib/card/card-header":75,"material-ui/lib/card/card-text":76,"material-ui/lib/flat-button":82,"react-mixin":155,"react/addons":195}],348:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
-  value: true
+	value: true
 });
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -40368,27 +40374,90 @@ var _servicesPostService = require('../services/PostService');
 
 var _servicesPostService2 = _interopRequireDefault(_servicesPostService);
 
+var _materialUiLibDialog = require('material-ui/lib/dialog');
+
+var _materialUiLibDialog2 = _interopRequireDefault(_materialUiLibDialog);
+
+var _materialUiLibRaisedButton = require('material-ui/lib/raised-button');
+
+var _materialUiLibRaisedButton2 = _interopRequireDefault(_materialUiLibRaisedButton);
+
+var _materialUiLibTextField = require('material-ui/lib/text-field');
+
+var _materialUiLibTextField2 = _interopRequireDefault(_materialUiLibTextField);
+
+var _servicesListService = require('../services/ListService');
+
+var _servicesListService2 = _interopRequireDefault(_servicesListService);
+
 var UserLists = (function (_React$Component) {
-  _inherits(UserLists, _React$Component);
+	_inherits(UserLists, _React$Component);
 
-  function UserLists(props) {
-    _classCallCheck(this, UserLists);
+	function UserLists(props) {
+		_classCallCheck(this, UserLists);
 
-    _get(Object.getPrototypeOf(UserLists.prototype), 'constructor', this).call(this, props);
-  }
+		_get(Object.getPrototypeOf(UserLists.prototype), 'constructor', this).call(this, props);
+		this.state = {
+			modalInsetListOpen: false,
+			nomelista: ''
+		};
+	}
 
-  _createClass(UserLists, [{
-    key: 'render',
-    value: function render() {
-      return _reactAddons2['default'].createElement(
-        _materialUiLibListsList2['default'],
-        { subheader: 'Listas', insetSubheader: true },
-        _reactAddons2['default'].createElement(_materialUiLibListsListItem2['default'], { primaryText: 'Criar Lista' })
-      );
-    }
-  }]);
+	_createClass(UserLists, [{
+		key: 'handleOpenInsetList',
+		value: function handleOpenInsetList() {
+			this.setState({ modalInsetListOpen: true });
+		}
+	}, {
+		key: 'handleCloseInsetList',
+		value: function handleCloseInsetList() {
+			this.setState({ modalInsetListOpen: false, nomelista: '' });
+		}
+	}, {
+		key: 'handleInsetList',
+		value: function handleInsetList() {
+			_servicesListService2['default'].insertList(this.state.nomelista, this, this.callbackUncluiLista);
+		}
+	}, {
+		key: 'callbackUncluiLista',
+		value: function callbackUncluiLista() {
+			alert("incluiu Lista!");
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var actions = [_reactAddons2['default'].createElement(_materialUiLibFlatButton2['default'], {
+				label: 'Cancelar',
+				secondary: true,
+				onTouchTap: this.handleCloseInsetList.bind(this) }), _reactAddons2['default'].createElement(_materialUiLibFlatButton2['default'], {
+				label: 'Criar',
+				primary: true,
+				onTouchTap: this.handleInsetList.bind(this) })];
+			return _reactAddons2['default'].createElement(
+				'span',
+				null,
+				_reactAddons2['default'].createElement(
+					_materialUiLibListsList2['default'],
+					{ subheader: 'Listas', insetSubheader: true },
+					_reactAddons2['default'].createElement(_materialUiLibListsListItem2['default'], { primaryText: 'Criar Lista', onTouchTap: this.handleOpenInsetList.bind(this) })
+				),
+				_reactAddons2['default'].createElement(
+					_materialUiLibDialog2['default'],
+					{
+						title: 'Crie uma nova lista',
+						actions: actions,
+						modal: true,
+						open: this.state.modalInsetListOpen },
+					_reactAddons2['default'].createElement(_materialUiLibTextField2['default'], {
+						hintText: 'Nome da lista',
+						floatingLabelText: 'Nome da lista',
+						valueLink: this.linkState('nomelista') })
+				)
+			);
+		}
+	}]);
 
-  return UserLists;
+	return UserLists;
 })(_reactAddons2['default'].Component);
 
 ;
@@ -40398,7 +40467,7 @@ var UserLists = (function (_React$Component) {
 exports['default'] = (0, _AuthenticatedComponent2['default'])(UserLists);
 module.exports = exports['default'];
 
-},{"../services/PostService":354,"./AuthenticatedComponent":344,"material-ui/lib/flat-button":82,"material-ui/lib/lists/list":86,"material-ui/lib/lists/list-item":85,"react-mixin":155,"react/addons":195}],349:[function(require,module,exports){
+},{"../services/ListService":354,"../services/PostService":355,"./AuthenticatedComponent":344,"material-ui/lib/dialog":78,"material-ui/lib/flat-button":82,"material-ui/lib/lists/list":86,"material-ui/lib/lists/list-item":85,"material-ui/lib/raised-button":100,"material-ui/lib/text-field":127,"react-mixin":155,"react/addons":195}],349:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40731,7 +40800,7 @@ var User = _react2['default'].createClass({
 exports['default'] = User;
 module.exports = exports['default'];
 
-},{"../services/UserService":356,"./SearchBar":346,"material-ui/lib/app-bar":69,"material-ui/lib/dialog":78,"material-ui/lib/flat-button":82,"material-ui/lib/raised-button":100,"material-ui/lib/styles/colors":109,"material-ui/lib/styles/raw-themes/light-raw-theme":113,"material-ui/lib/styles/theme-manager":116,"react":340}],352:[function(require,module,exports){
+},{"../services/UserService":357,"./SearchBar":346,"material-ui/lib/app-bar":69,"material-ui/lib/dialog":78,"material-ui/lib/flat-button":82,"material-ui/lib/raised-button":100,"material-ui/lib/styles/colors":109,"material-ui/lib/styles/raw-themes/light-raw-theme":113,"material-ui/lib/styles/theme-manager":116,"react":340}],352:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -40802,7 +40871,7 @@ if (!_storesLoginStore2['default'].isLoggedIn()) {
 	router.transitionTo('/login');
 }
 
-},{"./components/home":349,"./components/login":350,"./components/user":351,"./services/RouterContainer":355,"./stores/LoginStore":357,"react":340,"react-dom":154,"react-router":180,"react-tap-event-plugin":194}],353:[function(require,module,exports){
+},{"./components/home":349,"./components/login":350,"./components/user":351,"./services/RouterContainer":356,"./stores/LoginStore":358,"react":340,"react-dom":154,"react-router":180,"react-tap-event-plugin":194}],353:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40852,7 +40921,76 @@ var AuthService = (function () {
 exports['default'] = new AuthService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":357,"reqwest":341}],354:[function(require,module,exports){
+},{"../stores/LoginStore":358,"reqwest":341}],354:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _reqwest = require('reqwest');
+
+var _reqwest2 = _interopRequireDefault(_reqwest);
+
+var _storesLoginStore = require('../stores/LoginStore');
+
+var _storesLoginStore2 = _interopRequireDefault(_storesLoginStore);
+
+var ListService = (function () {
+  function ListService() {
+    _classCallCheck(this, ListService);
+  }
+
+  _createClass(ListService, [{
+    key: 'insertList',
+    value: function insertList(listname, comp, callback) {
+      return (0, _reqwest2['default'])({
+        url: '/rsp/apiv1/list',
+        method: 'POST',
+        crossOrigin: true,
+        type: 'json',
+        data: {
+          ln: listname
+        },
+        headers: {
+          'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
+        },
+        success: function success() {
+          callback.call(comp);
+        }
+      });
+    }
+  }, {
+    key: 'list',
+    value: function list(callback, comp) {
+      return (0, _reqwest2['default'])({
+        url: '/rsp/apiv1/post',
+        method: 'GET',
+        crossOrigin: true,
+        type: 'json',
+        headers: {
+          'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
+        },
+        success: function success(posts) {
+          callback.call(comp, posts);
+        }
+      });
+    }
+  }]);
+
+  return ListService;
+})();
+
+exports['default'] = new ListService();
+module.exports = exports['default'];
+
+},{"../stores/LoginStore":358,"reqwest":341}],355:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40921,7 +41059,7 @@ var PostService = (function () {
 exports['default'] = new PostService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":357,"reqwest":341}],355:[function(require,module,exports){
+},{"../stores/LoginStore":358,"reqwest":341}],356:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40938,7 +41076,7 @@ exports["default"] = {
 };
 module.exports = exports["default"];
 
-},{}],356:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41019,7 +41157,7 @@ var UserService = (function () {
 exports['default'] = new UserService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":357,"reqwest":341}],357:[function(require,module,exports){
+},{"../stores/LoginStore":358,"reqwest":341}],358:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41072,4 +41210,4 @@ var LoginStore = (function () {
 exports['default'] = new LoginStore();
 module.exports = exports['default'];
 
-},{"../services/RouterContainer":355}]},{},[352]);
+},{"../services/RouterContainer":356}]},{},[352]);

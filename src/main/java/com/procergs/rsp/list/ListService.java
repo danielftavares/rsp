@@ -1,11 +1,6 @@
 package com.procergs.rsp.list;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -21,18 +16,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-import org.apache.lucene.index.IndexOptions;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-
 import com.procergs.rsp.list.ed.ListED;
-import com.procergs.rsp.post.ed.PostED;
+import com.procergs.rsp.user.ed.FollowED;
 import com.procergs.rsp.user.ed.UserEd;
 import com.procergs.rsp.user.ed.UserRequestED;
 
@@ -53,11 +38,24 @@ public class ListService {
 	  
     @POST
     @Produces({ MediaType.APPLICATION_JSON })
-	public boolean post(@Context HttpServletRequest httpRequest, @FormParam("n") String name){
+	public boolean post(@Context HttpServletRequest httpRequest, @FormParam("ln") String name){
     	ListED listED = new ListED();
     	listED.setName(name);
     	listBD.insert(listED);
     	
+    	UserEd follower = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+    	FollowED followED = new FollowED(follower, listED);
+    	listBD.insertFollow(followED);
+    	
     	return true;
+	}
+    
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+	public List<ListED> list(@Context HttpServletRequest httpRequest){
+    	
+    	UserEd userED = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+    	
+    	return listBD.list(userED);
 	}
 }
