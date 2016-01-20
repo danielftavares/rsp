@@ -9,6 +9,7 @@ import SearchBar from './SearchBar';
 import FlatButton from 'material-ui/lib/flat-button';
 import ListService from '../services/ListService';
 import PostArea from './PostArea';
+import TimeLine from './TimeLine';
 
 
 
@@ -29,7 +30,7 @@ const List = React.createClass({
   },
 
   follow(){
-  	UserService.follow(this.state.user);
+  	ListService.follow(this.list.listId);
   },
 
   render() {
@@ -46,7 +47,7 @@ const List = React.createClass({
     	<FlatButton label="Seguir" secondary={true} onTouchTap={this.follow}/>
     	
     	<PostArea list={this.state.list} />
-    	
+    	<TimeLine list={this.state.list} />
       </div>
     );
   },

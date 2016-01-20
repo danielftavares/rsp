@@ -13,12 +13,17 @@ class TimeLine extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      itens: ''
+      itens: '',
+      list: props.list
     };
   }
 
   componentDidMount() {
-    PostService.list(this.fillTimeLine, this);
+    var data = {};
+    if(this.state.list){
+    	data['l'] = this.state.list.idList
+    }
+    PostService.list(data, this.fillTimeLine, this);
   }
   
   fillTimeLine(posts){

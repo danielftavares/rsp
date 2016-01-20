@@ -4,9 +4,6 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Subquery;
 
 import com.procergs.rsp.post.ed.PostED;
 import com.procergs.rsp.user.ed.UserEd;
@@ -27,6 +24,13 @@ public class PostBD {
 		 
 		q.setParameter("USER", user);
 		 
+		return q.getResultList();
+	}
+
+
+	public Collection<PostED> listPostList(Long idList) {
+		Query q = em.createQuery("SELECT p FROM PostED p WHERE p.listED.id = :idList");
+		q.setParameter("idList", idList);
 		return q.getResultList();
 	}
 

@@ -18,6 +18,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -102,9 +103,14 @@ public class PostService {
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-	public Collection<PostED> list(@Context HttpServletRequest httpRequest){
+	public Collection<PostED> list(@QueryParam("l") Long idList, @Context HttpServletRequest httpRequest){
     	UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
-    	return postBD.list(user);
+    	
+    	if(idList != null){
+    		return postBD.listPostList(idList);
+    	} else {
+    		return postBD.list(user);
+    	}
 	}
 
 }

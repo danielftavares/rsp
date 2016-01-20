@@ -26,12 +26,13 @@ class PostService {
   }
   
   
-  list(callback, comp) {
+  list(data, callback, comp) {
     return reqwest({
       url: '/rsp/apiv1/post',
       method: 'GET',
       crossOrigin: true,
       type: 'json',
+      data: data,
       headers: {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
