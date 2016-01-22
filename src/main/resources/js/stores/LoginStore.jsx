@@ -1,4 +1,4 @@
-import RouterContainer from '../services/RouterContainer';
+
 
 class LoginStore {
 
@@ -22,7 +22,7 @@ class LoginStore {
   
   doLogin(userLoginED){
   	localStorage.setItem('userLoginED', JSON.stringify(userLoginED));
-  	RouterContainer.get().transitionTo('/');
+  	history.replaceState(null, '/');
   	
   }
   

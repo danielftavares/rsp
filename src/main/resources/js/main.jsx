@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM, { render } from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import Router, {Route} from 'react-router';
+import {Route, IndexRoute, Router, browserHistory} from 'react-router';
 import Home from './components/home';
 import Login from './components/login';
 import User from './components/user';
-import List from './components/list';  
+import List from './components/list';
+import Master from './components/master';  
 import LoginStore from './stores/LoginStore'
-import RouterContainer from './services/RouterContainer';
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
@@ -23,20 +23,18 @@ injectTapEventPlugin();
 //render((<Home />), document.getElementById('app'));
 
 var routes = (
-		  <Route>
-		  	<Route name="home" 	path="/" 			handler={Home}/>
-		    <Route name="login" path="/login" 		handler={Login}/>
-		    <Route name="user" 	path="/u/:userId" 	handler={User}/>
-		    <Route name="list" 	path="/l/:listId" 	handler={List}/>
+		  <Route path="/" component={Master} >
+		  	<IndexRoute component={Home} />
+		    <Route  path="/login" 		component={Login}/>
+		    <Route 	path="/u/:userId" 	component={User}/>
+		    <Route 	path="/l/:listId" 	component={List}/>
 		  </Route>
 		);
 
-var router = Router.create({routes});
-RouterContainer.set(router);
+var router =  (<Router history={browserHistory}  onUpdate={() => window.scrollTo(0, 0)} >{routes}</Router>)
 
-router.run(function (Handler) {
-	ReactDOM.render(<Handler />, document.getElementById('app'));
-});
+
+render(router, document.getElementById('app'))
 
 if(!LoginStore.isLoggedIn()){
 	router.transitionTo('/login');	

@@ -8,7 +8,6 @@ import Menu from 'material-ui/lib/menus/menu';
 import RefreshIndicator from 'material-ui/lib/refresh-indicator';
 import ReactMixin from 'react-mixin';
 import UserService from '../services/UserService'
-import RouterContainer from '../services/RouterContainer';
 
 
 const style = {
@@ -29,6 +28,12 @@ const find_user_indicator = (<RefreshIndicator
 								style={style.refresh} />)
 
 class SearchBar extends React.Component {
+	
+
+	propTypes: {
+	    history: React.PropTypes.object
+	}
+	
 	
  constructor(props) {
 	    super(props);
@@ -64,7 +69,7 @@ class SearchBar extends React.Component {
   }
   
   userOpen(usuario){
-  	RouterContainer.get().transitionTo('/u/'+usuario.idUsuario);
+	  this.props.history.replaceState(null, '/u/'+usuario.idUsuario);
   }
 	  
   render() {

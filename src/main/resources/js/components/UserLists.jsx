@@ -9,11 +9,15 @@ import Dialog from 'material-ui/lib/dialog';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 import ListService from '../services/ListService'
-import RouterContainer from '../services/RouterContainer';
 
 
 class UserLists extends React.Component {
 	 
+	
+	propTypes: {
+		history: React.PropTypes.object.isRequired,
+	  }
+		  
   constructor(props) {
     super(props);
     this.state = {
@@ -59,7 +63,7 @@ class UserLists extends React.Component {
   
   
   openList(lt){
-  	RouterContainer.get().transitionTo('/l/'+lt.idList);
+	  this.props.history.replaceState(null, '/l/'+lt.idList);
   }
   
   render() {
