@@ -15,6 +15,17 @@ import LeftNav from 'material-ui/lib/left-nav';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
 
+import Toolbar from 'material-ui/lib/toolbar/toolbar';
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
+import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
+import FloatingActionButton from 'material-ui/lib/floating-action-button';
+import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
+import FontIcon from 'material-ui/lib/font-icon';
+import ActionHome from 'material-ui/lib/svg-icons/action/home';
+import NavigationMenu from 'material-ui/lib/svg-icons/navigation/menu';
+import IconButton from 'material-ui/lib/icon-button';
+
 const Master  = React.createClass({
 
 
@@ -154,17 +165,22 @@ const Master  = React.createClass({
     
     return (
       <div>
-          <AppBar
-    		title="RSP"
-    		showMenuIconButton={showMenuIconButton}
-    		onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}
-    		zDepth={0}
-    		style={styles.appBar}
-    		 />
-
+          <Toolbar style={styles.appBar} >
+          { showMenuIconButton ? 
+	          <ToolbarGroup firstChild={true} float="left">
+	          	<IconButton iconClassName="muidocs-icon-custom-github" onTouchTap={this.handleTouchTapLeftIconButton} />
+	          </ToolbarGroup>
+	          	: 
+	          		""
+          }
+	          <ToolbarGroup float="right">
+	          	<SearchBar history={history} />
+	          </ToolbarGroup>
+          </Toolbar>
+          
+          
         <div style={this.prepareStyles(styles.root)}>
-            <div style={this.prepareStyles(styles.content)}>            
-				<SearchBar history={history} />
+            <div style={this.prepareStyles(styles.content)}>
 				{children}
 			</div>
 		</div>
@@ -177,6 +193,7 @@ const Master  = React.createClass({
         </LeftNav>
         
       </div>
+      
     );
   },
 });
