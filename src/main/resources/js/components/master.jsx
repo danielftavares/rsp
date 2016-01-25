@@ -25,6 +25,9 @@ import FontIcon from 'material-ui/lib/font-icon';
 import ActionHome from 'material-ui/lib/svg-icons/action/home';
 import NavigationMenu from 'material-ui/lib/svg-icons/navigation/menu';
 import IconButton from 'material-ui/lib/icon-button';
+import IconMenu from 'material-ui/lib/menus/icon-menu';
+
+import { Link } from 'react-router'
 
 const Master  = React.createClass({
 
@@ -73,6 +76,8 @@ const Master  = React.createClass({
         // Needed to overlap the examples
         zIndex: this.state.muiTheme.zIndex.appBar + 1,
         top: 0,
+        backgroundColor: this.state.muiTheme.appBar.color,
+        
       },
       root: {
         paddingTop: Spacing.desktopKeylineIncrement,
@@ -168,13 +173,28 @@ const Master  = React.createClass({
           <Toolbar style={styles.appBar} >
           { showMenuIconButton ? 
 	          <ToolbarGroup firstChild={true} float="left">
-	          	<IconButton iconClassName="muidocs-icon-custom-github" onTouchTap={this.handleTouchTapLeftIconButton} />
+		          <IconButton 
+			          onTouchTap={this.handleTouchTapLeftIconButton.bind(this)} >
+		          <NavigationMenu />
+		        </IconButton>    	
+          
+          
 	          </ToolbarGroup>
 	          	: 
 	          		""
           }
 	          <ToolbarGroup float="right">
 	          	<SearchBar history={history} />
+
+	            
+	            <IconMenu iconButtonElement={
+	              <IconButton touch={true}>
+	                <NavigationExpandMoreIcon />
+	              </IconButton>
+	            }>
+	          	  <Link to={'/user/edit'}> <MenuItem primaryText="Editar Perfil" /> </Link>
+	              <MenuItem primaryText="Sair" />
+	            </IconMenu>
 	          </ToolbarGroup>
           </Toolbar>
           
@@ -188,7 +208,8 @@ const Master  = React.createClass({
 		<LeftNav 
     		docked={docked} 
     		open={leftNavOpen} 
-    		style={styles.leftNav} >
+    		style={styles.leftNav} 
+			onRequestChange={leftNavOpen => this.setState({leftNavOpen})} >
           <UserLists history={history}  />
         </LeftNav>
         
