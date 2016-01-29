@@ -30,7 +30,7 @@ class UserService {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
       success: function (lista) {
-    	 callback(lista, comp);
+    	 callback.call(comp, lista);
       }
     });
   }

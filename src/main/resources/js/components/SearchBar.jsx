@@ -7,8 +7,10 @@ import ListItem from 'material-ui/lib/lists/list-item';
 import Menu from 'material-ui/lib/menus/menu';
 import RefreshIndicator from 'material-ui/lib/refresh-indicator';
 import LinkedStateMixin from 'react-addons-linked-state-mixin'
-import UserService from '../services/UserService'
+import UserService from '../services/UserService';
 import Avatar from 'material-ui/lib/avatar';
+import UserAvatar from './UserAvatar';
+import { Link } from 'react-router'
 
 const style = {
 		  container: {
@@ -48,30 +50,27 @@ const SearchBar = React.createClass({
 	  },
 	  
 
-  listUsers(listUsers,sb){
-	var users = [];
-	for (var i = 0; i < listUsers.length ; i++) {
-	  var u = listUsers[i];
-	  users.push({text: u.nome, value: <ListItem primaryText={u.nome} onTouchTap={sb.userOpen.bind(sb, u)}  																	  		
-	  													rightAvatar={u.profileImage ?
-	  														<Avatar src={ '/rsp/apiv1/image/'+ u.idUsuario + '/'+ u.profileImage.idImage + '.jpg'  } />
-	  														: '' 
-		}  /> });
-	}
-	
-	sb.setState({
-	    	searchResult: users
+  listUsers(listUsers){
+	this.setState({
+	    	searchResult: listUsers
 	    });
-  },
-	
-  
-  userOpen(usuario){
-	  this.props.history.replaceState(null, '/u/'+usuario.idUsuario);
   },
 	  
   render() {
+	var renderListItem = function(item){
+		if(item.idUsuario){
+			return {text: item.nome, 
+					value: ( <Link to={'/u/'+item.idUsuario}>
+								<ListItem 
+									primaryText={item.nome}
+									rightAvatar={<UserAvatar user={item} /> }
+								 />
+							 </Link>) }
+		}
+	}
+	  
     return (
-      <AutoComplete filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult}  />
+      <AutoComplete filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult.map(renderListItem)}  />
     );
   }
 });
