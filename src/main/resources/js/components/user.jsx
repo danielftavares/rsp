@@ -4,11 +4,9 @@ import Dialog from 'material-ui/lib/dialog';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import LightRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme';
 import Colors from 'material-ui/lib/styles/colors';
-import AppBar from 'material-ui/lib/app-bar';
-import SearchBar from './SearchBar';
 import FlatButton from 'material-ui/lib/flat-button';
 import UserService from '../services/UserService'
-
+import Avatar from 'material-ui/lib/avatar';
 
 
 const User = React.createClass({
@@ -34,14 +32,12 @@ const User = React.createClass({
   render() {
     return (
       <div>
-      	<AppBar
-    		title="RSP"
-    		iconClassNameRight="muidocs-icon-navigation-expand-more"
-    		 />
-    		
-    	<SearchBar />
     	<h1>{this.props.params.userId}</h1>
     	<h2>{this.state.user.nome}</h2>
+    	{this.state.user.profileImage ?
+    			 <Avatar size="80" src={ '/rsp/apiv1/image/'+ this.state.user.idUsuario + '/'+ this.state.user.profileImage.idImage + '.jpg'  } />
+    			 : '' 
+    	}
     	<FlatButton label="Seguir" secondary={true} onTouchTap={this.follow}/>
       </div>
     );

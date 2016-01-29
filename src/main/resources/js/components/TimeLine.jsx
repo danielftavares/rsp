@@ -6,7 +6,9 @@ import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardText from 'material-ui/lib/card/card-text';
 import ReactMixin from 'react-mixin';
-import PostService from '../services/PostService'
+import PostService from '../services/PostService';
+import Avatar from 'material-ui/lib/avatar';
+import { Link } from 'react-router'
 
 class TimeLine extends React.Component {
 	 
@@ -34,7 +36,14 @@ class TimeLine extends React.Component {
   		i.push(
   		  <Card>
 		    <CardHeader
-		      title={post.userEd.nome} />
+		      title={ <Link  to={'/u/'+post.userEd.idUsuario} >{post.userEd.nome}</Link> }
+		      subtitle={ new Date(post.data).toLocaleString() }
+		      avatar={post.userEd.profileImage ?
+	    			 <Avatar src={ '/rsp/apiv1/image/'+ post.userEd.idUsuario + '/'+ post.userEd.profileImage.idImage + '.jpg'  } />
+	    			 : '' 
+	    			}
+		    
+		    />
 		    <CardText>
 		      {post.texto}
 		    </CardText>

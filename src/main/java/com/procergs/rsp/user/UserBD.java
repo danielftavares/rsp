@@ -16,7 +16,7 @@ public class UserBD {
 	}
 	
 	public UserEd login(String usuario, String senha){
-		Query q = em.createNativeQuery("SELECT ID_USUARIO, NOME FROM usuario WHERE NOME = :nome AND SENHA = MD5(:senha)", UserEd.class);
+		Query q = em.createNativeQuery("SELECT ID_USUARIO, NOME, ID_PROFILE_IMAGE FROM usuario WHERE NOME = :nome AND SENHA = MD5(:senha)", UserEd.class);
 		q.setParameter("nome", usuario);
 		q.setParameter("senha", senha);
 		return (UserEd)q.getSingleResult();
@@ -32,6 +32,11 @@ public class UserBD {
 
 	public void insertFollow(FollowED f) {
 		em.persist(f);
+	}
+
+	public void update(UserEd userED) {
+		em.merge(userED);
+		
 	}
 
 }

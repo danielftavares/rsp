@@ -21,6 +21,8 @@ public class RestAuthenticationFilter implements Filter {
 	
 	public static final String URL_LOGIN = "/user/login";
 	
+	public static final String URL_IMAGE = "/image/";
+	
 	@Inject
 	UserLoginService userLoginService;
 	
@@ -36,7 +38,7 @@ public class RestAuthenticationFilter implements Filter {
 			
 			boolean authenticationStatus = false;
 			
-			if(httpServletRequest.getRequestURI().endsWith(URL_LOGIN)){
+			if(httpServletRequest.getRequestURI().endsWith(URL_LOGIN) || httpServletRequest.getRequestURI().contains(URL_IMAGE)){
 				authenticationStatus = true;
 			} else {
 				try{

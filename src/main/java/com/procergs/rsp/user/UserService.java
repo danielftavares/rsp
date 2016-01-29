@@ -1,6 +1,10 @@
 package com.procergs.rsp.user;
 
+import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -9,8 +13,11 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,7 +25,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.IOUtils;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+
+import com.procergs.rsp.image.ImageService;
+import com.procergs.rsp.image.ed.ImageED;
+import com.procergs.rsp.profile.ProfileService;
+import com.procergs.rsp.profile.ed.ProfileField;
+import com.procergs.rsp.profile.ed.ProfileFieldValue;
 import com.procergs.rsp.user.ed.FollowED;
 import com.procergs.rsp.user.ed.UserEd;
 import com.procergs.rsp.user.ed.UserLoginED;
@@ -36,6 +53,12 @@ public class UserService {
 	UserLoginService userLoginService;
 
 	UserBD userBd;
+	
+	@EJB
+	ImageService imageService;
+	
+	@EJB
+	ProfileService profileService;
 
 	@PostConstruct
 	public void init() {
@@ -54,11 +77,14 @@ public class UserService {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("login")
-	public UserLoginED login(@Context HttpHeaders httpHeaders, @FormParam("username") String username,
-			@FormParam("password") String password) {
-		UserEd userEd = login(username, password);
-		UserLoginED userLoginED = userLoginService.gerarLogin(userEd);
-		return userLoginED;
+	public UserLoginED login(@Context HttpHeaders httpHeaders, @FormParam("username") String username, @FormParam("password") String password, @Context  final HttpServletResponse response) {
+		try{
+			UserEd userEd = login(username, password);
+			UserLoginED userLoginED = userLoginService.gerarLogin(userEd);
+			return userLoginED;
+		} catch (Exception e){
+			throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));
+		}
 	}
 
 	
@@ -92,5 +118,65 @@ public class UserService {
 		return userBd.login(username, password);
 	}
 	
-	
+	@POST
+	@Path("/profile")
+	@Consumes("multipart/form-data")
+	public void updateProfile(MultipartFormDataInput input, @Context HttpServletRequest httpRequest){
+		UserEd userED = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+		userED = userBd.find(userED.getIdUsuario());
+		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
+		try{
+			List<InputPart> inputParts = uploadForm.get("pi");
+			if(inputParts != null){
+				for (InputPart inputPart : inputParts) {
+					ImageED imageED = new ImageED();
+					InputStream istream = inputPart.getBody(InputStream.class,null);
+					imageED.setImage(IOUtils.toByteArray(istream) );
+					imageED.setDate(Calendar.getInstance());
+					imageService.save(imageED);
+					userED.setProfileImage(imageED);
+				}	
+			}
+			
+			List<ProfileFieldValue> values = profileService.loadFieldValues(userED.getIdUsuario());
+			List<ProfileField> fields = profileService.listaFields();
+			for (ProfileField profileField : fields) {
+				if(uploadForm.containsKey("f"+profileField.getIdProfileField())){
+					InputPart inputPart = uploadForm.get("f"+profileField.getIdProfileField()).get(0);
+					boolean haveValue = false;
+					for (ProfileFieldValue profileValue : values) {
+						if(profileValue.getProfileField().equals(profileField)){
+							profileValue.setValue(inputPart.getBodyAsString());
+							profileService.updateFieldValue(profileValue);
+							haveValue = true;
+						}
+					}
+					if(!haveValue){
+						ProfileFieldValue profileFieldValue = new ProfileFieldValue();
+						profileFieldValue.setProfile(userED);
+						profileFieldValue.setProfileField(profileField);
+						profileFieldValue.setValue(inputPart.getBodyAsString());
+						profileService.insertProfileFieldValue(profileFieldValue);
+					}
+				} else {
+					profileService.removeProfileFieldValue(userED, profileField);
+				}
+			}
+			
+//			for(String key: uploadForm.keySet()){
+//				if(key.matches("[f](\\d*)")){
+//					List<InputPart> inputPartsf = uploadForm.get(key);
+//					for (InputPart inputPart : inputPartsf) {
+//						System.out.println(inputPart.getBodyAsString());
+//					}
+//				}
+//			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+
+		userBd.update(userED);
+		System.out.println("TESTE!!");
+		
+	}
 }

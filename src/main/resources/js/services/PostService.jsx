@@ -3,7 +3,7 @@ import LoginStore from '../stores/LoginStore'
 
 class PostService {
 
-  post(text, list) {
+  post(text, list, functionsuccess, functionerror, comp) {
   	var postData = {};
   	postData["t"] =  text;
   	if(list){
@@ -19,8 +19,11 @@ class PostService {
       headers: {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
-      success: function (userlogin) {
-    	 alert('OK!')
+      success: function () {
+    	  functionsuccess.call(comp);
+      },
+      error: function (err) {
+    	  functionerror.call(comp);
       }
     });
   }

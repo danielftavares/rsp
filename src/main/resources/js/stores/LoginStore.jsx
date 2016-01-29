@@ -11,7 +11,6 @@ class LoginStore {
     }
   }
   
-  
   get user() {
 	  return this._user;
   }
@@ -22,8 +21,7 @@ class LoginStore {
   
   doLogin(userLoginED){
   	localStorage.setItem('userLoginED', JSON.stringify(userLoginED));
-  	history.replaceState(null, '/');
-  	
+  	 window.location=  window.location.pathname;
   }
   
 }

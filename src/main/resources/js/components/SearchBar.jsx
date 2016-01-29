@@ -6,9 +6,9 @@ import ListItem from 'material-ui/lib/lists/list-item';
 
 import Menu from 'material-ui/lib/menus/menu';
 import RefreshIndicator from 'material-ui/lib/refresh-indicator';
-import ReactMixin from 'react-mixin';
+import LinkedStateMixin from 'react-addons-linked-state-mixin'
 import UserService from '../services/UserService'
-
+import Avatar from 'material-ui/lib/avatar';
 
 const style = {
 		  container: {
@@ -27,23 +27,15 @@ const find_user_indicator = (<RefreshIndicator
 								status="loading"
 								style={style.refresh} />)
 
-class SearchBar extends React.Component {
-	
+const SearchBar = React.createClass({
+								
+	mixins: [LinkedStateMixin],
 
-	propTypes: {
-	    history: React.PropTypes.object
-	}
-	
-	
- constructor(props) {
-	    super(props);
-	    this.state = {
-	      searchResult: [],
-	      searchUser: []
-	    };
-	  }
- 
- search(t) {
+	  getInitialState: function() {
+		    return  {searchResult: [], searchUser: []};
+	  },
+
+	  search(t) {
 	    this.setState({
 	    	searchResult: [
 	    	               {
@@ -53,33 +45,36 @@ class SearchBar extends React.Component {
 	    	              ]
 	    });
 	    UserService.lista(t, this.props.user, this.listUsers, this);
-	  }
+	  },
 	  
 
   listUsers(listUsers,sb){
 	var users = [];
 	for (var i = 0; i < listUsers.length ; i++) {
 	  var u = listUsers[i];
-	  users.push({text: u.nome, value: <ListItem primaryText={u.nome} onTouchTap={sb.userOpen.bind(sb, u)} /> });
+	  users.push({text: u.nome, value: <ListItem primaryText={u.nome} onTouchTap={sb.userOpen.bind(sb, u)}  																	  		
+	  													rightAvatar={u.profileImage ?
+	  														<Avatar src={ '/rsp/apiv1/image/'+ u.idUsuario + '/'+ u.profileImage.idImage + '.jpg'  } />
+	  														: '' 
+		}  /> });
 	}
 	
 	sb.setState({
 	    	searchResult: users
 	    });
-  }
+  },
+	
   
   userOpen(usuario){
 	  this.props.history.replaceState(null, '/u/'+usuario.idUsuario);
-  }
+  },
 	  
   render() {
     return (
-      <AutoComplete filter={AutoComplete.noFilter} onUpdateInput={this.search.bind(this)} dataSource={this.state.searchResult}  />
+      <AutoComplete filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult}  />
     );
   }
-};
+});
 
-ReactMixin(SearchBar.prototype, React.addons.LinkedStateMixin);
-
-export default AuthenticatedComponent(SearchBar);
+export default SearchBar
 

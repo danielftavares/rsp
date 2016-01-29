@@ -6,7 +6,7 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import LightRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme';
 import Colors from 'material-ui/lib/styles/colors';
 import AuthService from '../services/AuthService';
-import ReactMixin from 'react-mixin';
+import LinkedStateMixin from 'react-addons-linked-state-mixin'
 
 const containerStyle = {
   textAlign: 'center',
@@ -14,26 +14,30 @@ const containerStyle = {
   width: 300
 };
 
-export default class Login extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      user: '',
-      password: ''
-    };
-  }
+const Login = React.createClass({
+  
+  
+  mixins: [LinkedStateMixin],
+  
+  getInitialState: function() {
+    return  { user: '', password: '', msgError: '' };
+  },
   
   login(e) {
     e.preventDefault();
-    AuthService.login(this.state.user, this.state.password);
-  }
+    AuthService.login(this.state.user, this.state.password, this, this._errorLogin);
+  },
+  
+  _errorLogin(){
+	  this.setState({msgError: 'Senha inválida' });
+  },
   
   render() {
     return (
       <div style={containerStyle}>
         <h1>RSP Login</h1>
-        <form onSubmit={this.login.bind(this)}>
+        <form onSubmit={this.login}>
 	        <TextField
 		        hintText="Usuario"
 		        floatingLabelText="usuario" 
@@ -44,10 +48,11 @@ export default class Login extends React.Component {
 			        type="password" 
 			        valueLink={this.linkState('password')} />
 			 <RaisedButton type="submit" label="Primary" primary={true} />
-		</form>
+	         <div>{ this.state.msgError }</div>
+	    </form>
       </div>
     );
   }
-}
+})
 
-ReactMixin(Login.prototype, React.addons.LinkedStateMixin);
+export default Login;

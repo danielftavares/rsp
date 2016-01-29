@@ -26,6 +26,7 @@ import ActionHome from 'material-ui/lib/svg-icons/action/home';
 import NavigationMenu from 'material-ui/lib/svg-icons/navigation/menu';
 import IconButton from 'material-ui/lib/icon-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
+import LoginStore from '../stores/LoginStore'
 
 import { Link } from 'react-router'
 
@@ -83,6 +84,17 @@ const Master  = React.createClass({
         paddingTop: Spacing.desktopKeylineIncrement,
         minHeight: 400,
       },
+      title: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          margin: 0,
+          paddingTop: 0,
+          letterSpacing: 0,
+          fontSize: 24,
+          color: this.state.muiTheme.textColor,
+          lineHeight: this.state.muiTheme.height + 'px',
+        },
       content: {
         margin: Spacing.desktopGutter,
       },
@@ -167,22 +179,34 @@ const Master  = React.createClass({
       styles.footer.paddingLeft = 256;
     }
 
+    if (!LoginStore.isLoggedIn()){
+    	if(window.location.hash.startsWith("#/login")){
+    		return (<div>{children}</div>)
+    	} else {
+    		history.replaceState(null, '/login');
+    		return (<div>REDIRECIONANDO PARA O LOGIN...</div>)
+    	}
+    	
+    	
+    }
     
     return (
       <div>
+      	  
           <Toolbar style={styles.appBar} >
-          { showMenuIconButton ? 
 	          <ToolbarGroup firstChild={true} float="left">
+	          { showMenuIconButton ?
 		          <IconButton 
 			          onTouchTap={this.handleTouchTapLeftIconButton.bind(this)} >
 		          <NavigationMenu />
-		        </IconButton>    	
-          
+		        </IconButton>
+		       	: 
+	          		""
+	          }
+		        <h1 style={styles.title} ><Link to={'/'}>Home</Link></h1>
           
 	          </ToolbarGroup>
-	          	: 
-	          		""
-          }
+	       
 	          <ToolbarGroup float="right">
 	          	<SearchBar history={history} />
 
@@ -192,7 +216,7 @@ const Master  = React.createClass({
 	                <NavigationExpandMoreIcon />
 	              </IconButton>
 	            }>
-	          	  <Link to={'/user/edit'}> <MenuItem primaryText="Editar Perfil" /> </Link>
+	          	  <Link to={'/u/e'}> <MenuItem primaryText="Editar Perfil" /> </Link>
 	              <MenuItem primaryText="Sair" />
 	            </IconMenu>
 	          </ToolbarGroup>

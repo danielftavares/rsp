@@ -47,6 +47,19 @@ class UserService {
     });
   }
   
+   
+   updateProfile(profileForm){
+	  	return reqwest({
+	      url: '/rsp/apiv1/user/profile',
+	      method: 'POST',
+	      contentType: 'multipart/form-data',
+	      processData : false,
+	      data:profileForm,
+	      headers: {
+	    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+	      }
+	    });
+	  }
 }
 
 export default new UserService()

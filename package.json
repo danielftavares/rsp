@@ -18,11 +18,12 @@
     "build-js": "browserify --extension=.jsx --extension=.js src/main/resources/js/main.jsx  > src/main/webapp/js/rsp.js"
   },
   "dependencies": {
-    "material-ui": "^0.14.2",
-    "react": "^0.14.3",
-    "react-dom":"^0.14.3",
+    "material-ui": "^0.14.3",
+    "react": "^0.14.6",
+    "react-dom":"^0.14.6",
     "react-mixin": "^3.0.3",
     "react-tap-event-plugin": "^0.2.1",
+    "react-addons-linked-state-mixin": "^0.14.6",
     "react-router":"1.0.3",
     "history": "1.17.0"
   },
@@ -41,6 +42,6 @@
     "karma": "0.13.15",
     "grunt-karma": "^0.12.1",
     "node-sass": "^3.4.2",
-    "reqwest": "^2.0.4"
+    "reqwest": "^2.0.5"
   }
 }
