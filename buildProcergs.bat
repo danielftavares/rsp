@@ -1,0 +1,2 @@
+
+npm run build-js && npm run build-css && copy /y C:\Users\daniel-tavares\Documents\TC\workspace\rsp\src\main\webapp\js\rsp.js C:\Users\daniel-tavares\tc\wildfly-9.0.2.Final\wildfly-9.0.2.Final\standalone\deployments\rsp.war\js\

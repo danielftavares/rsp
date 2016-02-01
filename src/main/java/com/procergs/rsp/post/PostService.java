@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Collection;
@@ -56,15 +57,18 @@ public class PostService {
 	public void init() {
 		postBD = new PostBD(em);
 		try {
-			directory = FSDirectory.open(Paths.get(new URI("file:///"+System.getProperty("java.io.tmpdir")+File.separator + "rsp"+File.separator )));
+			
+//			directory = FSDirectory.open(Paths.get(new URI("file:///"+System.getProperty("java.io.tmpdir")+File.separator + "rsp"+File.separator )));
+			directory = FSDirectory.open(Files.createTempDirectory("rsp") );
 //			directory.create();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+//		catch (URISyntaxException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	  
     @POST
@@ -105,16 +109,16 @@ public class PostService {
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-	public Collection<PostED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser, @Context HttpServletRequest httpRequest){
+	public Collection<PostED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser,@QueryParam("lp") Long idLastPost, @Context HttpServletRequest httpRequest){
     	UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
     	
     	if(idList != null){
-    		return postBD.listPostList(idList);
+    		return postBD.listPostList(idList, idLastPost);
     	
     	}else if(idUser != null){
-        	return postBD.listPostUser(idUser);
+        	return postBD.listPostUser(idUser, idLastPost);
     	} else {
-    		return postBD.list(user);
+    		return postBD.list(user, idLastPost);
     	}
 	}
 

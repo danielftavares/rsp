@@ -4,6 +4,8 @@ import FlatButton from 'material-ui/lib/flat-button';
 import UserService from '../services/UserService';
 import UserAvatar from './UserAvatar';
 import TimeLine from './TimeLine';
+import FollowBtn from './FollowBtn';
+import UserFieldsValue from './UserFieldsValue';
 import ProfileService from '../services/ProfileService';
 import Colors from 'material-ui/lib/styles/colors';
 import LoginStore from '../stores/LoginStore';
@@ -15,43 +17,44 @@ const User = React.createClass({
 		    muiTheme: React.PropTypes.string
 		  },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
     		user: {}, 
-    		profileValues: [], 
     		followingFollowers: [], 
     		followingList: [],
-    		followersList: [] };
+    		followersList: [],
+        amIFollowing: false };
   },
 
   componentDidMount() {
     UserService.findUserById(this.props.params.userId, this.loadUser, this );
-    ProfileService.getFieldsValue(this.props.params.userId, this.loadProfileValues, this );
     UserService.listFollowingAndFollowers(this.props.params.userId, this.loadFollowingFollowers, this );
   },
-  
+
   loadFollowingFollowers(list){
 	  this.setState({
 		  followingFollowers: list,
-		  followingList: list.following ,
-		  followersList: list.followers
+		  followingList: this.getRandomSubarray(list.following, 5) ,
+		  followersList: this.getRandomSubarray(list.followers, 5)
 	    })
   },
   
+  getRandomSubarray(arr, size) {
+    var shuffled = arr.slice(0), i = arr.length, temp, index;
+    while (i--) {
+      index = Math.floor((i + 1) * Math.random());
+      temp = shuffled[index];
+      shuffled[index] = shuffled[i];
+      shuffled[i] = temp;
+    }
+    return shuffled.slice(0, size);
+  }, 
+
+
   loadUser(user) {
     this.setState({
       user: user
     })
-  },
-  
-  loadProfileValues(pvs){
-      this.setState({
-    	  profileValues: pvs
-        }) 
-  }, 
-
-  follow(){
-  	UserService.follow(this.state.user);
   },
 
   render() {
@@ -73,9 +76,6 @@ const User = React.createClass({
 			  }
 		      
 		    };
-	  var renderProfileValues = function(dt){
-		  return (<span><label style={styles.userdataillabel} >{ dt.profileField.label }</label><span style={styles.userdatailvalue} >{ dt.value }</span></span>)
-	  }
 	  var renderUserAvatarLink = function(u){
 		  return (<Link to={'/u/'+u.idUsuario+'/'+u.nome}> <UserAvatar user={u} size={40} /></Link>)
 	  }
@@ -86,24 +86,20 @@ const User = React.createClass({
     		<UserAvatar user={this.state.user} size={150} />
       		<h2>{this.state.user.nome}</h2>
       		<div>
-      			{ this.state.user.idUsuario == LoginStore.user.userEd.idUsuario ?
-      				<Link to={'/u/e'}><FlatButton label="Editar" linkButton={true} secondary={true} /></Link>
-      				:
-      				<FlatButton label="Seguir" secondary={true} onTouchTap={this.follow}/>
-      			}
+            <FollowBtn user={this.state.user} />
       		</div>
-      		{ this.state.profileValues.map(renderProfileValues)}
+          <UserFieldsValue user={this.state.user} />
       		<div>
       			<label>Seguindo (<Link to={'/u/following/'+this.state.user.idUsuario}>{ this.state.followingList.length }</Link>):</label>
-      			{this.state.followingList.map(renderUserAvatarLink)}
+      			<div>{this.state.followingList.map(renderUserAvatarLink)}</div>
       		</div>
       		<div>
 	  			<label>Seguido (<Link to={'/u/followers/'+this.state.user.idUsuario}>{ this.state.followersList.length }</Link>):</label>
-	  			{this.state.followersList.map(renderUserAvatarLink)}
+	  			<div>{this.state.followersList.map(renderUserAvatarLink)}</div>
 	  		</div>
     	</div>
     	<div style={styles.usertimeline} >
-    		<TimeLine user={this.state.user.idUsuario }  />
+    		<TimeLine idUsuario={this.props.params.userId }  />
     	</div>
       </div>
     );

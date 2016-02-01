@@ -10,11 +10,26 @@ import { Link } from 'react-router'
 import UserAvatar from './UserAvatar';
 import Paper from 'material-ui/lib/paper';
 
+
+var TimeLineItem = React.createClass({
+  render(){
+    return (<Card>
+        <CardHeader
+          title={ <Link  to={'/u/'+this.props.post.userEd.idUsuario} >{this.props.post.userEd.nome}</Link> }
+          subtitle={ new Date(this.props.post.data).toLocaleString() }
+          avatar={ <UserAvatar user={this.props.post.userEd} /> }  />
+        <CardText>
+          {this.props.post.texto}
+        </CardText>
+      </Card>)
+  }
+});
+
 const TimeLine = React.createClass({
 	 
 	
   getInitialState: function() {
-	    return  {itens: []};
+	    return  {itens: [], loadingPosts: true};
   },
 
   componentDidMount() {
@@ -26,29 +41,47 @@ const TimeLine = React.createClass({
     	data['u'] =  this.props.idUsuario;
     }
     PostService.list(data, this.fillTimeLine, this);
+    window.addEventListener('scroll', this.handleScroll);
   },
   
   fillTimeLine(posts){
-  	this.setState({ itens: posts });
+  	this.setState({ itens: posts, loadingPosts: false });
+  },
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+
+  fillTimeLineExtraPosts(posts){
+    this.setState({ itens: this.state.itens.concat(posts)  , loadingPosts: false });
+  },
+
+  handleScroll(e){
+   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if(!this.state.loadingPosts){
+        this.setState({loadingPosts: true});
+        var lastPost = this.state.itens[this.state.itens.length - 1].idPost;
+
+
+        var data = {lp: lastPost};
+        if(this.props.list){
+          data['l'] = this.props.list.idList
+        }
+        if(this.props.idUsuario){
+          data['u'] =  this.props.idUsuario;
+        }
+        PostService.list(data, this.fillTimeLineExtraPosts, this);
+
+        console.log("Carregando dados");
+      }
+        
+    }
   },
   
-  
   render() {
-	var renderTimeLineItem = function(post){
-		return (<Card>
-		    <CardHeader
-		      title={ <Link  to={'/u/'+post.userEd.idUsuario} >{post.userEd.nome}</Link> }
-		      subtitle={ new Date(post.data).toLocaleString() }
-		      avatar={ <UserAvatar user={post.userEd} /> }  />
-		    <CardText>
-		      {post.texto}
-		    </CardText>
-		  </Card>)
-		
-	}
     return (
       <Paper>
-      	{this.state.itens.map(renderTimeLineItem)}
+      	{this.state.itens.map(function(post){ return (<TimeLineItem post={post} />) })}
       </Paper>
     );
   }

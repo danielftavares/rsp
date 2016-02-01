@@ -116,6 +116,15 @@ public class UserService {
 		userBd.insertFollow(f);
 	}
 	
+	@GET
+	@Path("/uf/{idUser}")
+	public void infollow(@PathParam("idUser") Long idUser, @Context HttpServletRequest httpRequest){
+		UserEd followed = userBd.find(idUser);
+		UserEd follower = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+		FollowED f = new FollowED(follower, followed);
+		userBd.deleteFollow(f);
+	}
+	
 	public UserEd login(String username, String password) {
 		return userBd.login(username, password);
 	}

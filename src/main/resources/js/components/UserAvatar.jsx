@@ -8,7 +8,7 @@ const UserAvatar = React.createClass({
 		return (
 				this.props.user.profileImage?
 						<Avatar size={this.props.size} style={this.props.style} src={ '/rsp/apiv1/image/'+ this.props.user.idUsuario + '/'+ this.props.user.profileImage.idImage + '.jpg'  } />
-				:   	<Avatar size={this.props.size} icon={<SocialPerson />} />
+				:   	<Avatar size={this.props.size} style={this.props.style} icon={<SocialPerson />} />
 		)
 	}
 	

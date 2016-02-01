@@ -27,7 +27,7 @@ import NavigationMenu from 'material-ui/lib/svg-icons/navigation/menu';
 import IconButton from 'material-ui/lib/icon-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import LoginStore from '../stores/LoginStore'
-
+import Snackbar from 'material-ui/lib/snackbar';
 import { Link } from 'react-router'
 
 const Master  = React.createClass({
@@ -45,6 +45,7 @@ const Master  = React.createClass({
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
+    showMessageBar: React.PropTypes.func
   },
 
 
@@ -57,7 +58,9 @@ const Master  = React.createClass({
   getInitialState() {
     return {
       muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
-	 leftNavOpen: false,
+	    leftNavOpen: false,
+      openSnackbar: false,
+      snackbarMsg: ''
     };
   },
 
@@ -130,6 +133,7 @@ const Master  = React.createClass({
   getChildContext() {
     return {
       muiTheme: this.state.muiTheme,
+      showMessageBar: this.showMessageBar
     };
   },
 
@@ -150,6 +154,20 @@ const Master  = React.createClass({
   _handleTouchTap() {
     this.setState({
       open: true,
+    });
+  },
+
+  handleopenSnackbarClose(){
+    this.setState({
+      openSnackbar: false,
+    });
+  },
+
+  showMessageBar(message){
+
+    this.setState({
+      snackbarMsg: message,
+      openSnackbar: true
     });
   },
 
@@ -229,6 +247,12 @@ const Master  = React.createClass({
 			</div>
 		</div>
 		
+    <Snackbar
+          open={this.state.openSnackbar}
+          message={this.state.snackbarMsg}
+          autoHideDuration={4000}
+          onRequestClose={this.handleopenSnackbarClose} />
+
 		<LeftNav 
     		docked={docked} 
     		open={leftNavOpen} 

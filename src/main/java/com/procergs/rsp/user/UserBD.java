@@ -54,4 +54,11 @@ public class UserBD {
 		return q.getResultList();
 	}
 
+	public void deleteFollow(FollowED f) {
+		Query q = em.createQuery("DELETE FROM FollowED f WHERE f.follower = :follower AND f.followed = :followed ");
+		q.setParameter("follower", f.getFollower());
+		q.setParameter("followed", f.getFollowed());
+		q.executeUpdate();
+	}
+
 }

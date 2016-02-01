@@ -5,6 +5,9 @@ import {Route, IndexRoute, Router } from 'react-router';
 import Home from './components/home';
 import Login from './components/login';
 import User from './components/user';
+import UserFollowing from './components/userfollowing';
+import UserFollowers from './components/userfollowers';
+
 import UserEdit from './components/useredit';
 import List from './components/list';
 import Master from './components/master';  
@@ -28,6 +31,8 @@ var routes = (
 		    <Route  path="/login" 		component={Login}/>
 		  	<Route 	path="/u/e" 		component={UserEdit}/>
 		  	<Route 	path="/u/:userId" 	component={User}/>
+		  	<Route 	path="/u/following/:userId" component={UserFollowing}/>
+		  	<Route 	path="/u/followers/:userId" component={UserFollowers}/>
 		  	<Route 	path="/u/:userId/*" 	component={User}/>
 		  	<Route 	path="/l/:listId" 	component={List}/>
 		  	<Route 	path="/l/:listId/*" 	component={List}/>

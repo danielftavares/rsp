@@ -36,16 +36,36 @@ class UserService {
   }
   
   
-   follow(user){
+   follow(user,callback,comp){
   	return reqwest({
       url: '/rsp/apiv1/user/f/'+user.idUsuario,
       method: 'GET',
       crossOrigin: true,
       headers: {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function () {
+       LoginStore.clearFollowing();
+       callback.call(comp);
       }
     });
   }
+
+  unfollow(user,callback,comp){
+    return reqwest({
+      url: '/rsp/apiv1/user/uf/'+user.idUsuario,
+      method: 'GET',
+      crossOrigin: true,
+      headers: {
+        'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function () {
+       LoginStore.clearFollowing();
+       callback.call(comp);
+      }
+    });
+  }
+  
   
    
    updateProfile(profileForm){

@@ -19,24 +19,34 @@ public class PostBD {
 		em.persist(postED);
 	}
 
-	public Collection<PostED> list(UserEd user) {
-		Query q = em.createQuery("SELECT p FROM PostED p WHERE EXISTS (SELECT f FROM FollowED f WHERE f.followed = p.userEd AND f.follower = :USER) or p.userEd = :USER");
+	public Collection<PostED> list(UserEd user, Long idLastPost) {
+		Query q = null;
+		if(idLastPost == null){
+			q = em.createQuery("SELECT p FROM PostED p WHERE EXISTS (SELECT f FROM FollowED f WHERE f.followed = p.userEd AND f.follower = :USER) or p.userEd = :USER  ORDER BY p.data DESC");	
+		} else {
+			q = em.createQuery("SELECT p FROM PostED p WHERE EXISTS (SELECT f FROM FollowED f WHERE f.followed = p.userEd AND f.follower = :USER) or p.userEd = :USER AND p.id < :idLastPost  ORDER BY p.data DESC");
+			q.setParameter("idLastPost", idLastPost);
+		}
+		
 		 
 		q.setParameter("USER", user);
+		q.setMaxResults(30);
 		 
 		return q.getResultList();
 	}
 
 
-	public Collection<PostED> listPostList(Long idList) {
-		Query q = em.createQuery("SELECT p FROM PostED p WHERE p.listED.id = :idList");
+	public Collection<PostED> listPostList(Long idList, Long idLastPost) {
+		Query q = em.createQuery("SELECT p FROM PostED p WHERE p.listED.id = :idList ORDER BY p.data DESC ");
 		q.setParameter("idList", idList);
+		q.setMaxResults(30);
 		return q.getResultList();
 	}
 
-	public Collection<PostED> listPostUser(Long idUser) {
-		Query q = em.createQuery("SELECT p FROM PostED p WHERE p.userEd.id = :idUser");
-		q.setParameter("idList", idUser);
+	public Collection<PostED> listPostUser(Long idUser, Long idLastPost) {
+		Query q = em.createQuery("SELECT p FROM PostED p WHERE p.userEd.id = :idUser ORDER BY p.data DESC ");
+		q.setParameter("idUser", idUser);
+		q.setMaxResults(30);
 		return q.getResultList();
 	}
 
