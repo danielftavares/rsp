@@ -1,5 +1,6 @@
 package com.procergs.rsp.list;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -32,6 +33,12 @@ public class ListBD {
 
 	public ListED find(Long idlist) {
 		return em.find(ListED.class, idlist);
+	}
+
+	public Collection<ListED> listList(String listname) {
+		Query query = em.createQuery("SELECT l FROM ListED l WHERE l.name like :u order by l.name");
+		query.setParameter("u", "%"+listname+"%");
+		return (Collection<ListED>) query.getResultList();
 	}
 
 }

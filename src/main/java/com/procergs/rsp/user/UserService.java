@@ -22,6 +22,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -37,6 +38,7 @@ import com.procergs.rsp.profile.ProfileService;
 import com.procergs.rsp.profile.ed.ProfileField;
 import com.procergs.rsp.profile.ed.ProfileFieldValue;
 import com.procergs.rsp.user.ed.FollowED;
+import com.procergs.rsp.user.ed.FollowingFollowersED;
 import com.procergs.rsp.user.ed.UserEd;
 import com.procergs.rsp.user.ed.UserLoginED;
 import com.procergs.rsp.user.ed.UserRequestED;
@@ -91,7 +93,7 @@ public class UserService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("l")
-	public Collection<UserEd> listUser(@FormParam("un") String username){
+	public Collection<UserEd> listUser(@QueryParam("un") String username){
 		return userBd.listUser(username);
 	}
 	
@@ -116,6 +118,16 @@ public class UserService {
 	
 	public UserEd login(String username, String password) {
 		return userBd.login(username, password);
+	}
+	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("lf/{idUser}")
+	public FollowingFollowersED listFollowingAndFollowers(@PathParam("idUser") Long idUser){
+		FollowingFollowersED followingFollowersED = new FollowingFollowersED();
+		followingFollowersED.setFollowers(userBd.listFollowers(idUser));
+		followingFollowersED.setFollowing(userBd.listFollowing (idUser));
+		return followingFollowersED;
 	}
 	
 	@POST

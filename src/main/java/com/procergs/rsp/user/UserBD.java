@@ -1,6 +1,7 @@
 package com.procergs.rsp.user;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -23,7 +24,9 @@ public class UserBD {
 	}
 
 	public Collection<UserEd> listUser(String username) {
-		return (Collection<UserEd>) em.createQuery("SELECT u FROM UserEd u").getResultList();
+		Query query = em.createQuery("SELECT u FROM UserEd u WHERE u.nome like :u order by u.nome");
+		query.setParameter("u", "%"+username+"%");
+		return (Collection<UserEd>) query.getResultList();
 	}
 
 	public UserEd find(Long idUser) {
@@ -37,6 +40,18 @@ public class UserBD {
 	public void update(UserEd userED) {
 		em.merge(userED);
 		
+	}
+
+	public List<UserEd> listFollowers(Long idUser) {
+		Query q = em.createQuery("SELECT f.follower FROM FollowED f WHERE f.followed.id = :idUser");
+		q.setParameter("idUser", idUser);
+		return q.getResultList();
+	}
+
+	public List<UserEd> listFollowing(Long idUser) {
+		Query q = em.createQuery("SELECT f.followed FROM FollowED f WHERE f.follower.id = :idUser");
+		q.setParameter("idUser", idUser);
+		return q.getResultList();
 	}
 
 }

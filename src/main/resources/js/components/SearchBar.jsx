@@ -1,5 +1,4 @@
 import React from 'react';
-import AuthenticatedComponent from './AuthenticatedComponent';
 import AutoComplete from 'material-ui/lib/auto-complete';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import ListItem from 'material-ui/lib/lists/list-item';
@@ -8,6 +7,7 @@ import Menu from 'material-ui/lib/menus/menu';
 import RefreshIndicator from 'material-ui/lib/refresh-indicator';
 import LinkedStateMixin from 'react-addons-linked-state-mixin'
 import UserService from '../services/UserService';
+import ListService from '../services/ListService';
 import Avatar from 'material-ui/lib/avatar';
 import UserAvatar from './UserAvatar';
 import { Link } from 'react-router'
@@ -34,11 +34,14 @@ const SearchBar = React.createClass({
 	mixins: [LinkedStateMixin],
 
 	  getInitialState: function() {
-		    return  {searchResult: [], searchUser: []};
+		    return  {searchResult: [], searchUser: [], searchList: [], loading: false};
 	  },
 
 	  search(t) {
 	    this.setState({
+	    	searchUser: [],
+	    	searchList: [],
+	    	loading: true,
 	    	searchResult: [
 	    	               {
 	    	            	    text: t,
@@ -46,31 +49,56 @@ const SearchBar = React.createClass({
 	    	            	  }
 	    	              ]
 	    });
-	    UserService.lista(t, this.props.user, this.listUsers, this);
+	    UserService.lista(t, this.listUsers, this);
+	    ListService.lista(t, this.listList, this);
 	  },
 	  
 
   listUsers(listUsers){
-	this.setState({
-	    	searchResult: listUsers
+		this.setState({
+    		searchUser: listUsers,
+    		loading: false,	
+			searchResult: listUsers.concat(this.state.searchList)
 	    });
   },
+
+  listList(listLists){
+		this.setState({
+	    		searchList: listLists,
+	    		loading: false,	
+	    		searchResult: this.state.searchUser.concat(listLists)
+		    });
+	  },
+	  
+	  makeSearch(text, index, item){
+		  if(!item){
+			  //TODO
+			  alert("FAzer PESquisa!!");
+		  }
+		  return true;
+	  },
 	  
   render() {
 	var renderListItem = function(item){
 		if(item.idUsuario){
 			return {text: item.nome, 
-					value: ( <Link to={'/u/'+item.idUsuario}>
+					value: ( <Link to={'/u/'+item.idUsuario+'/'+item.nome}>
 								<ListItem 
 									primaryText={item.nome}
-									rightAvatar={<UserAvatar user={item} /> }
+									leftAvatar={<UserAvatar user={item} /> }
 								 />
 							 </Link>) }
+		} else {
+			return {text: item.name, 
+				value: ( <Link to={'/l/'+item.idList+'/'+item.name}>
+							<ListItem 
+								primaryText={item.name} />
+						 </Link>) }
 		}
 	}
 	  
     return (
-      <AutoComplete filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult.map(renderListItem)}  />
+      <AutoComplete onNewRequest={this.makeSearch} filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult.map(renderListItem)}  />
     );
   }
 });

@@ -1,5 +1,6 @@
 package com.procergs.rsp.list;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -39,7 +41,7 @@ public class ListService {
 	  
     @POST
     @Produces({ MediaType.APPLICATION_JSON })
-	public boolean post(@Context HttpServletRequest httpRequest, @FormParam("ln") String name){
+	public ListED post(@Context HttpServletRequest httpRequest, @FormParam("ln") String name){
     	ListED listED = new ListED();
     	listED.setName(name);
     	listBD.insert(listED);
@@ -48,7 +50,7 @@ public class ListService {
     	FollowED followED = new FollowED(follower, listED);
     	listBD.insertFollow(followED);
     	
-    	return true;
+    	return listED;
 	}
     
     @GET
@@ -56,6 +58,15 @@ public class ListService {
 	public List<ListED> list(@Context HttpServletRequest httpRequest){
     	UserEd userED = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
     	return listBD.list(userED);
+	}
+    
+    
+	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("l")
+	public Collection<ListED> listUser(@QueryParam("ln") String listname){
+		return listBD.listList(listname);
 	}
     
 	

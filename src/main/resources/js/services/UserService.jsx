@@ -17,14 +17,14 @@ class UserService {
     });
   }
 
-  lista(text, user, callback, comp) {
+  lista(text, callback, comp) {
     return reqwest({
       url: '/rsp/apiv1/user/l',
       method: 'GET',
       crossOrigin: true,
       type: 'json',
       data: {
-    	  l: text
+    	  un: text
       },
       headers: {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
@@ -57,6 +57,21 @@ class UserService {
 	      data:profileForm,
 	      headers: {
 	    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+	      }
+	    });
+	  }
+   
+   listFollowingAndFollowers(idUser, callback, comp){
+	  	return reqwest({
+	      url: '/rsp/apiv1/user/lf/'+idUser,
+	      method: 'GET',
+	      crossOrigin: true,
+	      type: 'json',
+	      headers: {
+	    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+	      },
+	      success: function (lista) {
+	    	 callback.call(comp, lista);
 	      }
 	    });
 	  }

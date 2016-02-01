@@ -15,8 +15,8 @@ class ListService {
       headers: {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
-      success: function () {
-    	  callback.call(comp);
+      success: function (l) {
+    	  callback.call(comp,l);
       }
     });
   }
@@ -67,6 +67,24 @@ class ListService {
       }
     });
   }
+   
+   lista(text, callback, comp) {
+	    return reqwest({
+	      url: '/rsp/apiv1/list/l',
+	      method: 'GET',
+	      crossOrigin: true,
+	      type: 'json',
+	      data: {
+	    	  ln: text
+	      },
+	      headers: {
+	    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+	      },
+	      success: function (lista) {
+	    	 callback.call(comp, lista);
+	      }
+	    });
+	  }
 }
 
 export default new ListService()

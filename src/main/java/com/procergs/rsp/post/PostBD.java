@@ -34,4 +34,10 @@ public class PostBD {
 		return q.getResultList();
 	}
 
+	public Collection<PostED> listPostUser(Long idUser) {
+		Query q = em.createQuery("SELECT p FROM PostED p WHERE p.userEd.id = :idUser");
+		q.setParameter("idList", idUser);
+		return q.getResultList();
+	}
+
 }

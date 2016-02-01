@@ -32,8 +32,6 @@ class ProfileService {
   }
   
   
-  
-  
 
   getFieldsValue(iduser, callback, comp){
 		

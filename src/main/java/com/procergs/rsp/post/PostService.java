@@ -1,11 +1,13 @@
 package com.procergs.rsp.post;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -54,7 +56,7 @@ public class PostService {
 	public void init() {
 		postBD = new PostBD(em);
 		try {
-			directory = FSDirectory.open(Paths.get(new URI("file:///C:/temp/post.rsp")));
+			directory = FSDirectory.open(Paths.get(new URI("file:///"+System.getProperty("java.io.tmpdir")+File.separator + "rsp"+File.separator )));
 //			directory.create();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -103,11 +105,14 @@ public class PostService {
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-	public Collection<PostED> list(@QueryParam("l") Long idList, @Context HttpServletRequest httpRequest){
+	public Collection<PostED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser, @Context HttpServletRequest httpRequest){
     	UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
     	
     	if(idList != null){
     		return postBD.listPostList(idList);
+    	
+    	}else if(idUser != null){
+        	return postBD.listPostUser(idUser);
     	} else {
     		return postBD.list(user);
     	}
