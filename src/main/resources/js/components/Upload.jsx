@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import FlatButton from 'material-ui/lib/flat-button';
 
 const Upload = React.createClass({
 	
@@ -21,16 +22,28 @@ const Upload = React.createClass({
 		  return ReactDOM.findDOMNode(this.refs.input).files[0];
 	  }, 
 	  
+	  openFileChange(){
+		ReactDOM.findDOMNode(this.refs.input).click();
+	  },
 	render(){
 		let style = {
 				imgst: {
 					maxHeight: "100px",
 					maxWidth: "100px"
+				},
+				imgimp: {
+					display: "none"
 				}
+
 		}
+
 		return (
 				<span>
-					<input ref='input' type="file"  onChange={this.fotoChange} /> 
+					<FlatButton 
+			      	onTouchTap={this.openFileChange} 
+			      	label="Selecionar Arquivo" 
+			      	primary={true} />
+						<input style={style.imgimp} ref='input' type="file"  onChange={this.fotoChange} /> 
 			      	<img ref='image' style={style.imgst} />
 		      	</span>
 		)

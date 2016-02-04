@@ -1,11 +1,11 @@
 import React from 'react';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import LightRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme';
-import Colors from 'material-ui/lib/styles/colors';
+import DarkRawTheme from 'material-ui/lib/styles/raw-themes/dark-raw-theme';
 import AppBar from 'material-ui/lib/app-bar';
 import SearchBar from './SearchBar';
 import UserLists from './UserLists';
-import {Spacing} from 'material-ui/lib/styles';
+import {Spacing,Typography,Colors} from 'material-ui/lib/styles';
 import {
   StylePropable,
   StyleResizable,
@@ -28,7 +28,10 @@ import IconButton from 'material-ui/lib/icon-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import LoginStore from '../stores/LoginStore'
 import Snackbar from 'material-ui/lib/snackbar';
-import { Link } from 'react-router'
+import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import { Link } from 'react-router';
+
+import RSPTheme from './rspTheme';
 
 const Master  = React.createClass({
 
@@ -57,7 +60,7 @@ const Master  = React.createClass({
 
   getInitialState() {
     return {
-      muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
+      muiTheme: ThemeManager.getMuiTheme(RSPTheme),
 	    leftNavOpen: false,
       openSnackbar: false,
       snackbarMsg: ''
@@ -80,8 +83,6 @@ const Master  = React.createClass({
         // Needed to overlap the examples
         zIndex: this.state.muiTheme.zIndex.appBar + 1,
         top: 0,
-        backgroundColor: this.state.muiTheme.appBar.color,
-        
       },
       root: {
         paddingTop: Spacing.desktopKeylineIncrement,
@@ -119,6 +120,17 @@ const Master  = React.createClass({
       },
       iconButton: {
         color: darkWhite,
+      },
+
+      logoNav: {
+        cursor: 'pointer',
+        fontSize: 24,
+        color: Typography.textFullWhite,
+        lineHeight: Spacing.desktopKeylineIncrement + 'px',
+        fontWeight: Typography.fontWeightLight,
+        backgroundColor: Colors.cyan500,
+        paddingLeft: Spacing.desktopGutter,
+        marginBottom: 8,
       },
     };
 
@@ -210,54 +222,52 @@ const Master  = React.createClass({
     
     return (
       <div>
-      	  
-          <Toolbar style={styles.appBar} >
-	          <ToolbarGroup firstChild={true} float="left">
-	          { showMenuIconButton ?
-		          <IconButton 
-			          onTouchTap={this.handleTouchTapLeftIconButton.bind(this)} >
-		          <NavigationMenu />
-		        </IconButton>
-		       	: 
-	          		""
-	          }
-		        <h1 style={styles.title} ><Link to={'/'}>Home</Link></h1>
-          
-	          </ToolbarGroup>
-	       
-	          <ToolbarGroup float="right">
-	          	<SearchBar history={history} />
 
-	            
-	            <IconMenu iconButtonElement={
-	              <IconButton touch={true}>
-	                <NavigationExpandMoreIcon />
-	              </IconButton>
-	            }>
-	          	  <Link to={'/u/e'}> <MenuItem primaryText="Editar Perfil" /> </Link>
-	              <MenuItem primaryText="Sair" />
-	            </IconMenu>
-	          </ToolbarGroup>
-          </Toolbar>
-          
+        <AppBar
+          onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}
+          title="RSP"
+          zDepth={0}
+          style={styles.appBar}
+          showMenuIconButton={showMenuIconButton} 
+          iconElementRight={ 
+            <div>
+
+            <SearchBar history={history} />
+
+              
+            <IconMenu
+              iconButtonElement={ <IconButton><MoreVertIcon /></IconButton>}
+              targetOrigin={{horizontal: 'right', vertical: 'top'}}
+              anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
+                  <Link to={'/u/e'}> <MenuItem primaryText="Editar Perfil" /> </Link>
+                  <MenuItem primaryText="Sair" />
+                </IconMenu>
+              </div>
+
+               } />
           
         <div style={this.prepareStyles(styles.root)}>
             <div style={this.prepareStyles(styles.content)}>
-				{children}
-			</div>
-		</div>
-		
-    <Snackbar
-          open={this.state.openSnackbar}
-          message={this.state.snackbarMsg}
-          autoHideDuration={4000}
-          onRequestClose={this.handleopenSnackbarClose} />
+              {children}
+            </div>
+        </div>
 
-		<LeftNav 
-    		docked={docked} 
-    		open={leftNavOpen} 
-    		style={styles.leftNav} 
-			onRequestChange={leftNavOpen => this.setState({leftNavOpen})} >
+        <Snackbar
+              open={this.state.openSnackbar}
+              message={this.state.snackbarMsg}
+              autoHideDuration={4000}
+              onRequestClose={this.handleopenSnackbarClose} />
+
+        <LeftNav 
+          docked={docked} 
+          open={leftNavOpen} 
+          style={styles.leftNav} 
+          onRequestChange={leftNavOpen => this.setState({leftNavOpen})} >
+
+        <div style={this.prepareStyles(styles.logoNav)} onTouchTap={this.handleTouchTapHeader}>
+          Material-UI
+        </div>
+
           <UserLists history={history}  />
         </LeftNav>
         

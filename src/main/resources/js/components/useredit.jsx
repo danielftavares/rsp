@@ -52,10 +52,6 @@ const UserEdit = React.createClass({
 	    
   },
 
-  
-  fileChange(f){
-	  
-  },
 
   saveProfile(){
 	  var f = this.refs.upload.getFile();
@@ -99,7 +95,7 @@ const UserEdit = React.createClass({
       	
       	{ this.state.pfields.map(createField) }
       	
-      	<Upload ref='upload' onFileChamge={this.fileChange} />
+      	<Upload ref='upload' />
       
         
         

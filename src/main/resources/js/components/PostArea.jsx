@@ -7,20 +7,22 @@ import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardText from 'material-ui/lib/card/card-text';
 import LinkedStateMixin from 'react-addons-linked-state-mixin'
-import Snackbar from 'material-ui/lib/snackbar';
 import CircularProgress from 'material-ui/lib/circular-progress';
-
+import Upload from './Upload'
 
 const PostArea = React.createClass({
 	
   mixins: [LinkedStateMixin],
 
+  contextTypes: {
+          showMessageBar: React.PropTypes.func
+   },
+
   getInitialState: function() {
 	    return  { 
 	    		posth: '' , 
-	    		open: false, 
-	    		msg: '', 
-	    		ploading : false};
+	    		ploading : false,
+            editing: false };
   },
 	  
   post(e) {
@@ -29,40 +31,48 @@ const PostArea = React.createClass({
   },
   
   postDone(){
-	  this.setState({ open: true, msg: "Postagem realizada com sucesso.", posth:'', ploading: false });
-	  
+	  this.setState({posth:'', ploading: false });
+     this.context.showMessageBar("Postagem realizada com sucesso.");
   },
 
   
   postError(){
-	  this.setState({ open: true , msg: "Erro. Verifique sua conexão", ploading: false });
-  },
-  
-  handleRequestClose(){
-	  this.setState({ open: false });
+	  this.setState({ploading: false });
+     this.context.showMessageBar("Erro. Verifique sua conexão");
   },
 
+  gainFocus(){
+   this.setState({editing:true})
+  },
+
+  loseFocus(){
+   if(!this.state.posth){
+      this.setState({editing:false})
+   }
+  },
+
+
   render() {
+
     return (
 		  <Card>
 		    <CardText>
-		    	<TextField valueLink={this.linkState('posth')}  hintText="o que esta acontecendo?" multiLine={true} fullWidth={true} />
+		    	<TextField valueLink={this.linkState('posth')}  hintText="o que esta acontecendo?" multiLine={true} fullWidth={true} onFocus={this.gainFocus} onBlur={this.loseFocus} />
 		    </CardText>
+          { this.state.editing ? 
 		    <CardActions>
 		      <FlatButton 
 		      	onTouchTap={this.post} 
 		      	label="Postar" 
 		      	primary={true}
 		      	disabled={this.state.ploading}
-		      	icon={this.state.ploading ? <CircularProgress size={0.3} /> : '' }
-		      />
+		      	icon={this.state.ploading ? <CircularProgress size={0.3} /> : '' } />
+
+            <Upload ref='upload' />
 		      
 		    </CardActions>
-		    <Snackbar
-		    	open={this.state.open}
-		    	message={this.state.msg}
-		    	autoHideDuration={4000}
-		    	onRequestClose={this.handleRequestClose} />
+          : '' }
+
 		   </Card>
     );
   }
