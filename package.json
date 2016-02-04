@@ -18,13 +18,14 @@
     "build-js": "browserify --extension=.jsx --extension=.js src/main/resources/js/main.jsx  > src/main/webapp/js/rsp.js"
   },
   "dependencies": {
-    "material-ui": "^0.14.3",
-    "react": "^0.14.6",
-    "react-dom":"^0.14.6",
+    "material-ui": "^0.14.4",
+    "react": "^0.14.7",
+    "react-dom":"^0.14.7",
     "react-tap-event-plugin": "^0.2.1",
-    "react-addons-linked-state-mixin": "^0.14.6",
+    "react-addons-linked-state-mixin": "^0.14.7",
     "react-router":"1.0.3",
-    "history": "1.17.0"
+    "history": "1.17.0",
+     "react-visibility-sensor" : "3.0.0"
   },
   "devDependencies": {
     "babelify": "^6.1.0",

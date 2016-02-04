@@ -53,12 +53,26 @@ const TimeLine = React.createClass({
   },
 
   fillTimeLineExtraPosts(posts){
-    this.setState({ itens: this.state.itens.concat(posts)  , loadingPosts: false });
+    if(posts.length == 0){
+      window.removeEventListener('scroll', this.handleScroll);
+    }
+    this.setState({ itens: this.state.itens.concat(posts)  , loadingPosts: false});
   },
 
   handleScroll(e){
-   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+
+    function getDocHeight() {
+        var D = document;
+        return Math.max(
+            D.body.scrollHeight, D.documentElement.scrollHeight,
+            D.body.offsetHeight, D.documentElement.offsetHeight,
+            D.body.clientHeight, D.documentElement.clientHeight
+        );
+    }
+
+   if ((window.innerHeight + window.scrollY) >= getDocHeight()) {
       if(!this.state.loadingPosts){
+        debugger;
         this.setState({loadingPosts: true});
         var lastPost = this.state.itens[this.state.itens.length - 1].idPost;
 
