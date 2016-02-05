@@ -59,9 +59,7 @@ const UserEdit = React.createClass({
 	  
 	  if(f){
 		  formData.set('pi', f, f.name);  
-	  }
-	  debugger
-	  
+	  }	  
 	  
 	  for (var s in this.state){
 		  if(s.startsWith("f") && this.state[s]){

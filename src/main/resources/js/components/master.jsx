@@ -21,7 +21,6 @@ import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
-import FontIcon from 'material-ui/lib/font-icon';
 import ActionHome from 'material-ui/lib/svg-icons/action/home';
 import NavigationMenu from 'material-ui/lib/svg-icons/navigation/menu';
 import IconButton from 'material-ui/lib/icon-button';
@@ -264,9 +263,11 @@ const Master  = React.createClass({
           style={styles.leftNav} 
           onRequestChange={leftNavOpen => this.setState({leftNavOpen})} >
 
-        <div style={this.prepareStyles(styles.logoNav)} onTouchTap={this.handleTouchTapHeader}>
-          Material-UI
-        </div>
+          <div style={this.prepareStyles(styles.logoNav)}>
+            Material-UI
+          </div>
+
+          <Link to={'/'}><MenuItem>Início</MenuItem></Link>
 
           <UserLists history={history}  />
         </LeftNav>

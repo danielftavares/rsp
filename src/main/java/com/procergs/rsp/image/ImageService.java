@@ -35,7 +35,7 @@ public class ImageService {
 	@Path("/{idUser}/{idImage}.jpg")
 	@Produces({"image/jpeg"})
 	public Response getImage(@PathParam("idUser")Long idUsuario,@PathParam("idImage") Long idImage){
-		ImageED imageEd = imageBD.findImage(idUsuario, idImage);
+		ImageED imageEd = imageBD.findImage(idImage);
 		
 		CacheControl cc = new CacheControl();
 		
@@ -47,15 +47,23 @@ public class ImageService {
 	}
 	
 	
-	
 	@GET
-	public Response getImage(){
-		ImageED imageEd = imageBD.findImage(1l, 1l);
-		return Response.ok(imageEd.getImage()).build();
+	@Path("/{idImage}.{type}")
+	public Response getImage(@PathParam("idImage") Long idImage, @PathParam("type") String type){
+		ImageED imageEd = imageBD.findImage(idImage);
+		
+		CacheControl cc = new CacheControl();
+		
+		cc.setNoCache(false);
+		cc.setNoStore(false);
+		cc.setPrivate(false);
+		cc.setMaxAge(Integer.MAX_VALUE);
+		return Response.ok(imageEd.getImage(), "image/"+imageEd.getType()).cacheControl(cc).build();
 	}
-
-
-	public void save(ImageED imageED) {
+	
+	
+	
+	public void insert(ImageED imageED) {
 		imageBD.save(imageED);
 	}
 	  

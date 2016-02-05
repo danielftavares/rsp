@@ -27,7 +27,19 @@ const PostArea = React.createClass({
 	  
   post(e) {
     this.setState({ ploading: true });
-    PostService.post(this.state.posth, this.props.list, this.postDone, this.postError, this);
+
+    var f = this.refs.upload.getFile();
+
+    var formData = new FormData();
+    if(f){
+      formData.set('pi', f, f.name);  
+    } 
+    formData.set("t", this.state.posth);
+    if(this.props.list){
+      formData.set("l", this.props.list);
+    }
+    
+    PostService.post(formData, this.postDone, this.postError, this);
   },
   
   postDone(){
@@ -57,7 +69,7 @@ const PostArea = React.createClass({
     return (
 		  <Card>
 		    <CardText>
-		    	<TextField valueLink={this.linkState('posth')}  hintText="o que esta acontecendo?" multiLine={true} fullWidth={true} onFocus={this.gainFocus} onBlur={this.loseFocus} />
+		    	<TextField valueLink={this.linkState('posth')}  hintText="o que esta acontecendo?" multiLine={this.state.editing} rows={this.state.editing? 4 : 1}  rowsMax={4} fullWidth={true} onFocus={this.gainFocus} onBlur={this.loseFocus} />
 		    </CardText>
           { this.state.editing ? 
 		    <CardActions>

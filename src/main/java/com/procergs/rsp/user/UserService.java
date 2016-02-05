@@ -42,6 +42,7 @@ import com.procergs.rsp.user.ed.FollowingFollowersED;
 import com.procergs.rsp.user.ed.UserEd;
 import com.procergs.rsp.user.ed.UserLoginED;
 import com.procergs.rsp.user.ed.UserRequestED;
+import com.procergs.rsp.util.RSPUtil;
 
 @Stateless
 @Named
@@ -147,16 +148,13 @@ public class UserService {
 		userED = userBd.find(userED.getIdUsuario());
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
 		try{
-			List<InputPart> inputParts = uploadForm.get("pi");
-			if(inputParts != null){
-				for (InputPart inputPart : inputParts) {
-					ImageED imageED = new ImageED();
-					InputStream istream = inputPart.getBody(InputStream.class,null);
-					imageED.setImage(IOUtils.toByteArray(istream) );
-					imageED.setDate(Calendar.getInstance());
-					imageService.save(imageED);
-					userED.setProfileImage(imageED);
-				}	
+			List<byte []> f = RSPUtil.getFiles(input, "pi");
+			if(!f.isEmpty()){
+				ImageED imageED = new ImageED();
+				imageED.setImage(f.get(0));
+				imageED.setDate(Calendar.getInstance());
+				imageService.insert(imageED);
+				userED.setProfileImage(imageED);
 			}
 			
 			List<ProfileFieldValue> values = profileService.loadFieldValues(userED.getIdUsuario());

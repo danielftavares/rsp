@@ -17,7 +17,7 @@ public class ImageBD {
 		this.em = em;
 	}
 
-	public ImageED findImage(Long idUsuario, Long idImage) {
+	public ImageED findImage(Long idImage) {
 		Query q = em.createQuery("SELECT i FROM ImageED i WHERE i.id = :idimage");
 		q.setParameter("idimage", idImage);
 		

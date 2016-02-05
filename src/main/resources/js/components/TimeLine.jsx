@@ -8,11 +8,43 @@ import PostService from '../services/PostService';
 import Avatar from 'material-ui/lib/avatar';
 import { Link } from 'react-router'
 import UserAvatar from './UserAvatar';
+import IconButton from 'material-ui/lib/icon-button';
 import Paper from 'material-ui/lib/paper';
+import ActionThumbUpIcon from 'material-ui/lib/svg-icons/action/thumb-up';
+
+
+
+
+var TimeLineItemImage = React.createClass({
+  render(){
+    let style = {
+        imgst: {
+          maxHeight: "200px",
+          maxWidth: "230px"
+        }
+    }
+    return <img style={style.imgst} src={'apiv1/image/'+ this.props.image.idImage + '.' + this.props.image.type}  />
+  }
+});
 
 
 var TimeLineItem = React.createClass({
+  like(){
+    PostService.like(this.props.post, this.postLikeCallback, this);
+
+  },
+
+  postLikeCallback(){
+    alert("like em post!");
+  },
+
   render(){
+    let style = {
+        action: {
+          padding: 0,
+          float: "right"
+        }
+    }
     return (<Card>
         <CardHeader
           title={ <Link  to={'/u/'+this.props.post.userEd.idUsuario} >{this.props.post.userEd.nome}</Link> }
@@ -21,6 +53,16 @@ var TimeLineItem = React.createClass({
         <CardText>
           {this.props.post.texto}
         </CardText>
+        {this.props.post.images.length > 0 ?
+        <CardText>
+          {this.props.post.images.map(function(image){ return (<TimeLineItemImage image={image} />) })}
+        </CardText>
+        : ''
+        }
+        <CardActions style={style.action} >
+           <IconButton onTouchTap={this.like} ><ActionThumbUpIcon style={style.iconact} /></IconButton>
+           <span>{ this.props.post.likes.length > 0 ? this.props.post.likes.length : '' }</span>
+        </CardActions>
       </Card>)
   }
 });
@@ -45,6 +87,7 @@ const TimeLine = React.createClass({
   },
   
   fillTimeLine(posts){
+    debugger;
   	this.setState({ itens: posts, loadingPosts: false });
   },
 
@@ -72,7 +115,6 @@ const TimeLine = React.createClass({
 
    if ((window.innerHeight + window.scrollY) >= getDocHeight()) {
       if(!this.state.loadingPosts){
-        debugger;
         this.setState({loadingPosts: true});
         var lastPost = this.state.itens[this.state.itens.length - 1].idPost;
 

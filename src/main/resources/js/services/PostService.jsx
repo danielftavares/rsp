@@ -3,19 +3,13 @@ import LoginStore from '../stores/LoginStore'
 
 class PostService {
 
-  post(text, list, functionsuccess, functionerror, comp) {
-  	var postData = {};
-  	postData["t"] =  text;
-  	if(list){
-  		postData["l"] =  list.idList;
-  	}
-  
+  post(formData, functionsuccess, functionerror, comp) {
     return reqwest({
       url: '/rsp/apiv1/post',
       method: 'POST',
-      crossOrigin: true,
-      type: 'json',
-      data: postData,
+      data: formData,
+      contentType: 'multipart/form-data',
+      processData : false,
       headers: {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
@@ -41,6 +35,19 @@ class PostService {
       },
       success: function (posts) {
     	 callback.call(comp, posts);
+      }
+    });
+  }
+
+  like(post, functionsuccess, comp) {
+    return reqwest({
+      url: '/rsp/apiv1/post/'+post.idPost,
+      method: 'POST',
+      headers: {
+        'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function () {
+        functionsuccess.call(comp);
       }
     });
   }
