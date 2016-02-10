@@ -24,7 +24,6 @@ const UserEdit = React.createClass({
   },
   
   loadpfieldvalues(fieldValues){
-	  debugger;
 	  var v = {};
 	  for(let fv of fieldValues){
 		  v['f'+fv.profileField.idProfileField] = fv.value;

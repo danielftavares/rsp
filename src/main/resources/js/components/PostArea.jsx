@@ -51,6 +51,7 @@ const PostArea = React.createClass({
   },
   
   postDone(){
+    debugger;
 	  this.setState({posth:'', ploading: false, editing: false });
     this.context.showMessageBar("Postagem realizada com sucesso.");
     if(this.props.onStopPosting){

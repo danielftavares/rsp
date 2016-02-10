@@ -12,7 +12,7 @@ import UserEdit from './components/useredit';
 import List from './components/list';
 import Master from './components/master';  
 import LoginStore from './stores/LoginStore'
-import createHistory from 'history/lib/createHashHistory';
+import { hashHistory } from 'react-router'
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
@@ -39,7 +39,7 @@ var routes = (
 		  </Route>
 		);
 
-var router =  (<Router history={createHistory({queryKey: false})}  onUpdate={() => window.scrollTo(0, 0)} >{routes}</Router>)
+var router =  (<Router history={hashHistory}  onUpdate={() => window.scrollTo(0, 0)} >{routes}</Router>)
 
 render(router, document.getElementById('app'))
 

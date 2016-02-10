@@ -11,6 +11,11 @@ class LoginStore {
     	this._user = null;
     }
   }
+
+  logout(){
+    this._user = null;
+    localStorage.removeItem('userLoginED');
+  }
   
   get user() {
 	  return this._user;

@@ -4,6 +4,7 @@ import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardText from 'material-ui/lib/card/card-text';
+import CardTitle from 'material-ui/lib/card/card-title';
 import PostService from '../services/PostService';
 import Avatar from 'material-ui/lib/avatar';
 import { Link } from 'react-router'
@@ -124,8 +125,10 @@ const TimeLine = React.createClass({
   },
 
   componentWillReceiveProps(np){
-    this.setState({itens: [], loadingPosts: true});
-    this._loadInitialData(np);
+    if(np.list !=  this.props.list || np.idUsuario != this.props.idUsuario){
+      this.setState({itens: [], loadingPosts: true});
+      this._loadInitialData(np);
+    }
   },
 
   _loadInitialData(props){

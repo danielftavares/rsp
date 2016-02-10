@@ -204,6 +204,10 @@ const Master  = React.createClass({
     });
   },
 
+  logout(){
+    LoginStore.logout();
+  },
+
   render() {
 	  
     const {
@@ -237,8 +241,6 @@ const Master  = React.createClass({
     		history.replaceState(null, '/login');
     		return (<div>REDIRECIONANDO PARA O LOGIN...</div>)
     	}
-    	
-    	
     }
     
     return (
@@ -260,8 +262,8 @@ const Master  = React.createClass({
               iconButtonElement={ <IconButton><MoreVertIcon /></IconButton>}
               targetOrigin={{horizontal: 'right', vertical: 'top'}}
               anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
-                  <Link to={'/u/e'}> <MenuItem primaryText="Editar Perfil" /> </Link>
-                  <MenuItem primaryText="Sair" />
+                  <Link to={'/u/e'}><MenuItem primaryText="Editar Perfil" /></Link>
+                  <Link to={'/login'}><MenuItem onTouchTap={this.logout} primaryText="Sair" /></Link>
                 </IconMenu>
               </div>
 

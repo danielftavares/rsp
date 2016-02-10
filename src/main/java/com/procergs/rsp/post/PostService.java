@@ -155,7 +155,7 @@ public class PostService {
 	 * @return
 	 */
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8"  )
 	public Collection<PostED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser,
 			@QueryParam("lp") Long idLastPost, @Context HttpServletRequest httpRequest) {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
