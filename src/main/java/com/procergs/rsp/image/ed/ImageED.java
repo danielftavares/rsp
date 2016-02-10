@@ -42,7 +42,7 @@ public class ImageED {
 	@Column(name = "TYPE")
 	private String type;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="ID_POST")
 	@XmlTransient
 	private PostED postED;
@@ -88,6 +88,31 @@ public class ImageED {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((idImage == null) ? 0 : idImage.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ImageED other = (ImageED) obj;
+		if (idImage == null) {
+			if (other.idImage != null)
+				return false;
+		} else if (!idImage.equals(other.idImage))
+			return false;
+		return true;
 	}
 	
 	

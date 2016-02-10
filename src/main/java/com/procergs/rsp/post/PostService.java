@@ -19,6 +19,7 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -89,6 +90,7 @@ public class PostService {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes("multipart/form-data")
+	@Transactional
 	public boolean post(MultipartFormDataInput input, @Context HttpServletRequest httpRequest) {
 
 		try {

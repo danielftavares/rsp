@@ -12,7 +12,6 @@ const Upload = React.createClass({
 		  reader.onload = function (e) {
 			  // get loaded data and render thumbnail.
 			  ReactDOM.findDOMNode(t.refs.image).src = this.result;
-			  t.props.onFileChamge(this.result)
 			};
 		  // read the image file as a data URL.
 	      reader.readAsDataURL(ReactDOM.findDOMNode(this.refs.input).files[0]);

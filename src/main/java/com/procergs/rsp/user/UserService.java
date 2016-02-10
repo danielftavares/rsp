@@ -9,11 +9,16 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -47,6 +52,7 @@ import com.procergs.rsp.util.RSPUtil;
 @Stateless
 @Named
 @Path("user")
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class UserService {
 
 	@PersistenceContext(unitName = "RSP_PU")
@@ -143,18 +149,16 @@ public class UserService {
 	@POST
 	@Path("/profile")
 	@Consumes("multipart/form-data")
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void updateProfile(MultipartFormDataInput input, @Context HttpServletRequest httpRequest){
 		UserEd userED = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 		userED = userBd.find(userED.getIdUsuario());
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
 		try{
-			List<byte []> f = RSPUtil.getFiles(input, "pi");
-			if(!f.isEmpty()){
-				ImageED imageED = new ImageED();
-				imageED.setImage(f.get(0));
-				imageED.setDate(Calendar.getInstance());
-				imageService.insert(imageED);
+			List<ImageED> limages = RSPUtil.getImages(input, "pi");
+			for (ImageED imageED : limages) {
 				userED.setProfileImage(imageED);
+				imageService.insert(imageED);
 			}
 			
 			List<ProfileFieldValue> values = profileService.loadFieldValues(userED.getIdUsuario());

@@ -39,15 +39,15 @@ const Login = React.createClass({
         <h1>RSP Login</h1>
         <form onSubmit={this.login}>
 	        <TextField
-		        hintText="Usuario"
-		        floatingLabelText="usuario" 
+		        hintText="Usuário"
+		        floatingLabelText="Usuário" 
 		        valueLink={this.linkState('user')} /> 
 		    <TextField
 			        hintText="Senha"
 			        floatingLabelText="Senha" 
 			        type="password" 
 			        valueLink={this.linkState('password')} />
-			 <RaisedButton type="submit" label="Primary" primary={true} />
+			   <RaisedButton type="submit" label="Login" primary={true} />
 	         <div>{ this.state.msgError }</div>
 	    </form>
       </div>
