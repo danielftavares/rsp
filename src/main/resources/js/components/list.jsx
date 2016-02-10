@@ -15,6 +15,12 @@ const List = React.createClass({
   componentDidMount() {
     ListService.findListById(this.props.params.listId, this.loadList, this )
   },
+
+  componentWillReceiveProps(np){
+    if(np.params){
+      ListService.findListById(np.params.listId, this.loadList, this )
+    }
+  },
   
   loadList(list) {
       this.setState({
@@ -23,18 +29,16 @@ const List = React.createClass({
   },
 
   follow(){
-  	ListService.follow(this.list.listId);
+    ListService.follow(this.list.listId);
   },
 
   render() {
     return (
       <div>
-    	<h1>{this.state.list.idList}</h1>
-    	<h2>{this.state.list.name}</h2>
-    	<FlatButton label="Seguir" secondary={true} onTouchTap={this.follow}/>
-    	
-    	<PostArea list={this.state.list} />
-    	<TimeLine list={this.state.list} />
+        <h2>{this.state.list.name}</h2>
+        <FlatButton label="Seguir" secondary={true} onTouchTap={this.follow}/>
+        <PostArea list={this.state.list} />
+        <TimeLine list={this.state.list} />
       </div>
     );
   },

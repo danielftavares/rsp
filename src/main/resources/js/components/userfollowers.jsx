@@ -8,7 +8,6 @@ import Colors from 'material-ui/lib/styles/colors';
 import LoginStore from '../stores/LoginStore';
 import { Link } from 'react-router';
 import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
 import UserItem from './UserItem'
 
 

@@ -41,7 +41,20 @@ class PostService {
 
   like(post, functionsuccess, comp) {
     return reqwest({
-      url: '/rsp/apiv1/post/'+post.idPost,
+      url: '/rsp/apiv1/post/l/'+post.idPost,
+      method: 'POST',
+      headers: {
+        'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function () {
+        functionsuccess.call(comp);
+      }
+    });
+  }
+
+  dislike(post, functionsuccess, comp) {
+    return reqwest({
+      url: '/rsp/apiv1/post/dl/'+post.idPost,
       method: 'POST',
       headers: {
         'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token

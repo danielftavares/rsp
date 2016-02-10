@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FlatButton from 'material-ui/lib/flat-button';
+import ImageAddAPhoto from 'material-ui/lib/svg-icons/image/add-a-photo';
 
 const Upload = React.createClass({
 	
@@ -41,8 +42,9 @@ const Upload = React.createClass({
 				<span>
 					<FlatButton 
 			      	onTouchTap={this.openFileChange} 
-			      	label="Selecionar Arquivo" 
-			      	primary={true} />
+			      	label="Adicionar Imagem" 
+			      	secondary={true}
+			      	icon={<ImageAddAPhoto />} />
 						<input style={style.imgimp} ref='input' type="file"  onChange={this.fotoChange} /> 
 			      	<img ref='image' style={style.imgst} />
 		      	</span>

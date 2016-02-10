@@ -29,6 +29,8 @@ import LoginStore from '../stores/LoginStore'
 import Snackbar from 'material-ui/lib/snackbar';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import { Link } from 'react-router';
+import Dialog from 'material-ui/lib/dialog';
+import FlatButton from 'material-ui/lib/flat-button';
 
 import RSPTheme from './rspTheme';
 
@@ -47,7 +49,8 @@ const Master  = React.createClass({
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
-    showMessageBar: React.PropTypes.func
+    showMessageBar: React.PropTypes.func,
+    showDialog: React.PropTypes.func
   },
 
 
@@ -62,7 +65,10 @@ const Master  = React.createClass({
       muiTheme: ThemeManager.getMuiTheme(RSPTheme),
 	    leftNavOpen: false,
       openSnackbar: false,
-      snackbarMsg: ''
+      snackbarMsg: '',
+      titleDialog: '',
+      openDialog: false,
+      dialogContent: null
     };
   },
 
@@ -144,7 +150,8 @@ const Master  = React.createClass({
   getChildContext() {
     return {
       muiTheme: this.state.muiTheme,
-      showMessageBar: this.showMessageBar
+      showMessageBar: this.showMessageBar,
+      showDialog: this.showDialog
     };
   },
 
@@ -174,11 +181,26 @@ const Master  = React.createClass({
     });
   },
 
-  showMessageBar(message){
+  handleCloseDialog(){
+    this.setState({
+      openDialog: false,
+      titleDialog: '',
+      dialogContent: null
+    });
+  },
 
+  showMessageBar(message){
     this.setState({
       snackbarMsg: message,
       openSnackbar: true
+    });
+  },
+
+  showDialog(title, content){
+    this.setState({
+      openDialog: true,
+      titleDialog: title,
+      dialogContent: content
     });
   },
 
@@ -256,6 +278,20 @@ const Master  = React.createClass({
               message={this.state.snackbarMsg}
               autoHideDuration={4000}
               onRequestClose={this.handleopenSnackbarClose} />
+
+        <Dialog
+          title={this.state.titleDialog}
+          modal={false}
+          open={this.state.openDialog}
+          onRequestClose={this.handleCloseDialog}
+          actions={    <FlatButton
+                          label="Ok"
+                          primary={true}
+                          keyboardFocused={true}
+                          onTouchTap={this.handleCloseDialog} />}
+           >
+          {this.state.dialogContent}
+        </Dialog>
 
         <LeftNav 
           docked={docked} 

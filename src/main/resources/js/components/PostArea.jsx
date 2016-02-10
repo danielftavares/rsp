@@ -8,6 +8,7 @@ import CardHeader from 'material-ui/lib/card/card-header';
 import CardText from 'material-ui/lib/card/card-text';
 import LinkedStateMixin from 'react-addons-linked-state-mixin'
 import CircularProgress from 'material-ui/lib/circular-progress';
+import ContentAddBox from 'material-ui/lib/svg-icons/content/add-box';
 import Upload from './Upload'
 
 const PostArea = React.createClass({
@@ -22,7 +23,11 @@ const PostArea = React.createClass({
 	    return  { 
 	    		posth: '' , 
 	    		ploading : false,
-            editing: false };
+          editing: false };
+  },
+
+  componentDidMount(){
+    this.refs.tfPost.focus();
   },
 	  
   post(e) {
@@ -38,13 +43,19 @@ const PostArea = React.createClass({
     if(this.props.list){
       formData.set("l", this.props.list);
     }
+    if(this.props.parentPost){
+      formData.set("pp", this.props.parentPost.idPost);
+    }
     
     PostService.post(formData, this.postDone, this.postError, this);
   },
   
   postDone(){
-	  this.setState({posth:'', ploading: false });
-     this.context.showMessageBar("Postagem realizada com sucesso.");
+	  this.setState({posth:'', ploading: false, editing: false });
+    this.context.showMessageBar("Postagem realizada com sucesso.");
+    if(this.props.onStopPosting){
+      this.props.onStopPosting(e);
+    }
   },
 
   
@@ -53,13 +64,16 @@ const PostArea = React.createClass({
      this.context.showMessageBar("Erro. Verifique sua conexão");
   },
 
-  gainFocus(){
-   this.setState({editing:true})
+  gainFocus(e){
+   this.setState({editing:true});
   },
 
-  loseFocus(){
+  loseFocus(e){
    if(!this.state.posth){
-      this.setState({editing:false})
+      this.setState({editing:false});
+      if(this.props.onStopPosting){
+        this.props.onStopPosting(e);
+      }
    }
   },
 
@@ -69,7 +83,16 @@ const PostArea = React.createClass({
     return (
 		  <Card>
 		    <CardText>
-		    	<TextField valueLink={this.linkState('posth')}  hintText="o que esta acontecendo?" multiLine={this.state.editing} rows={this.state.editing? 4 : 1}  rowsMax={4} fullWidth={true} onFocus={this.gainFocus} onBlur={this.loseFocus} />
+		    	<TextField 
+            valueLink={this.linkState('posth')} 
+            hintText="o que esta acontecendo?"
+            multiLine={true}
+            ref="tfPost"
+            rows={this.state.editing? 3 : 1} 
+            rowsMax={3} 
+            fullWidth={true} 
+            onFocus={this.gainFocus}
+            onBlur={this.loseFocus} />
 		    </CardText>
           { this.state.editing ? 
 		    <CardActions>
@@ -78,7 +101,7 @@ const PostArea = React.createClass({
 		      	label="Postar" 
 		      	primary={true}
 		      	disabled={this.state.ploading}
-		      	icon={this.state.ploading ? <CircularProgress size={0.3} /> : '' } />
+		      	icon={this.state.ploading ? <CircularProgress size={0.3} /> : <ContentAddBox /> } />
 
             <Upload ref='upload' />
 		      

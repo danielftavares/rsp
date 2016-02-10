@@ -10,7 +10,12 @@ import { Link } from 'react-router'
 import UserAvatar from './UserAvatar';
 import IconButton from 'material-ui/lib/icon-button';
 import Paper from 'material-ui/lib/paper';
+import Colors from 'material-ui/lib/styles/colors';
 import ActionThumbUpIcon from 'material-ui/lib/svg-icons/action/thumb-up';
+import ContentReply from 'material-ui/lib/svg-icons/content/reply';
+import List from 'material-ui/lib/lists/list';
+import UserItem from './UserItem';
+import PostArea from './PostArea';
 
 
 
@@ -29,15 +34,45 @@ var TimeLineItemImage = React.createClass({
 
 
 var TimeLineItem = React.createClass({
-  like(){
-    PostService.like(this.props.post, this.postLikeCallback, this);
+  contextTypes: {
+          showDialog: React.PropTypes.func
+   },
 
+  getInitialState: function() {
+    return { iLiked: false,
+             replying: false };
+  },
+
+  componentDidMount() {
+    this.setState({iLiked: this.props.post.iLiked });
+  }, 
+  like(){
+    if(this.state.iLiked){
+      PostService.dislike(this.props.post, this.postLikeCallback, this); 
+    } else {
+      PostService.like(this.props.post, this.postLikeCallback, this); 
+    }
+    
   },
 
   postLikeCallback(){
-    alert("like em post!");
+    this.setState({iLiked: !this.state.iLiked });
+  },
+  showLikers(){
+    var listlikers = (<List subheader="Seguidores">
+            {this.props.post.likes.map(function(l){
+               return <UserItem user={l.userEd} />;
+            })}
+          </List>)
+    this.context.showDialog("Usuarios que curtiram", listlikers)
   },
 
+  startReply(){
+    this.setState({replying: true});
+  },
+  stopReply(){
+    this.setState({replying: false});
+  },
   render(){
     let style = {
         action: {
@@ -45,9 +80,13 @@ var TimeLineItem = React.createClass({
           float: "right"
         }
     }
+
     return (<Card>
         <CardHeader
-          title={ <Link  to={'/u/'+this.props.post.userEd.idUsuario} >{this.props.post.userEd.nome}</Link> }
+          title={(<span><Link  to={'/u/'+this.props.post.userEd.idUsuario} >{this.props.post.userEd.nome}</Link>
+            {this.props.post.listED ? 
+              (<span> em <Link  to={'/l/'+this.props.post.listED.idList}>{this.props.post.listED.name}</Link></span>) : 
+              '' }</span>) }
           subtitle={ new Date(this.props.post.data).toLocaleString() }
           avatar={ <UserAvatar user={this.props.post.userEd} /> }  />
         <CardText>
@@ -60,9 +99,14 @@ var TimeLineItem = React.createClass({
         : ''
         }
         <CardActions style={style.action} >
-           <IconButton onTouchTap={this.like} ><ActionThumbUpIcon style={style.iconact} /></IconButton>
-           <span>{ this.props.post.likes.length > 0 ? this.props.post.likes.length : '' }</span>
+           <IconButton onTouchTap={this.startReply} ><ContentReply color={ this.state.iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
+           <IconButton onTouchTap={this.like} ><ActionThumbUpIcon color={ this.state.iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
+           <a onClick={ this.showLikers }>{ this.props.post.likes.length > 0 ? this.props.post.likes.length : '' }</a>
         </CardActions>
+        {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={this.props.post}  /></CardText>: '' }
+        {this.props.post.replies.length > 0 ?
+          <CardText>{this.props.post.replies.map(function(post){ return (<TimeLineItem post={post} />) })}</CardText>
+          : ''}
       </Card>)
   }
 });
@@ -75,19 +119,27 @@ const TimeLine = React.createClass({
   },
 
   componentDidMount() {
+    this._loadInitialData(this.props);
+    window.addEventListener('scroll', this.handleScroll);
+  },
+
+  componentWillReceiveProps(np){
+    this.setState({itens: [], loadingPosts: true});
+    this._loadInitialData(np);
+  },
+
+  _loadInitialData(props){
     var data = {};
-    if(this.props.list){
-    	data['l'] = this.props.list.idList
+    if(props.list){
+      data['l'] = props.list.idList
     }
-    if(this.props.idUsuario){
-    	data['u'] =  this.props.idUsuario;
+    if(props.idUsuario){
+      data['u'] =  props.idUsuario;
     }
     PostService.list(data, this.fillTimeLine, this);
-    window.addEventListener('scroll', this.handleScroll);
   },
   
   fillTimeLine(posts){
-    debugger;
   	this.setState({ itens: posts, loadingPosts: false });
   },
 

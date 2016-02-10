@@ -104,6 +104,13 @@ public class PostService {
 					postED.setListED(new ListED(idList));
 				}
 			}
+			
+			if (uploadForm.containsKey("pp")) {
+				Long idParentPost = uploadForm.get("pp").get(0).getBody(Long.class, null);
+				if (idParentPost != null) {
+					postED.setParent(new PostED(idParentPost));
+				}
+			}
 			postBD.insert(postED);
 
 			List<ImageED> limages = RSPUtil.getImages(input, "pi");
@@ -151,27 +158,29 @@ public class PostService {
 			@QueryParam("lp") Long idLastPost, @Context HttpServletRequest httpRequest) {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 
+		Collection<PostED> list = null;
 		if (idList != null) {
-			return postBD.listPostList(idList, idLastPost);
-
+			list =  postBD.listPostList(idList, idLastPost);
 		} else if (idUser != null) {
-			return postBD.listPostUser(idUser, idLastPost);
+			list =  postBD.listPostUser(idUser, idLastPost);
 		} else {
-			Collection<PostED> l = postBD.list(user, idLastPost);
-			for (PostED postED : l) {
-				postED.getLikes().size();
-				postED.getImages().size();
-				for (LikeED likeed : postED.getLikes()) {
-					postED.setiLiked(likeed.getUserEd().equals(user));
-				}
-			}
-			return l;
+			list = postBD.list(user, idLastPost);
 		}
+		
+		for (PostED postED : list) {
+			postED.getReplies().size();
+			postED.getLikes().size();
+			postED.getImages().size();
+			for (LikeED likeed : postED.getLikes()) {
+				postED.setiLiked(likeed.getUserEd().equals(user));
+			}
+		}
+		return list;
 	}
 
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("/{idpost}")
+	@Path("/l/{idpost}")
 	public boolean like(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		LikeED likeED = new LikeED();
 		likeED.setDate(Calendar.getInstance());
@@ -179,6 +188,19 @@ public class PostService {
 		likeED.setUserEd(user);
 		likeED.setPostED(new PostED(idPost));
 		postBD.insertLike(likeED);
+		return true;
+	}
+	
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/dl/{idpost}")
+	public boolean dislike(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+		LikeED likeED = new LikeED();
+		likeED.setDate(Calendar.getInstance());
+		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+		likeED.setUserEd(user);
+		likeED.setPostED(new PostED(idPost));
+		postBD.deleteLike(likeED);
 		return true;
 	}
 

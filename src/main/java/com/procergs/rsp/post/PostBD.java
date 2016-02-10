@@ -21,90 +21,101 @@ public class PostBD {
 	public PostBD(EntityManager em) {
 		this.em = em;
 	}
-	
-	public void insert(PostED postED){
+
+	public void insert(PostED postED) {
 		em.persist(postED);
 	}
 
 	public Collection<PostED> list(UserEd user, Long idLastPost) {
-		 CriteriaBuilder builder = em.getCriteriaBuilder();
-		 CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
-		 Root<PostED> root = q.from(PostED.class);
-		 
-		 Subquery<FollowED> subqueryuf = q.subquery(FollowED.class);
-		 Root<FollowED> subqueryRoot = subqueryuf.from(FollowED.class);
-		 subqueryuf.select(subqueryRoot);
-		 subqueryuf.where(builder.and(
-				 					builder.or(builder.equal(subqueryRoot.get("followed"), root.get("userEd")),
-				 							builder.equal(subqueryRoot.get("listFollowed"), root.get("listED") )
-				 							),
-				 					
-				 					builder.equal(subqueryRoot.get("follower"), user)
-				 		));
-		 
-		
-		 
-		 if(idLastPost != null){
-			 q.where(builder.and(
-					 	builder.lt(root.get("idPost"), idLastPost),
-					 	builder.or(builder.equal(root.get("userEd"), user),builder.exists(subqueryuf))	
-					 ));
-		 } else {
-			 q.where(builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf)));
-		 }
-		 
-		 q.orderBy(builder.desc(root.get("data")));
-		 
-		 
-		 Query query = em.createQuery(q);
-		 query.setMaxResults(10);
-		 
-		 List<PostED> l = query.getResultList();
-		 return l;
-//		Query q = null;
-//		if(idLastPost == null){
-//			q = em.createQuery("SELECT p FROM PostED p JOIN FETCH p.images JOIN FETCH p.likes WHERE EXISTS (SELECT f FROM FollowED f WHERE f.followed = p.userEd AND f.follower = :USER) or p.userEd = :USER  ORDER BY p.data DESC");	
-//		} else {
-//			q = em.createQuery("SELECT p FROM PostED p JOIN FETCH p.images JOIN FETCH p.likes WHERE (EXISTS (SELECT f FROM FollowED f WHERE f.followed = p.userEd AND f.follower = :USER) or p.userEd = :USER) AND p.id < :idLastPost  ORDER BY p.data DESC");
-//			q.setParameter("idLastPost", idLastPost);
-//		}
-//		
-//		 
-//		q.setParameter("USER", user);
-//		q.setMaxResults(10);
-//		 
-//		return q.getResultList();
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
+		Root<PostED> root = q.from(PostED.class);
+
+		Subquery<FollowED> subqueryuf = q.subquery(FollowED.class);
+		Root<FollowED> subqueryRoot = subqueryuf.from(FollowED.class);
+		subqueryuf.select(subqueryRoot);
+		subqueryuf.where(builder.and(builder.or(builder.equal(subqueryRoot.get("followed"), root.get("userEd")),
+				builder.equal(subqueryRoot.get("listFollowed"), root.get("listED"))),
+
+				builder.equal(subqueryRoot.get("follower"), user)));
+
+		if (idLastPost != null) {
+			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
+								builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf)),
+								builder.isNull(root.get("parent"))));
+		} else {
+			q.where(builder.and(
+						builder.isNull(root.get("parent")),
+						builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf))));
+		}
+
+		q.orderBy(builder.desc(root.get("data")));
+
+		Query query = em.createQuery(q);
+		query.setMaxResults(10);
+
+		List<PostED> l = query.getResultList();
+		return l;
 	}
 
-
 	public Collection<PostED> listPostList(Long idList, Long idLastPost) {
-		Query q = null;
-		if(idLastPost == null){
-			q = em.createQuery("SELECT p FROM PostED p WHERE p.listED.id = :idList ORDER BY p.data DESC ");
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
+		Root<PostED> root = q.from(PostED.class);
+
+		if (idLastPost != null) {
+			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
+								builder.equal(root.get("listED").get("idList"), idList),
+								builder.isNull(root.get("parent"))));
 		} else {
-			em.createQuery("SELECT p FROM PostED p WHERE p.listED.id = :idList AND p.id < :idLastPost ORDER BY p.data DESC ");
-			q.setParameter("idLastPost", idLastPost);
+			q.where(builder.and(
+						builder.isNull(root.get("parent")),
+						builder.equal(root.get("listED").get("idList"), idList)));
 		}
-		q.setParameter("idList", idList);
-		q.setMaxResults(10);
-		return q.getResultList();
+
+		q.orderBy(builder.desc(root.get("data")));
+
+		Query query = em.createQuery(q);
+		query.setMaxResults(10);
+
+		List<PostED> l = query.getResultList();
+		return l;
 	}
 
 	public Collection<PostED> listPostUser(Long idUser, Long idLastPost) {
-		Query q = null;
-		if(idLastPost == null){
-			q = em.createQuery("SELECT p FROM PostED p WHERE p.userEd.id = :idUser ORDER BY p.data DESC ");
+
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
+		Root<PostED> root = q.from(PostED.class);
+
+		if (idLastPost != null) {
+			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
+							builder.equal(root.get("userEd").get("idUsuario"), idUser),
+							builder.isNull(root.get("parent"))));
 		} else {
-			q = em.createQuery("SELECT p FROM PostED p WHERE p.userEd.id = :idUser AND p.id < :idLastPost ORDER BY p.data DESC ");
-			q.setParameter("idLastPost", idLastPost);
+			q.where(builder.and(
+						builder.equal(root.get("userEd").get("idUsuario"), idUser),
+						builder.isNull(root.get("parent"))));
 		}
-		q.setParameter("idUser", idUser);
-		q.setMaxResults(10);
-		return q.getResultList();
+
+		q.orderBy(builder.desc(root.get("data")));
+
+		Query query = em.createQuery(q);
+		query.setMaxResults(10);
+
+		List<PostED> l = query.getResultList();
+		return l;
 	}
 
 	public void insertLike(LikeED likeED) {
 		em.persist(likeED);
+	}
+
+	public void deleteLike(LikeED likeED) {
+		Query q = em.createQuery("DELETE FROM LikeED l WHERE l.userEd = :u AND l.postED = :p");
+		q.setParameter("u", likeED.getUserEd());
+		q.setParameter("p", likeED.getPostED());
+		q.executeUpdate();
 	}
 
 }

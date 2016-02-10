@@ -31,6 +31,13 @@ const User = React.createClass({
     UserService.listFollowingAndFollowers(this.props.params.userId, this.loadFollowingFollowers, this );
   },
 
+  componentWillReceiveProps(np){
+    if(np.params){
+      UserService.findUserById(np.params.userId, this.loadUser, this );
+      UserService.listFollowingAndFollowers(np.params.userId, this.loadFollowingFollowers, this );
+    }
+  },
+
   loadFollowingFollowers(list){
 	  this.setState({
 		  followingFollowers: list,
