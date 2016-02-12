@@ -17,7 +17,7 @@ public class UserBD {
 	}
 	
 	public UserEd login(String usuario, String senha){
-		Query q = em.createNativeQuery("SELECT ID_USUARIO, NOME, ID_PROFILE_IMAGE FROM usuario WHERE NOME = :nome AND SENHA = MD5(:senha)", UserEd.class);
+		Query q = em.createNativeQuery("SELECT ID_USUARIO, NOME, ID_PROFILE_IMAGE FROM usuario WHERE LOGIN = :nome AND SENHA = MD5(:senha)", UserEd.class);
 		q.setParameter("nome", usuario);
 		q.setParameter("senha", senha);
 		return (UserEd)q.getSingleResult();
@@ -33,6 +33,17 @@ public class UserBD {
 		return em.find(UserEd.class, idUser);
 	}
 
+	public UserEd find(String login){
+		Query q = em.createQuery("SELECT u FROM UserEd u WHERE u.login = :n");
+		q.setParameter("n", login);
+		List<UserEd> l = q.getResultList();
+		if(!l.isEmpty()){
+			return l.get(0);
+		} else {
+			return null; 
+		}
+	}
+	
 	public void insertFollow(FollowED f) {
 		em.persist(f);
 	}
@@ -59,6 +70,10 @@ public class UserBD {
 		q.setParameter("follower", f.getFollower());
 		q.setParameter("followed", f.getFollowed());
 		q.executeUpdate();
+	}
+
+	public void insert(UserEd userEd) {
+		em.persist(userEd);
 	}
 
 }

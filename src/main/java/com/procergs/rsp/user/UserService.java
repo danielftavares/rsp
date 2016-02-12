@@ -3,6 +3,7 @@ package com.procergs.rsp.user;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,12 @@ import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Named;
+import javax.naming.NamingEnumeration;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
@@ -62,10 +69,10 @@ public class UserService {
 	UserLoginService userLoginService;
 
 	UserBD userBd;
-	
+
 	@EJB
 	ImageService imageService;
-	
+
 	@EJB
 	ProfileService profileService;
 
@@ -74,107 +81,158 @@ public class UserService {
 		userBd = new UserBD(em);
 	}
 
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("login")
-	public Boolean login(@Context HttpHeaders httpHeaders) {
-		System.out.println(httpHeaders.getRequestHeaders());
-		System.out.println("Passou aqui!!");
-		return true;
-	}
-
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("login")
-	public UserLoginED login(@Context HttpHeaders httpHeaders, @FormParam("username") String username, @FormParam("password") String password, @Context  final HttpServletResponse response) {
-		try{
-			UserEd userEd = login(username, password);
-			UserLoginED userLoginED = userLoginService.gerarLogin(userEd);
-			return userLoginED;
-		} catch (Exception e){
+	public UserLoginED login(@Context HttpHeaders httpHeaders, @FormParam("username") String username, @FormParam("password") String password, @Context final HttpServletResponse response) {
+		try {
+			UserEd userPath = userBd.find(username);
+			if (userPath != null && userPath.getLdap() == false) {
+				UserEd userEd = login(username, password);
+				UserLoginED userLoginED = userLoginService.gerarLogin(userEd);
+				return userLoginED;
+
+			} else {
+				// autentica por ldap
+				Hashtable env = new Hashtable();
+				env.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+				env.put(javax.naming.Context.PROVIDER_URL, System.getProperty("rsp.ldap"));
+				LdapContext ctx = new InitialLdapContext(env, null);
+
+				SearchControls ctls = new SearchControls();
+				ctls.setSearchScope(2);
+				String[] atrib = { "uid" , "cn", "jpegPhoto"};
+				ctls.setReturningAttributes(atrib);
+				ctls.setCountLimit(100L);
+
+				NamingEnumeration<SearchResult> sr = ctx.search("ou=procergs,o=estado,c=br", "uid="+username, ctls);
+				String uds = null;
+				Attributes userAtributes = null;
+				while (sr.hasMore()) {
+					SearchResult sre = sr.next();
+					uds = sre.getNameInNamespace();
+					userAtributes = sre.getAttributes();
+				}
+
+				if(userAtributes == null){
+					throw new Exception("Loguin Fail");
+				}
+				env = new Hashtable();
+				env.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+				env.put(javax.naming.Context.PROVIDER_URL, "ldap://sonora.procergs.reders:389");
+				env.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");
+		//
+//				// Authenticate as S. User and password "mysecret"
+//				env.put(Context.SECURITY_PRINCIPAL, "procergs-daniel-tavares");
+				env.put(javax.naming.Context.SECURITY_PRINCIPAL, uds);
+				env.put(javax.naming.Context.SECURITY_CREDENTIALS, password);
+				ctx = new InitialLdapContext(env, null);
+
+				// autenticação bem sucedida!
+				if(userPath == null){
+					// cria Usuario
+					UserEd userEd = new UserEd();
+					userEd.setLogin(username);
+					userEd.setNome((String)userAtributes.get("cn").get());
+					userEd.setLdap(true);
+					
+					ImageED imageED = new ImageED();
+					imageED.setImage((byte[]) userAtributes.get("jpegPhoto").get());
+					imageED.setDate(Calendar.getInstance());
+					imageED.setType("jpeg");
+					imageService.insert(imageED);
+					
+					userEd.setProfileImage(imageED);
+					userBd.insert(userEd);
+					UserLoginED userLoginED = userLoginService.gerarLogin(userEd);
+					return userLoginED;
+				} else {
+					UserLoginED userLoginED = userLoginService.gerarLogin(userPath);
+					return userLoginED;
+				}
+			}
+
+		} catch (Exception e) {
 			throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));
 		}
 	}
 
-	
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("l")
-	public Collection<UserEd> listUser(@QueryParam("un") String username){
+	public Collection<UserEd> listUser(@QueryParam("un") String username) {
 		return userBd.listUser(username);
 	}
-	
-	
+
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/{idUser}")
-	public UserEd find(@PathParam("idUser") Long idUser){
+	public UserEd find(@PathParam("idUser") Long idUser) {
 		return userBd.find(idUser);
 	}
-	
 
 	@GET
 	@Path("/f/{idUser}")
-	public void follow(@PathParam("idUser") Long idUser, @Context HttpServletRequest httpRequest){
+	public void follow(@PathParam("idUser") Long idUser, @Context HttpServletRequest httpRequest) {
 		UserEd followed = userBd.find(idUser);
 		UserEd follower = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
-		
+
 		FollowED f = new FollowED(follower, followed);
 		userBd.insertFollow(f);
 	}
-	
+
 	@GET
 	@Path("/uf/{idUser}")
-	public void infollow(@PathParam("idUser") Long idUser, @Context HttpServletRequest httpRequest){
+	public void infollow(@PathParam("idUser") Long idUser, @Context HttpServletRequest httpRequest) {
 		UserEd followed = userBd.find(idUser);
 		UserEd follower = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 		FollowED f = new FollowED(follower, followed);
 		userBd.deleteFollow(f);
 	}
-	
+
 	public UserEd login(String username, String password) {
 		return userBd.login(username, password);
 	}
-	
+
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("lf/{idUser}")
-	public FollowingFollowersED listFollowingAndFollowers(@PathParam("idUser") Long idUser){
+	public FollowingFollowersED listFollowingAndFollowers(@PathParam("idUser") Long idUser) {
 		FollowingFollowersED followingFollowersED = new FollowingFollowersED();
 		followingFollowersED.setFollowers(userBd.listFollowers(idUser));
-		followingFollowersED.setFollowing(userBd.listFollowing (idUser));
+		followingFollowersED.setFollowing(userBd.listFollowing(idUser));
 		return followingFollowersED;
 	}
-	
+
 	@POST
 	@Path("/profile")
 	@Consumes("multipart/form-data")
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	public void updateProfile(MultipartFormDataInput input, @Context HttpServletRequest httpRequest){
+	public void updateProfile(MultipartFormDataInput input, @Context HttpServletRequest httpRequest) {
 		UserEd userED = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 		userED = userBd.find(userED.getIdUsuario());
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
-		try{
+		try {
 			List<ImageED> limages = RSPUtil.getImages(input, "pi");
 			for (ImageED imageED : limages) {
 				userED.setProfileImage(imageED);
 				imageService.insert(imageED);
 			}
-			
+
 			List<ProfileFieldValue> values = profileService.loadFieldValues(userED.getIdUsuario());
 			List<ProfileField> fields = profileService.listaFields();
 			for (ProfileField profileField : fields) {
-				if(uploadForm.containsKey("f"+profileField.getIdProfileField())){
-					InputPart inputPart = uploadForm.get("f"+profileField.getIdProfileField()).get(0);
+				if (uploadForm.containsKey("f" + profileField.getIdProfileField())) {
+					InputPart inputPart = uploadForm.get("f" + profileField.getIdProfileField()).get(0);
 					boolean haveValue = false;
 					for (ProfileFieldValue profileValue : values) {
-						if(profileValue.getProfileField().equals(profileField)){
+						if (profileValue.getProfileField().equals(profileField)) {
 							profileValue.setValue(inputPart.getBodyAsString());
 							profileService.updateFieldValue(profileValue);
 							haveValue = true;
 						}
 					}
-					if(!haveValue){
+					if (!haveValue) {
 						ProfileFieldValue profileFieldValue = new ProfileFieldValue();
 						profileFieldValue.setProfile(userED);
 						profileFieldValue.setProfileField(profileField);
@@ -185,21 +243,21 @@ public class UserService {
 					profileService.removeProfileFieldValue(userED, profileField);
 				}
 			}
-			
-//			for(String key: uploadForm.keySet()){
-//				if(key.matches("[f](\\d*)")){
-//					List<InputPart> inputPartsf = uploadForm.get(key);
-//					for (InputPart inputPart : inputPartsf) {
-//						System.out.println(inputPart.getBodyAsString());
-//					}
-//				}
-//			}
-		} catch (Exception e){
+
+			// for(String key: uploadForm.keySet()){
+			// if(key.matches("[f](\\d*)")){
+			// List<InputPart> inputPartsf = uploadForm.get(key);
+			// for (InputPart inputPart : inputPartsf) {
+			// System.out.println(inputPart.getBodyAsString());
+			// }
+			// }
+			// }
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		userBd.update(userED);
 		System.out.println("TESTE!!");
-		
+
 	}
 }

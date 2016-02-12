@@ -23,7 +23,8 @@ const PostArea = React.createClass({
 	    return  { 
 	    		posth: '' , 
 	    		ploading : false,
-          editing: false };
+          editing: false,
+          mouseOver: false };
   },
 
   componentDidMount(){
@@ -37,25 +38,27 @@ const PostArea = React.createClass({
 
     var formData = new FormData();
     if(f){
-      formData.set('pi', f, f.name);  
+      formData.append('pi', f, f.name);  
     } 
-    formData.set("t", this.state.posth);
+    formData.append("t", this.state.posth);
     if(this.props.list){
-      formData.set("l", this.props.list);
+      formData.append("l", this.props.list.idList);
     }
     if(this.props.parentPost){
-      formData.set("pp", this.props.parentPost.idPost);
+      formData.append("pp", this.props.parentPost.idPost);
     }
     
     PostService.post(formData, this.postDone, this.postError, this);
   },
   
   postDone(){
-    debugger;
 	  this.setState({posth:'', ploading: false, editing: false });
     this.context.showMessageBar("Postagem realizada com sucesso.");
     if(this.props.onStopPosting){
-      this.props.onStopPosting(e);
+      this.props.onStopPosting();
+    }
+    if(this.props.onPostDone){
+      this.props.onPostDone();
     }
   },
 
@@ -70,7 +73,7 @@ const PostArea = React.createClass({
   },
 
   loseFocus(e){
-   if(!this.state.posth){
+   if(!this.state.posth && !this.state.mouseOver){
       this.setState({editing:false});
       if(this.props.onStopPosting){
         this.props.onStopPosting(e);
@@ -78,11 +81,18 @@ const PostArea = React.createClass({
    }
   },
 
+  _mouseEnterElement(){
+    this.setState({mouseOver: true});
+  },
+
+  _mouseLeaveElement(){
+    this.setState({mouseOver: false});
+  },
 
   render() {
 
     return (
-		  <Card>
+		  <Card onMouseEnter={this._mouseEnterElement} onMouseLeave={this._mouseLeaveElement} >
 		    <CardText>
 		    	<TextField 
             valueLink={this.linkState('posth')} 

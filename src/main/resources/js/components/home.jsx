@@ -9,15 +9,19 @@ const Home = React.createClass({
 	    history: React.PropTypes.object
 	},
 	
+   _onPostDone() {
+      this.refs.timeLine.updateTimeLine();
+   },
+
   render() {
 	const {
 		history,
 	} = this.props;
 		
-    return (
+   return (
       <div>
-		<PostArea history={history} />
-		<TimeLine history={history} />        
+   		<PostArea history={history} onPostDone={this._onPostDone} />
+   		<TimeLine ref="timeLine" history={history} />
       </div>
     );
   },

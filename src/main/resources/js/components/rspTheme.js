@@ -4,7 +4,20 @@ import Spacing from 'material-ui/lib/styles/spacing';
 import zIndex from 'material-ui/lib/styles/zIndex';
 
 export default {
-  spacing: Spacing,
+  spacing: {
+      iconSize: 24,
+
+      desktopGutter: 18,
+      desktopGutterMore: 24,
+      desktopGutterLess: 12,
+      desktopGutterMini: 4,
+      desktopKeylineIncrement: 64,
+      desktopDropDownMenuItemHeight: 32,
+      desktopDropDownMenuFontSize: 15,
+      desktopLeftNavMenuItemHeight: 48,
+      desktopSubheaderHeight: 48,
+      desktopToolbarHeight: 56,
+    },
   fontFamily: 'Roboto, sans-serif',
   palette: {
     primary1Color: Colors.cyan500,

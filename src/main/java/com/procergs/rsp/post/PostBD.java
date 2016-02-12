@@ -26,7 +26,7 @@ public class PostBD {
 		em.persist(postED);
 	}
 
-	public Collection<PostED> list(UserEd user, Long idLastPost) {
+	public Collection<PostED> list(UserEd user, Long idLastPost, Long idFirstPost) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
 		Root<PostED> root = q.from(PostED.class);
@@ -43,6 +43,10 @@ public class PostBD {
 			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
 								builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf)),
 								builder.isNull(root.get("parent"))));
+		} else if (idFirstPost != null) {
+			q.where(builder.and(builder.gt(root.get("idPost"), idFirstPost),
+					builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf)),
+					builder.isNull(root.get("parent"))));
 		} else {
 			q.where(builder.and(
 						builder.isNull(root.get("parent")),
@@ -58,7 +62,7 @@ public class PostBD {
 		return l;
 	}
 
-	public Collection<PostED> listPostList(Long idList, Long idLastPost) {
+	public Collection<PostED> listPostList(Long idList, Long idLastPost, Long idFirstPost) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
 		Root<PostED> root = q.from(PostED.class);
@@ -67,6 +71,10 @@ public class PostBD {
 			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
 								builder.equal(root.get("listED").get("idList"), idList),
 								builder.isNull(root.get("parent"))));
+		} if (idFirstPost!= null){
+			q.where(builder.and(builder.gt(root.get("idPost"), idFirstPost),
+					builder.equal(root.get("listED").get("idList"), idList),
+					builder.isNull(root.get("parent"))));
 		} else {
 			q.where(builder.and(
 						builder.isNull(root.get("parent")),
@@ -82,7 +90,7 @@ public class PostBD {
 		return l;
 	}
 
-	public Collection<PostED> listPostUser(Long idUser, Long idLastPost) {
+	public Collection<PostED> listPostUser(Long idUser, Long idLastPost, Long idFirstPost) {
 
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
@@ -92,6 +100,10 @@ public class PostBD {
 			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
 							builder.equal(root.get("userEd").get("idUsuario"), idUser),
 							builder.isNull(root.get("parent"))));
+		} else if (idFirstPost != null) {
+			q.where(builder.and(builder.gt(root.get("idPost"), idFirstPost),
+					builder.equal(root.get("userEd").get("idUsuario"), idUser),
+					builder.isNull(root.get("parent"))));
 		} else {
 			q.where(builder.and(
 						builder.equal(root.get("userEd").get("idUsuario"), idUser),

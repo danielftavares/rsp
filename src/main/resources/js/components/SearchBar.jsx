@@ -96,9 +96,14 @@ const SearchBar = React.createClass({
 						 </Link>) }
 		}
 	}
-	  
+	  var style = {
+	  		autocompletestyle : {
+	  			backgroundColor: 'rgba(255, 255, 255, 0.3)',
+	  			borderRadius: 10,
+	  		}
+	  }
     return (
-      <AutoComplete onNewRequest={this.makeSearch} filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult.map(renderListItem)}  />
+      <AutoComplete style={style.autocompletestyle} onNewRequest={this.makeSearch} filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult.map(renderListItem)}  />
     );
   }
 });

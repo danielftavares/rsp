@@ -6,11 +6,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.procergs.rsp.image.ed.ImageED;
 import com.procergs.rsp.profile.ed.ProfileFieldValue;
@@ -21,7 +24,12 @@ public class UserEd {
 
 	@Id
 	@Column(name = "ID_USUARIO")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idUsuario;
+	
+	
+	@Column(name = "LOGIN")
+	private String login;
 	
 	@Column(name = "NOME")
 	private String nome;
@@ -30,6 +38,9 @@ public class UserEd {
 	@JoinColumn(name="ID_PROFILE_IMAGE", referencedColumnName = "ID_IMAGE")
 	private ImageED profileImage;
 
+	@Column(name="LDAP")
+	@XmlTransient
+	private Boolean ldap;
 
 	public Long getIdUsuario() {
 		return idUsuario;
@@ -53,6 +64,25 @@ public class UserEd {
 
 	public void setProfileImage(ImageED profileImage) {
 		this.profileImage = profileImage;
+	}
+
+	@XmlTransient	
+	public Boolean getLdap() {
+		return ldap;
+	}
+
+	public void setLdap(Boolean ldap) {
+		this.ldap = ldap;
+	}
+	
+	
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
 	}
 
 	@Override

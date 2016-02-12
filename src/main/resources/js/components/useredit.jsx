@@ -14,7 +14,7 @@ const UserEdit = React.createClass({
   mixins: [LinkedStateMixin],
   
   getInitialState: function() {
-    return {nome: '', pi: null, pfields :[] };
+    return {nome: '',login: '', pi: null, pfields :[] };
   },
 
   componentDidMount() {
@@ -25,7 +25,8 @@ const UserEdit = React.createClass({
   
   loadpfieldvalues(fieldValues){
 	  var v = {};
-	  for(let fv of fieldValues){
+	  for(var i = 0; i< fieldValues.length; i++){
+      var fv = fieldValues[i];
 		  v['f'+fv.profileField.idProfileField] = fv.value;
 	  }
 	  
@@ -34,18 +35,20 @@ const UserEdit = React.createClass({
   
   loadUser(user) {
       this.setState({
-       nome: user.nome
+       nome: user.nome,
+       login: user.login
     })
   },
   
   loadpfields(fs){
 	  var fstates = {};
-	  for (let f of fs) {
+    for(var i = 0 ; i < fs.length; i++){
+	    var f = fs[i];
 		  fstates["f"+f.idProfileField] = '';
 		}
 	  
 	  
-	  fstates.pfields = fs
+	  fstates.pfields = fs;
 	  
 	  this.setState(fstates);
 	    
@@ -57,12 +60,12 @@ const UserEdit = React.createClass({
 	  var formData = new FormData(ReactDOM.findDOMNode(this.refs.form));
 	  
 	  if(f){
-		  formData.set('pi', f, f.name);  
+		  formData.append('pi', f, f.name);  
 	  }	  
 	  
 	  for (var s in this.state){
-		  if(s.startsWith("f") && this.state[s]){
-			  formData.set(s, this.state[s]);
+		  if(s.lastIndexOf("f") >= 0 && this.state[s]){
+			  formData.append(s, this.state[s]);
 		  }
 	  }
 	  
@@ -83,10 +86,10 @@ const UserEdit = React.createClass({
 	      
     return (
       <form ref="form" enctype="multipart/form-data" >
-      	
+      	<h2>Dados de {this.state.login}</h2>
       	<TextField
-	      hintText="Nome"
-	      floatingLabelText="Nome:"
+          hintText="Nome"
+          floatingLabelText="Nome:"
       	  fullWidth={true}
       	  valueLink={this.linkState('nome')} />
       	

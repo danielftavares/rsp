@@ -46692,7 +46692,8 @@ var PostArea = _react2['default'].createClass({
     return {
       posth: '',
       ploading: false,
-      editing: false };
+      editing: false,
+      mouseOver: false };
   },
 
   componentDidMount: function componentDidMount() {
@@ -46706,25 +46707,27 @@ var PostArea = _react2['default'].createClass({
 
     var formData = new FormData();
     if (f) {
-      formData.set('pi', f, f.name);
+      formData.append('pi', f, f.name);
     }
-    formData.set("t", this.state.posth);
+    formData.append("t", this.state.posth);
     if (this.props.list) {
-      formData.set("l", this.props.list);
+      formData.append("l", this.props.list.idList);
     }
     if (this.props.parentPost) {
-      formData.set("pp", this.props.parentPost.idPost);
+      formData.append("pp", this.props.parentPost.idPost);
     }
 
     _servicesPostService2['default'].post(formData, this.postDone, this.postError, this);
   },
 
   postDone: function postDone() {
-    debugger;
     this.setState({ posth: '', ploading: false, editing: false });
     this.context.showMessageBar("Postagem realizada com sucesso.");
     if (this.props.onStopPosting) {
-      this.props.onStopPosting(e);
+      this.props.onStopPosting();
+    }
+    if (this.props.onPostDone) {
+      this.props.onPostDone();
     }
   },
 
@@ -46738,7 +46741,7 @@ var PostArea = _react2['default'].createClass({
   },
 
   loseFocus: function loseFocus(e) {
-    if (!this.state.posth) {
+    if (!this.state.posth && !this.state.mouseOver) {
       this.setState({ editing: false });
       if (this.props.onStopPosting) {
         this.props.onStopPosting(e);
@@ -46746,11 +46749,19 @@ var PostArea = _react2['default'].createClass({
     }
   },
 
+  _mouseEnterElement: function _mouseEnterElement() {
+    this.setState({ mouseOver: true });
+  },
+
+  _mouseLeaveElement: function _mouseLeaveElement() {
+    this.setState({ mouseOver: false });
+  },
+
   render: function render() {
 
     return _react2['default'].createElement(
       _materialUiLibCardCard2['default'],
-      null,
+      { onMouseEnter: this._mouseEnterElement, onMouseLeave: this._mouseLeaveElement },
       _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
         null,
@@ -46924,8 +46935,13 @@ var SearchBar = _react2['default'].createClass({
 					) };
 			}
 		};
-
-		return _react2['default'].createElement(_materialUiLibAutoComplete2['default'], { onNewRequest: this.makeSearch, filter: _materialUiLibAutoComplete2['default'].noFilter, onUpdateInput: this.search, dataSource: this.state.searchResult.map(renderListItem) });
+		var style = {
+			autocompletestyle: {
+				backgroundColor: 'rgba(255, 255, 255, 0.3)',
+				borderRadius: 10
+			}
+		};
+		return _react2['default'].createElement(_materialUiLibAutoComplete2['default'], { style: style.autocompletestyle, onNewRequest: this.makeSearch, filter: _materialUiLibAutoComplete2['default'].noFilter, onUpdateInput: this.search, dataSource: this.state.searchResult.map(renderListItem) });
 	}
 });
 
@@ -47077,6 +47093,9 @@ var TimeLineItem = _react2['default'].createClass({
       action: {
         padding: 0,
         float: "right"
+      },
+      textmsg: {
+        whiteSpace: 'pre-wrap'
       }
     };
 
@@ -47107,7 +47126,7 @@ var TimeLineItem = _react2['default'].createClass({
         avatar: _react2['default'].createElement(_UserAvatar2['default'], { user: this.props.post.userEd }) }),
       _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
-        null,
+        { style: style.textmsg },
         this.props.post.texto
       ),
       this.props.post.images.length > 0 ? _react2['default'].createElement(
@@ -47171,6 +47190,29 @@ var TimeLine = _react2['default'].createClass({
     }
   },
 
+  updateTimeLine: function updateTimeLine() {
+
+    this.setState({ loadingPosts: true });
+
+    var firstPost = null;
+    if (this.state.itens && this.state.itens.length > 0) {
+      firstPost = this.state.itens[0].idPost;
+    }
+
+    var data = { fp: firstPost };
+    if (this.props.list) {
+      data['l'] = this.props.list.idList;
+    }
+    if (this.props.idUsuario) {
+      data['u'] = this.props.idUsuario;
+    }
+    _servicesPostService2['default'].list(data, this.fillTimeLineTopPosts, this);
+  },
+
+  fillTimeLineTopPosts: function fillTimeLineTopPosts(posts) {
+    this.setState({ itens: posts.concat(this.state.itens), loadingPosts: false });
+  },
+
   _loadInitialData: function _loadInitialData(props) {
     var data = {};
     if (props.list) {
@@ -47217,8 +47259,6 @@ var TimeLine = _react2['default'].createClass({
           data['u'] = this.props.idUsuario;
         }
         _servicesPostService2['default'].list(data, this.fillTimeLineExtraPosts, this);
-
-        console.log("Carregando dados");
       }
     }
   },
@@ -47616,7 +47656,7 @@ module.exports = exports['default'];
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
-	value: true
+  value: true
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -47634,23 +47674,27 @@ var _TimeLine = require('./TimeLine');
 var _TimeLine2 = _interopRequireDefault(_TimeLine);
 
 var Home = _react2['default'].createClass({
-	displayName: 'Home',
+  displayName: 'Home',
 
-	propTypes: {
-		children: _react2['default'].PropTypes.node,
-		history: _react2['default'].PropTypes.object
-	},
+  propTypes: {
+    children: _react2['default'].PropTypes.node,
+    history: _react2['default'].PropTypes.object
+  },
 
-	render: function render() {
-		var history = this.props.history;
+  _onPostDone: function _onPostDone() {
+    this.refs.timeLine.updateTimeLine();
+  },
 
-		return _react2['default'].createElement(
-			'div',
-			null,
-			_react2['default'].createElement(_PostArea2['default'], { history: history }),
-			_react2['default'].createElement(_TimeLine2['default'], { history: history })
-		);
-	}
+  render: function render() {
+    var history = this.props.history;
+
+    return _react2['default'].createElement(
+      'div',
+      null,
+      _react2['default'].createElement(_PostArea2['default'], { history: history, onPostDone: this._onPostDone }),
+      _react2['default'].createElement(_TimeLine2['default'], { ref: 'timeLine', history: history })
+    );
+  }
 
 });
 
@@ -47952,6 +47996,10 @@ var _rspTheme = require('./rspTheme');
 
 var _rspTheme2 = _interopRequireDefault(_rspTheme);
 
+var _UserAvatar = require('./UserAvatar');
+
+var _UserAvatar2 = _interopRequireDefault(_UserAvatar);
+
 var Master = _react2['default'].createClass({
   displayName: 'Master',
 
@@ -48049,6 +48097,9 @@ var Master = _react2['default'].createClass({
         backgroundColor: _materialUiLibStyles.Colors.cyan500,
         paddingLeft: _materialUiLibStyles.Spacing.desktopGutter,
         marginBottom: 8
+      },
+      avatarMen: {
+        position: 'fixed'
       }
     };
 
@@ -48146,7 +48197,7 @@ var Master = _react2['default'].createClass({
     }
 
     if (!_storesLoginStore2['default'].isLoggedIn()) {
-      if (window.location.hash.startsWith("#/login")) {
+      if (window.location.hash.lastIndexOf("#/login") >= 0) {
         return _react2['default'].createElement(
           'div',
           null,
@@ -48181,7 +48232,7 @@ var Master = _react2['default'].createClass({
               iconButtonElement: _react2['default'].createElement(
                 _materialUiLibIconButton2['default'],
                 null,
-                _react2['default'].createElement(_materialUiLibSvgIconsNavigationMoreVert2['default'], null)
+                _react2['default'].createElement(_UserAvatar2['default'], { user: _storesLoginStore2['default']._user.userEd })
               ),
               targetOrigin: { horizontal: 'right', vertical: 'top' },
               anchorOrigin: { horizontal: 'right', vertical: 'top' } },
@@ -48238,7 +48289,7 @@ var Master = _react2['default'].createClass({
         _react2['default'].createElement(
           'div',
           { style: this.prepareStyles(styles.logoNav) },
-          'Material-UI'
+          'RSP'
         ),
         _react2['default'].createElement(
           _reactRouter.Link,
@@ -48258,7 +48309,7 @@ var Master = _react2['default'].createClass({
 exports['default'] = Master;
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":409,"./SearchBar":387,"./UserLists":393,"./rspTheme":398,"material-ui/lib/app-bar":93,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":163,"material-ui/lib/svg-icons/navigation/expand-more":173,"material-ui/lib/svg-icons/navigation/menu":174,"material-ui/lib/svg-icons/navigation/more-vert":175,"material-ui/lib/toolbar/toolbar":183,"material-ui/lib/toolbar/toolbar-group":180,"material-ui/lib/toolbar/toolbar-separator":181,"material-ui/lib/toolbar/toolbar-title":182,"react":381,"react-router":233}],398:[function(require,module,exports){
+},{"../stores/LoginStore":409,"./SearchBar":387,"./UserAvatar":390,"./UserLists":393,"./rspTheme":398,"material-ui/lib/app-bar":93,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":163,"material-ui/lib/svg-icons/navigation/expand-more":173,"material-ui/lib/svg-icons/navigation/menu":174,"material-ui/lib/svg-icons/navigation/more-vert":175,"material-ui/lib/toolbar/toolbar":183,"material-ui/lib/toolbar/toolbar-group":180,"material-ui/lib/toolbar/toolbar-separator":181,"material-ui/lib/toolbar/toolbar-title":182,"react":381,"react-router":233}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48284,7 +48335,20 @@ var _materialUiLibStylesZIndex = require('material-ui/lib/styles/zIndex');
 var _materialUiLibStylesZIndex2 = _interopRequireDefault(_materialUiLibStylesZIndex);
 
 exports['default'] = {
-  spacing: _materialUiLibStylesSpacing2['default'],
+  spacing: {
+    iconSize: 24,
+
+    desktopGutter: 18,
+    desktopGutterMore: 24,
+    desktopGutterLess: 12,
+    desktopGutterMini: 4,
+    desktopKeylineIncrement: 64,
+    desktopDropDownMenuItemHeight: 32,
+    desktopDropDownMenuFontSize: 15,
+    desktopLeftNavMenuItemHeight: 48,
+    desktopSubheaderHeight: 48,
+    desktopToolbarHeight: 56
+  },
   fontFamily: 'Roboto, sans-serif',
   palette: {
     primary1Color: _materialUiLibStylesColors2['default'].cyan500,
@@ -48571,7 +48635,7 @@ var UserEdit = _react2['default'].createClass({
   mixins: [_reactAddonsLinkedStateMixin2['default']],
 
   getInitialState: function getInitialState() {
-    return { nome: '', pi: null, pfields: [] };
+    return { nome: '', login: '', pi: null, pfields: [] };
   },
 
   componentDidMount: function componentDidMount() {
@@ -48582,29 +48646,9 @@ var UserEdit = _react2['default'].createClass({
 
   loadpfieldvalues: function loadpfieldvalues(fieldValues) {
     var v = {};
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = fieldValues[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var fv = _step.value;
-
-        v['f' + fv.profileField.idProfileField] = fv.value;
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator['return']) {
-          _iterator['return']();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+    for (var i = 0; i < fieldValues.length; i++) {
+      var fv = fieldValues[i];
+      v['f' + fv.profileField.idProfileField] = fv.value;
     }
 
     this.setState(v);
@@ -48612,35 +48656,16 @@ var UserEdit = _react2['default'].createClass({
 
   loadUser: function loadUser(user) {
     this.setState({
-      nome: user.nome
+      nome: user.nome,
+      login: user.login
     });
   },
 
   loadpfields: function loadpfields(fs) {
     var fstates = {};
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = fs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var f = _step2.value;
-
-        fstates["f" + f.idProfileField] = '';
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-          _iterator2['return']();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
+    for (var i = 0; i < fs.length; i++) {
+      var f = fs[i];
+      fstates["f" + f.idProfileField] = '';
     }
 
     fstates.pfields = fs;
@@ -48653,12 +48678,12 @@ var UserEdit = _react2['default'].createClass({
     var formData = new FormData(_reactDom2['default'].findDOMNode(this.refs.form));
 
     if (f) {
-      formData.set('pi', f, f.name);
+      formData.append('pi', f, f.name);
     }
 
     for (var s in this.state) {
-      if (s.startsWith("f") && this.state[s]) {
-        formData.set(s, this.state[s]);
+      if (s.lastIndexOf("f") >= 0 && this.state[s]) {
+        formData.append(s, this.state[s]);
       }
     }
 
@@ -48680,6 +48705,12 @@ var UserEdit = _react2['default'].createClass({
     return _react2['default'].createElement(
       'form',
       { ref: 'form', enctype: 'multipart/form-data' },
+      _react2['default'].createElement(
+        'h2',
+        null,
+        'Dados de ',
+        this.state.login
+      ),
       _react2['default'].createElement(_materialUiLibTextField2['default'], {
         hintText: 'Nome',
         floatingLabelText: 'Nome:',
@@ -49312,30 +49343,8 @@ var ProfileService = (function () {
 						'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
 					},
 					success: function success(lista) {
-						var _iteratorNormalCompletion = true;
-						var _didIteratorError = false;
-						var _iteratorError = undefined;
 
-						try {
-							for (var _iterator = lista[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-								var f = _step.value;
-
-								fs.push(f);
-							}
-						} catch (err) {
-							_didIteratorError = true;
-							_iteratorError = err;
-						} finally {
-							try {
-								if (!_iteratorNormalCompletion && _iterator['return']) {
-									_iterator['return']();
-								}
-							} finally {
-								if (_didIteratorError) {
-									throw _iteratorError;
-								}
-							}
-						}
+						fs.push.apply(fs, lista);
 
 						callback.call(comp, fs);
 					}

@@ -33,6 +33,7 @@ import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 
 import RSPTheme from './rspTheme';
+import UserAvatar from './UserAvatar';
 
 const Master  = React.createClass({
 
@@ -137,6 +138,9 @@ const Master  = React.createClass({
         paddingLeft: Spacing.desktopGutter,
         marginBottom: 8,
       },
+      avatarMen:{
+        position: 'fixed'
+      }
     };
 
     if (this.isDeviceSize(StyleResizable.statics.Sizes.MEDIUM) ||
@@ -235,7 +239,7 @@ const Master  = React.createClass({
     }
 
     if (!LoginStore.isLoggedIn()){
-    	if(window.location.hash.startsWith("#/login")){
+    	if(window.location.hash.lastIndexOf("#/login") >= 0){
     		return (<div>{children}</div>)
     	} else {
     		history.replaceState(null, '/login');
@@ -259,7 +263,7 @@ const Master  = React.createClass({
 
               
             <IconMenu
-              iconButtonElement={ <IconButton><MoreVertIcon /></IconButton>}
+              iconButtonElement={ <IconButton><UserAvatar user={LoginStore._user.userEd} /></IconButton>}
               targetOrigin={{horizontal: 'right', vertical: 'top'}}
               anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
                   <Link to={'/u/e'}><MenuItem primaryText="Editar Perfil" /></Link>
@@ -302,7 +306,7 @@ const Master  = React.createClass({
           onRequestChange={leftNavOpen => this.setState({leftNavOpen})} >
 
           <div style={this.prepareStyles(styles.logoNav)}>
-            Material-UI
+            RSP
           </div>
 
           <Link to={'/'}><MenuItem>Início</MenuItem></Link>

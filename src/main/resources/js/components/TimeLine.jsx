@@ -79,6 +79,9 @@ var TimeLineItem = React.createClass({
         action: {
           padding: 0,
           float: "right"
+        },
+        textmsg:{
+          whiteSpace: 'pre-wrap'
         }
     }
 
@@ -90,7 +93,7 @@ var TimeLineItem = React.createClass({
               '' }</span>) }
           subtitle={ new Date(this.props.post.data).toLocaleString() }
           avatar={ <UserAvatar user={this.props.post.userEd} /> }  />
-        <CardText>
+        <CardText style={style.textmsg} >
           {this.props.post.texto}
         </CardText>
         {this.props.post.images.length > 0 ?
@@ -129,6 +132,30 @@ const TimeLine = React.createClass({
       this.setState({itens: [], loadingPosts: true});
       this._loadInitialData(np);
     }
+  },
+
+  updateTimeLine(){
+
+    this.setState({loadingPosts: true});
+
+    var firstPost = null;
+    if(this.state.itens && this.state.itens.length > 0){
+      firstPost = this.state.itens[0].idPost;
+    } 
+
+
+    var data = {fp: firstPost};
+    if(this.props.list){
+      data['l'] = this.props.list.idList
+    }
+    if(this.props.idUsuario){
+      data['u'] =  this.props.idUsuario;
+    }
+    PostService.list(data, this.fillTimeLineTopPosts, this);
+  },
+
+  fillTimeLineTopPosts(posts){
+    this.setState({ itens: posts.concat(this.state.itens)  , loadingPosts: false});
   },
 
   _loadInitialData(props){
@@ -182,8 +209,6 @@ const TimeLine = React.createClass({
           data['u'] =  this.props.idUsuario;
         }
         PostService.list(data, this.fillTimeLineExtraPosts, this);
-
-        console.log("Carregando dados");
       }
         
     }

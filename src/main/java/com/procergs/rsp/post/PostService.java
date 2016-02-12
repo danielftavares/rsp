@@ -2,6 +2,9 @@ package com.procergs.rsp.post;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -31,6 +34,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -42,6 +46,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.util.Types;
 
 import com.procergs.rsp.image.ImageService;
 import com.procergs.rsp.image.ed.ImageED;
@@ -96,7 +101,14 @@ public class PostService {
 		try {
 			Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
 			PostED postED = new PostED();
-			postED.setTexto(uploadForm.get("t").get(0).getBodyAsString());
+			
+			InputStream istream = uploadForm.get("t").get(0).getBody(InputStream.class, null);
+			
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(istream, writer, "UTF8");
+			String post = writer.toString();
+			
+			postED.setTexto(post);
 			postED.setUserEd(((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd());
 			postED.setData(Calendar.getInstance());
 
@@ -157,16 +169,16 @@ public class PostService {
 	@GET
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8"  )
 	public Collection<PostED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser,
-			@QueryParam("lp") Long idLastPost, @Context HttpServletRequest httpRequest) {
+			@QueryParam("lp") Long idLastPost, @QueryParam("fp") Long idFirstPost, @Context HttpServletRequest httpRequest) {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 
 		Collection<PostED> list = null;
 		if (idList != null) {
-			list =  postBD.listPostList(idList, idLastPost);
+			list =  postBD.listPostList(idList, idLastPost, idFirstPost);
 		} else if (idUser != null) {
-			list =  postBD.listPostUser(idUser, idLastPost);
+			list =  postBD.listPostUser(idUser, idLastPost, idFirstPost);
 		} else {
-			list = postBD.list(user, idLastPost);
+			list = postBD.list(user, idLastPost, idFirstPost);
 		}
 		
 		for (PostED postED : list) {

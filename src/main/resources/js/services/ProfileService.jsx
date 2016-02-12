@@ -20,9 +20,9 @@ class ProfileService {
 		    	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
 		      },
 		      success: function (lista) {
-		    	  for (let f of lista) {
-		    		  fs.push(f);
-		    		}
+		    	 
+		    	 fs.push.apply(fs, lista);
+		    	 
 		    	 callback.call(comp, fs);
 		      }
 		    });	
