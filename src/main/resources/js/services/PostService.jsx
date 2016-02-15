@@ -46,8 +46,8 @@ class PostService {
       headers: {
         'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
-      success: function () {
-        functionsuccess.call(comp);
+      success: function (posted) {
+        functionsuccess.call(comp, posted);
       }
     });
   }
@@ -59,8 +59,22 @@ class PostService {
       headers: {
         'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
-      success: function () {
-        functionsuccess.call(comp);
+      success: function (posted) {
+        functionsuccess.call(comp, posted);
+      }
+    });
+  }
+
+  loadPost(post,functionsuccess, comp){
+    return reqwest({
+      url: '/rsp/apiv1/post/'+post.idPost,
+      method: 'GET',
+      type: 'json',
+      headers: {
+        'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function (posted) {
+        functionsuccess.call(comp,posted);
       }
     });
   }

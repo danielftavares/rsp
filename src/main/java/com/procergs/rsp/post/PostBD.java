@@ -130,4 +130,8 @@ public class PostBD {
 		q.executeUpdate();
 	}
 
+	public PostED load(Long idPost) {
+		return em.find(PostED.class, idPost);
+	}
+
 }

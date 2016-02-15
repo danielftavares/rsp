@@ -17,7 +17,7 @@ import ContentReply from 'material-ui/lib/svg-icons/content/reply';
 import List from 'material-ui/lib/lists/list';
 import UserItem from './UserItem';
 import PostArea from './PostArea';
-
+import LoginStore from '../stores/LoginStore'
 
 
 
@@ -40,39 +40,49 @@ var TimeLineItem = React.createClass({
    },
 
   getInitialState: function() {
-    return { iLiked: false,
-             replying: false };
+    return { replying: false,
+             post: null };
   },
 
-  componentDidMount() {
-    this.setState({iLiked: this.props.post.iLiked });
-  }, 
   like(){
-    if(this.state.iLiked){
-      PostService.dislike(this.props.post, this.postLikeCallback, this); 
+    if(this._iLiked()){
+      PostService.dislike(this._getPost(), this._setPost, this); 
     } else {
-      PostService.like(this.props.post, this.postLikeCallback, this); 
+      PostService.like(this._getPost(), this._setPost, this); 
     }
     
   },
-
-  postLikeCallback(){
-    this.setState({iLiked: !this.state.iLiked });
-  },
   showLikers(){
     var listlikers = (<List subheader="Seguidores">
-            {this.props.post.likes.map(function(l){
+            {this._getPost().likes.map(function(l){
                return <UserItem user={l.userEd} />;
             })}
           </List>)
     this.context.showDialog("Usuarios que curtiram", listlikers)
   },
-
   startReply(){
     this.setState({replying: true});
   },
   stopReply(){
     this.setState({replying: false});
+  },
+  _replyDone(){
+    PostService.loadPost(this._getPost(), this._setPost, this);
+  },
+  _setPost(post){
+    this.setState({post: post});
+  },
+  _getPost(){
+    return this.state.post ? this.state.post : this.props.post;
+  },
+  _iLiked(){
+    var postED = this._getPost();
+    for (var i = postED.likes.length - 1; i >= 0; i--) {
+      if(postED.likes[i].userEd.idUsuario == LoginStore.user.userEd.idUsuario){
+        return true;
+      }
+    };
+    return false;
   },
   render(){
     let style = {
@@ -85,31 +95,34 @@ var TimeLineItem = React.createClass({
         }
     }
 
+    var postED = this._getPost();
+    var iLiked = this._iLiked();
+    
     return (<Card>
         <CardHeader
-          title={(<span><Link  to={'/u/'+this.props.post.userEd.idUsuario} >{this.props.post.userEd.nome}</Link>
-            {this.props.post.listED ? 
-              (<span> em <Link  to={'/l/'+this.props.post.listED.idList}>{this.props.post.listED.name}</Link></span>) : 
+          title={(<span><Link  to={'/u/'+postED.userEd.idUsuario} >{postED.userEd.nome}</Link>
+            {postED.listED ? 
+              (<span> em <Link  to={'/l/'+postED.listED.idList}>{postED.listED.name}</Link></span>) : 
               '' }</span>) }
-          subtitle={ new Date(this.props.post.data).toLocaleString() }
-          avatar={ <UserAvatar user={this.props.post.userEd} /> }  />
+          subtitle={ new Date(postED.data).toLocaleString() }
+          avatar={ <UserAvatar user={postED.userEd} /> }  />
         <CardText style={style.textmsg} >
-          {this.props.post.texto}
+          {postED.texto}
         </CardText>
-        {this.props.post.images.length > 0 ?
+        {postED.images.length > 0 ?
         <CardText>
-          {this.props.post.images.map(function(image){ return (<TimeLineItemImage image={image} />) })}
+          {postED.images.map(function(image){ return (<TimeLineItemImage image={image} />) })}
         </CardText>
         : ''
         }
         <CardActions style={style.action} >
-           <IconButton onTouchTap={this.startReply} ><ContentReply color={ this.state.iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
-           <IconButton onTouchTap={this.like} ><ActionThumbUpIcon color={ this.state.iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
-           <a onClick={ this.showLikers }>{ this.props.post.likes.length > 0 ? this.props.post.likes.length : '' }</a>
+           <IconButton onTouchTap={this.startReply} ><ContentReply color={ this.state.replying ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
+           <IconButton onTouchTap={this.like} ><ActionThumbUpIcon color={ iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
+           <a onClick={ this.showLikers }>{ postED.likes.length > 0 ? postED.likes.length : '' }</a>
         </CardActions>
-        {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={this.props.post}  /></CardText>: '' }
-        {this.props.post.replies.length > 0 ?
-          <CardText>{this.props.post.replies.map(function(post){ return (<TimeLineItem post={post} />) })}</CardText>
+        {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={postED} onPostDone={this._replyDone} /></CardText>: null }
+        {postED.replies.length > 0 ?
+          <CardText>{postED.replies.map(function(post){ return (<TimeLineItem post={post} />) })}</CardText>
           : ''}
       </Card>)
   }

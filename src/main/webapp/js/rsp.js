@@ -46767,10 +46767,10 @@ var PostArea = _react2['default'].createClass({
         null,
         _react2['default'].createElement(_materialUiLibTextField2['default'], {
           valueLink: this.linkState('posth'),
-          hintText: 'o que esta acontecendo?',
+          floatingLabelText: this.props.parentPost ? null : "o que esta acontecendo?",
           multiLine: true,
           ref: 'tfPost',
-          rows: this.state.editing ? 3 : 1,
+          rows: this.state.editing ? 3 : 2,
           rowsMax: 3,
           fullWidth: true,
           onFocus: this.gainFocus,
@@ -47031,6 +47031,10 @@ var _PostArea = require('./PostArea');
 
 var _PostArea2 = _interopRequireDefault(_PostArea);
 
+var _storesLoginStore = require('../stores/LoginStore');
+
+var _storesLoginStore2 = _interopRequireDefault(_storesLoginStore);
+
 var TimeLineItemImage = _react2['default'].createClass({
   displayName: 'TimeLineItemImage',
 
@@ -47053,40 +47057,50 @@ var TimeLineItem = _react2['default'].createClass({
   },
 
   getInitialState: function getInitialState() {
-    return { iLiked: false,
-      replying: false };
+    return { replying: false,
+      post: null };
   },
 
-  componentDidMount: function componentDidMount() {
-    this.setState({ iLiked: this.props.post.iLiked });
-  },
   like: function like() {
-    if (this.state.iLiked) {
-      _servicesPostService2['default'].dislike(this.props.post, this.postLikeCallback, this);
+    if (this._iLiked()) {
+      _servicesPostService2['default'].dislike(this._getPost(), this._setPost, this);
     } else {
-      _servicesPostService2['default'].like(this.props.post, this.postLikeCallback, this);
+      _servicesPostService2['default'].like(this._getPost(), this._setPost, this);
     }
-  },
-
-  postLikeCallback: function postLikeCallback() {
-    this.setState({ iLiked: !this.state.iLiked });
   },
   showLikers: function showLikers() {
     var listlikers = _react2['default'].createElement(
       _materialUiLibListsList2['default'],
       { subheader: 'Seguidores' },
-      this.props.post.likes.map(function (l) {
+      this._getPost().likes.map(function (l) {
         return _react2['default'].createElement(_UserItem2['default'], { user: l.userEd });
       })
     );
     this.context.showDialog("Usuarios que curtiram", listlikers);
   },
-
   startReply: function startReply() {
     this.setState({ replying: true });
   },
   stopReply: function stopReply() {
     this.setState({ replying: false });
+  },
+  _replyDone: function _replyDone() {
+    _servicesPostService2['default'].loadPost(this._getPost(), this._setPost, this);
+  },
+  _setPost: function _setPost(post) {
+    this.setState({ post: post });
+  },
+  _getPost: function _getPost() {
+    return this.state.post ? this.state.post : this.props.post;
+  },
+  _iLiked: function _iLiked() {
+    var postED = this._getPost();
+    for (var i = postED.likes.length - 1; i >= 0; i--) {
+      if (postED.likes[i].userEd.idUsuario == _storesLoginStore2['default'].user.userEd.idUsuario) {
+        return true;
+      }
+    };
+    return false;
   },
   render: function render() {
     var style = {
@@ -47099,6 +47113,9 @@ var TimeLineItem = _react2['default'].createClass({
       }
     };
 
+    var postED = this._getPost();
+    var iLiked = this._iLiked();
+
     return _react2['default'].createElement(
       _materialUiLibCardCard2['default'],
       null,
@@ -47108,31 +47125,31 @@ var TimeLineItem = _react2['default'].createClass({
           null,
           _react2['default'].createElement(
             _reactRouter.Link,
-            { to: '/u/' + this.props.post.userEd.idUsuario },
-            this.props.post.userEd.nome
+            { to: '/u/' + postED.userEd.idUsuario },
+            postED.userEd.nome
           ),
-          this.props.post.listED ? _react2['default'].createElement(
+          postED.listED ? _react2['default'].createElement(
             'span',
             null,
             ' em ',
             _react2['default'].createElement(
               _reactRouter.Link,
-              { to: '/l/' + this.props.post.listED.idList },
-              this.props.post.listED.name
+              { to: '/l/' + postED.listED.idList },
+              postED.listED.name
             )
           ) : ''
         ),
-        subtitle: new Date(this.props.post.data).toLocaleString(),
-        avatar: _react2['default'].createElement(_UserAvatar2['default'], { user: this.props.post.userEd }) }),
+        subtitle: new Date(postED.data).toLocaleString(),
+        avatar: _react2['default'].createElement(_UserAvatar2['default'], { user: postED.userEd }) }),
       _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
         { style: style.textmsg },
-        this.props.post.texto
+        postED.texto
       ),
-      this.props.post.images.length > 0 ? _react2['default'].createElement(
+      postED.images.length > 0 ? _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
         null,
-        this.props.post.images.map(function (image) {
+        postED.images.map(function (image) {
           return _react2['default'].createElement(TimeLineItemImage, { image: image });
         })
       ) : '',
@@ -47142,28 +47159,28 @@ var TimeLineItem = _react2['default'].createClass({
         _react2['default'].createElement(
           _materialUiLibIconButton2['default'],
           { onTouchTap: this.startReply },
-          _react2['default'].createElement(_materialUiLibSvgIconsContentReply2['default'], { color: this.state.iLiked ? _materialUiLibStylesColors2['default'].indigo900 : _materialUiLibStylesColors2['default'].indigo200 })
+          _react2['default'].createElement(_materialUiLibSvgIconsContentReply2['default'], { color: this.state.replying ? _materialUiLibStylesColors2['default'].indigo900 : _materialUiLibStylesColors2['default'].indigo200 })
         ),
         _react2['default'].createElement(
           _materialUiLibIconButton2['default'],
           { onTouchTap: this.like },
-          _react2['default'].createElement(_materialUiLibSvgIconsActionThumbUp2['default'], { color: this.state.iLiked ? _materialUiLibStylesColors2['default'].indigo900 : _materialUiLibStylesColors2['default'].indigo200 })
+          _react2['default'].createElement(_materialUiLibSvgIconsActionThumbUp2['default'], { color: iLiked ? _materialUiLibStylesColors2['default'].indigo900 : _materialUiLibStylesColors2['default'].indigo200 })
         ),
         _react2['default'].createElement(
           'a',
           { onClick: this.showLikers },
-          this.props.post.likes.length > 0 ? this.props.post.likes.length : ''
+          postED.likes.length > 0 ? postED.likes.length : ''
         )
       ),
       this.state.replying ? _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
         null,
-        _react2['default'].createElement(_PostArea2['default'], { ref: 'pareply', onStopPosting: this.stopReply, parentPost: this.props.post })
-      ) : '',
-      this.props.post.replies.length > 0 ? _react2['default'].createElement(
+        _react2['default'].createElement(_PostArea2['default'], { ref: 'pareply', onStopPosting: this.stopReply, parentPost: postED, onPostDone: this._replyDone })
+      ) : null,
+      postED.replies.length > 0 ? _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
         null,
-        this.props.post.replies.map(function (post) {
+        postED.replies.map(function (post) {
           return _react2['default'].createElement(TimeLineItem, { post: post });
         })
       ) : ''
@@ -47277,7 +47294,7 @@ var TimeLine = _react2['default'].createClass({
 exports['default'] = TimeLine;
 module.exports = exports['default'];
 
-},{"../services/PostService":406,"./PostArea":386,"./UserAvatar":390,"./UserItem":392,"material-ui/lib/avatar":95,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":98,"material-ui/lib/card/card-header":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/thumb-up":164,"material-ui/lib/svg-icons/content/reply":166,"react":381,"react-router":233}],389:[function(require,module,exports){
+},{"../services/PostService":406,"../stores/LoginStore":409,"./PostArea":386,"./UserAvatar":390,"./UserItem":392,"material-ui/lib/avatar":95,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":98,"material-ui/lib/card/card-header":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/thumb-up":164,"material-ui/lib/svg-icons/content/reply":166,"react":381,"react-router":233}],389:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49273,8 +49290,8 @@ var PostService = (function () {
         headers: {
           'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
         },
-        success: function success() {
-          functionsuccess.call(comp);
+        success: function success(posted) {
+          functionsuccess.call(comp, posted);
         }
       });
     }
@@ -49287,8 +49304,23 @@ var PostService = (function () {
         headers: {
           'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
         },
-        success: function success() {
-          functionsuccess.call(comp);
+        success: function success(posted) {
+          functionsuccess.call(comp, posted);
+        }
+      });
+    }
+  }, {
+    key: 'loadPost',
+    value: function loadPost(post, functionsuccess, comp) {
+      return (0, _reqwest2['default'])({
+        url: '/rsp/apiv1/post/' + post.idPost,
+        method: 'GET',
+        type: 'json',
+        headers: {
+          'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
+        },
+        success: function success(posted) {
+          functionsuccess.call(comp, posted);
         }
       });
     }

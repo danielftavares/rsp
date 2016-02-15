@@ -167,7 +167,7 @@ public class PostService {
 	 * @return
 	 */
 	@GET
-	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8"  )
+	@Produces( MediaType.APPLICATION_JSON)
 	public Collection<PostED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser,
 			@QueryParam("lp") Long idLastPost, @QueryParam("fp") Long idFirstPost, @Context HttpServletRequest httpRequest) {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
@@ -182,40 +182,52 @@ public class PostService {
 		}
 		
 		for (PostED postED : list) {
-			postED.getReplies().size();
-			postED.getLikes().size();
-			postED.getImages().size();
-			for (LikeED likeed : postED.getLikes()) {
-				postED.setiLiked(likeed.getUserEd().equals(user));
-			}
+			populatePostAttrs(user, postED);
 		}
 		return list;
 	}
 
+	private void populatePostAttrs(UserEd user, PostED postED) {
+		postED.getReplies().size();
+		postED.getLikes().size();
+		postED.getImages().size();
+	}
+	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/{idpost}")
+	public PostED load(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+		PostED posted = postBD.load(idPost);
+		return posted;
+	}
+	
+
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/l/{idpost}")
-	public boolean like(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+	public PostED like(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		LikeED likeED = new LikeED();
 		likeED.setDate(Calendar.getInstance());
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 		likeED.setUserEd(user);
 		likeED.setPostED(new PostED(idPost));
 		postBD.insertLike(likeED);
-		return true;
+		em.flush();
+		return load(idPost, httpRequest);
 	}
 	
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/dl/{idpost}")
-	public boolean dislike(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+	public PostED dislike(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		LikeED likeED = new LikeED();
 		likeED.setDate(Calendar.getInstance());
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 		likeED.setUserEd(user);
 		likeED.setPostED(new PostED(idPost));
 		postBD.deleteLike(likeED);
-		return true;
+		em.flush();
+		return load(idPost, httpRequest);
 	}
 
 }

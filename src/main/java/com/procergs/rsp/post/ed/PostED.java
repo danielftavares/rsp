@@ -60,7 +60,7 @@ public class PostED {
 	@OneToMany(mappedBy = "postED", fetch=FetchType.EAGER)
 	private List<LikeED> likes;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_POST_PARENT")
 	@XmlTransient
 	private PostED parent;
@@ -68,8 +68,6 @@ public class PostED {
 	@OneToMany(mappedBy = "parent", fetch=FetchType.EAGER)
 	private List<PostED> replies;
 
-	@javax.persistence.Transient
-	private boolean iLiked;
 
 	public Long getIdPost() {
 		return idPost;
@@ -125,14 +123,6 @@ public class PostED {
 
 	public void setLikes(List<LikeED> likes) {
 		this.likes = likes;
-	}
-
-	public boolean isiLiked() {
-		return iLiked;
-	}
-
-	public void setiLiked(boolean iLiked) {
-		this.iLiked = iLiked;
 	}
 
 	@XmlTransient

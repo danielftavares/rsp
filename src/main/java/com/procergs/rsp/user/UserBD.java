@@ -17,7 +17,7 @@ public class UserBD {
 	}
 	
 	public UserEd login(String usuario, String senha){
-		Query q = em.createNativeQuery("SELECT ID_USUARIO, NOME, ID_PROFILE_IMAGE FROM usuario WHERE LOGIN = :nome AND SENHA = MD5(:senha)", UserEd.class);
+		Query q = em.createNativeQuery("SELECT ID_USUARIO, NOME, ID_PROFILE_IMAGE, LDAP, LOGIN FROM usuario WHERE LOGIN = :nome AND SENHA = MD5(:senha) AND LDAP = FALSE", UserEd.class);
 		q.setParameter("nome", usuario);
 		q.setParameter("senha", senha);
 		return (UserEd)q.getSingleResult();

@@ -96,10 +96,10 @@ const PostArea = React.createClass({
 		    <CardText>
 		    	<TextField 
             valueLink={this.linkState('posth')} 
-            hintText="o que esta acontecendo?"
+            floatingLabelText={this.props.parentPost ? null : "o que esta acontecendo?" }
             multiLine={true}
             ref="tfPost"
-            rows={this.state.editing? 3 : 1} 
+            rows={this.state.editing? 3 : 2} 
             rowsMax={3} 
             fullWidth={true} 
             onFocus={this.gainFocus}
