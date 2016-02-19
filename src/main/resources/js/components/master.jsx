@@ -108,9 +108,6 @@ const Master  = React.createClass({
       content: {
         margin: Spacing.desktopGutter,
       },
-      contentWhenMedium: {
-        margin: `${Spacing.desktopGutter * 2}px ${Spacing.desktopGutter * 3}px`,
-      },
       footer: {
         backgroundColor: Colors.grey900,
         textAlign: 'center',
@@ -143,10 +140,10 @@ const Master  = React.createClass({
       }
     };
 
-    if (this.isDeviceSize(StyleResizable.statics.Sizes.MEDIUM) ||
+    /*if (this.isDeviceSize(StyleResizable.statics.Sizes.MEDIUM) ||
         this.isDeviceSize(StyleResizable.statics.Sizes.LARGE)) {
       styles.content = this.mergeStyles(styles.content, styles.contentWhenMedium);
-    }
+    }*/
 
     return styles;
   },

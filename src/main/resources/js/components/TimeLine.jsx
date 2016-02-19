@@ -12,13 +12,13 @@ import UserAvatar from './UserAvatar';
 import IconButton from 'material-ui/lib/icon-button';
 import Paper from 'material-ui/lib/paper';
 import Colors from 'material-ui/lib/styles/colors';
+import ColorManipulator from 'material-ui/lib/utils/color-manipulator';
 import ActionThumbUpIcon from 'material-ui/lib/svg-icons/action/thumb-up';
 import ContentReply from 'material-ui/lib/svg-icons/content/reply';
 import List from 'material-ui/lib/lists/list';
 import UserItem from './UserItem';
 import PostArea from './PostArea';
 import LoginStore from '../stores/LoginStore'
-
 
 
 var TimeLineItemImage = React.createClass({
@@ -36,7 +36,8 @@ var TimeLineItemImage = React.createClass({
 
 var TimeLineItem = React.createClass({
   contextTypes: {
-          showDialog: React.PropTypes.func
+          showDialog: React.PropTypes.func,
+          muiTheme: React.PropTypes.object
    },
 
   getInitialState: function() {
@@ -88,17 +89,29 @@ var TimeLineItem = React.createClass({
     let style = {
         action: {
           padding: 0,
-          float: "right"
+          textAlign: "right"
         },
         textmsg:{
-          whiteSpace: 'pre-wrap'
+          whiteSpace: 'pre-wrap',
+          color: Colors.grey900
+        },
+        item:{
+          backgroundColor: Colors.grey100,
+        },
+        childPost: {
+          padding: "0px 0px 6px 12px",
+        },
+        actions: {
+          width: 12,
+          height: 12,
         }
+        
     }
 
     var postED = this._getPost();
     var iLiked = this._iLiked();
     
-    return (<Card>
+    return (<Card style={style.item}>
         <CardHeader
           title={(<span><Link  to={'/u/'+postED.userEd.idUsuario} >{postED.userEd.nome}</Link>
             {postED.listED ? 
@@ -116,13 +129,13 @@ var TimeLineItem = React.createClass({
         : ''
         }
         <CardActions style={style.action} >
-           <IconButton onTouchTap={this.startReply} ><ContentReply color={ this.state.replying ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
-           <IconButton onTouchTap={this.like} ><ActionThumbUpIcon color={ iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
+           <IconButton style={style.actions} onTouchTap={this.startReply} ><ContentReply color={ this.state.replying ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
+           <IconButton style={style.actions} onTouchTap={this.like} ><ActionThumbUpIcon color={ iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
            <a onClick={ this.showLikers }>{ postED.likes.length > 0 ? postED.likes.length : '' }</a>
         </CardActions>
         {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={postED} onPostDone={this._replyDone} /></CardText>: null }
         {postED.replies.length > 0 ?
-          <CardText>{postED.replies.map(function(post){ return (<TimeLineItem post={post} />) })}</CardText>
+          <CardText style={style.childPost} >{postED.replies.map(function(post){ return (<TimeLineItem post={post} />) })}</CardText>
           : ''}
       </Card>)
   }
