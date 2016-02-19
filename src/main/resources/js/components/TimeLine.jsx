@@ -93,10 +93,6 @@ var TimeLineItem = React.createClass({
         },
         textmsg:{
           whiteSpace: 'pre-wrap',
-          color: Colors.grey900
-        },
-        item:{
-          backgroundColor: Colors.grey100,
         },
         childPost: {
           padding: "0px 0px 6px 12px",
@@ -105,13 +101,12 @@ var TimeLineItem = React.createClass({
           width: 12,
           height: 12,
         }
-        
     }
 
     var postED = this._getPost();
     var iLiked = this._iLiked();
     
-    return (<Card style={style.item}>
+    return (<Card>
         <CardHeader
           title={(<span><Link  to={'/u/'+postED.userEd.idUsuario} >{postED.userEd.nome}</Link>
             {postED.listED ? 

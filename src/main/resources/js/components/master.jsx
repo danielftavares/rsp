@@ -121,9 +121,6 @@ const Master  = React.createClass({
         color: Colors.lightWhite,
         maxWidth: 335,
       },
-      iconButton: {
-        color: darkWhite,
-      },
 
       logoNav: {
         cursor: 'pointer',
@@ -131,7 +128,7 @@ const Master  = React.createClass({
         color: Typography.textFullWhite,
         lineHeight: Spacing.desktopKeylineIncrement + 'px',
         fontWeight: Typography.fontWeightLight,
-        backgroundColor: Colors.cyan500,
+        backgroundColor: Colors.darkBlack,
         paddingLeft: Spacing.desktopGutter,
         marginBottom: 8,
       },

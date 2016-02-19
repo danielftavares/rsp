@@ -10,6 +10,7 @@ import LinkedStateMixin from 'react-addons-linked-state-mixin'
 import CircularProgress from 'material-ui/lib/circular-progress';
 import ContentAddBox from 'material-ui/lib/svg-icons/content/add-box';
 import Upload from './Upload'
+import Colors from 'material-ui/lib/styles/colors';
 
 const PostArea = React.createClass({
 	
@@ -90,9 +91,14 @@ const PostArea = React.createClass({
   },
 
   render() {
+    let style = {
+      postArea: {
+        backgroundColor: Colors.fullWhite
+      },
+    }
 
     return (
-		  <Card onMouseEnter={this._mouseEnterElement} onMouseLeave={this._mouseLeaveElement} >
+		  <Card style={style.postArea} onMouseEnter={this._mouseEnterElement} onMouseLeave={this._mouseLeaveElement} >
 		    <CardText>
 		    	<TextField 
             valueLink={this.linkState('posth')} 
