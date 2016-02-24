@@ -93,6 +93,7 @@ var TimeLineItem = React.createClass({
         },
         textmsg:{
           whiteSpace: 'pre-wrap',
+          padding: 10
         },
         childPost: {
           padding: "0px 0px 6px 12px",
@@ -100,14 +101,26 @@ var TimeLineItem = React.createClass({
         actions: {
           width: 12,
           height: 12,
+        },
+        item: {
+          marginBottom: 3,
+          marginTop: 5,
+        },
+        header:{
+          padding: 8,
+          height: "inherit"
+        },
+        images: {
+          padding: 5
         }
     }
 
     var postED = this._getPost();
     var iLiked = this._iLiked();
     
-    return (<Card>
+    return (<Card style={style.item} >
         <CardHeader
+          style={style.header}
           title={(<span><Link  to={'/u/'+postED.userEd.idUsuario} >{postED.userEd.nome}</Link>
             {postED.listED ? 
               (<span> em <Link  to={'/l/'+postED.listED.idList}>{postED.listED.name}</Link></span>) : 
@@ -118,7 +131,7 @@ var TimeLineItem = React.createClass({
           {postED.texto}
         </CardText>
         {postED.images.length > 0 ?
-        <CardText>
+        <CardText style={style.images} >
           {postED.images.map(function(image){ return (<TimeLineItemImage image={image} />) })}
         </CardText>
         : ''
@@ -237,9 +250,9 @@ const TimeLine = React.createClass({
   
   render() {
     return (
-      <Paper>
+      <div>
       	{this.state.itens.map(function(post){ return (<TimeLineItem post={post} />) })}
-      </Paper>
+      </div>
     );
   }
 });

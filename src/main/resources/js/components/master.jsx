@@ -34,6 +34,7 @@ import FlatButton from 'material-ui/lib/flat-button';
 
 import RSPTheme from './rspTheme';
 import UserAvatar from './UserAvatar';
+import ActionSearchIcon from 'material-ui/lib/svg-icons/action/search';
 
 const Master  = React.createClass({
 
@@ -111,6 +112,9 @@ const Master  = React.createClass({
       footer: {
         backgroundColor: Colors.grey900,
         textAlign: 'center',
+      },
+      btnAvatar: {
+        padding: 0,
       },
       a: {
         color: darkWhite,
@@ -246,18 +250,17 @@ const Master  = React.createClass({
 
         <AppBar
           onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}
-          title="RSP"
+          title=<img src="images/logorsp.png" />
           zDepth={0}
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} 
           iconElementRight={ 
             <div>
-
             <SearchBar history={history} />
+            <ActionSearchIcon />
 
-              
             <IconMenu
-              iconButtonElement={ <IconButton><UserAvatar user={LoginStore._user.userEd} /></IconButton>}
+              iconButtonElement={ <IconButton style={ styles.btnAvatar }><UserAvatar user={LoginStore._user.userEd} /></IconButton>}
               targetOrigin={{horizontal: 'right', vertical: 'top'}}
               anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
                   <Link to={'/u/e'}><MenuItem primaryText="Editar Perfil" /></Link>
@@ -300,7 +303,7 @@ const Master  = React.createClass({
           onRequestChange={leftNavOpen => this.setState({leftNavOpen})} >
 
           <div style={this.prepareStyles(styles.logoNav)}>
-            RSP
+            <img src="images/logorsp.png" />
           </div>
 
           <Link to={'/'}><MenuItem>Início</MenuItem></Link>

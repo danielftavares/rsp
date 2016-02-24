@@ -10,7 +10,8 @@ import UserService from '../services/UserService';
 import ListService from '../services/ListService';
 import Avatar from 'material-ui/lib/avatar';
 import UserAvatar from './UserAvatar';
-import { Link } from 'react-router'
+import { Link } from 'react-router';
+import ActionSearchIcon from 'material-ui/lib/svg-icons/action/search';
 
 const style = {
 		  container: {
@@ -103,7 +104,12 @@ const SearchBar = React.createClass({
 	  		}
 	  }
     return (
-      <AutoComplete style={style.autocompletestyle} onNewRequest={this.makeSearch} filter={AutoComplete.noFilter} onUpdateInput={this.search} dataSource={this.state.searchResult.map(renderListItem)}  />
+      <AutoComplete 
+      	style={style.autocompletestyle} 
+      	onNewRequest={this.makeSearch} 
+      	filter={AutoComplete.noFilter} 
+      	onUpdateInput={this.search} 
+      	dataSource={this.state.searchResult.map(renderListItem)} />
     );
   }
 });
