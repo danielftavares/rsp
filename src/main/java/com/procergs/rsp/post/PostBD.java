@@ -134,4 +134,14 @@ public class PostBD {
 		return em.find(PostED.class, idPost);
 	}
 
+	public void delete(Long idPost, UserEd user) {
+		Query qi = em.createQuery("DELETE FROM ImageED i WHERE i.postED.id = :p");
+		qi.setParameter("p", idPost);
+		qi.executeUpdate();
+
+		Query q = em.createQuery("DELETE FROM PostED p WHERE p.userEd = :u AND p.idPost = :p");
+		q.setParameter("u", user);
+		q.setParameter("p", idPost);
+		q.executeUpdate();
+	}
 }

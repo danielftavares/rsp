@@ -230,4 +230,14 @@ public class PostService {
 		return load(idPost, httpRequest);
 	}
 
+
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/d/{idpost}")
+	public void delete(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+		postBD.delete(idPost, user);
+	}
+
+
 }

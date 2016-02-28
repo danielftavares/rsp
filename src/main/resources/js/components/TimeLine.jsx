@@ -14,6 +14,7 @@ import Paper from 'material-ui/lib/paper';
 import Colors from 'material-ui/lib/styles/colors';
 import ColorManipulator from 'material-ui/lib/utils/color-manipulator';
 import ActionThumbUpIcon from 'material-ui/lib/svg-icons/action/thumb-up';
+import ActionDeleteIcon from 'material-ui/lib/svg-icons/action/delete';
 import ContentReply from 'material-ui/lib/svg-icons/content/reply';
 import List from 'material-ui/lib/lists/list';
 import UserItem from './UserItem';
@@ -53,6 +54,14 @@ var TimeLineItem = React.createClass({
     }
     
   },
+  removePost(){
+    if(confirm("Voce tem certeza que deseja apagar essa mensagem?")){
+      PostService.deletePost(this._getPost(), this.postDeleteCallback, this);
+    }
+  },
+  postDeleteCallback(){
+    window.location.reload();
+  },
   showLikers(){
     var listlikers = (<List subheader="Seguidores">
             {this._getPost().likes.map(function(l){
@@ -85,6 +94,9 @@ var TimeLineItem = React.createClass({
     };
     return false;
   },
+  _isMine(){
+    return this._getPost().userEd.idUsuario == LoginStore.user.userEd.idUsuario;
+  },
   render(){
     let style = {
         action: {
@@ -112,12 +124,18 @@ var TimeLineItem = React.createClass({
         },
         images: {
           padding: 5
-        }
+        },
+        colorActive: {
+          color: Colors.indigo900 
+        }, 
+        colorNotActive: {
+          color: Colors.indigo200
+        }, 
     }
 
     var postED = this._getPost();
     var iLiked = this._iLiked();
-    
+    var isMine = this._isMine();
     return (<Card style={style.item} >
         <CardHeader
           style={style.header}
@@ -137,9 +155,22 @@ var TimeLineItem = React.createClass({
         : ''
         }
         <CardActions style={style.action} >
-           <IconButton style={style.actions} onTouchTap={this.startReply} ><ContentReply color={ this.state.replying ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
-           <IconButton style={style.actions} onTouchTap={this.like} ><ActionThumbUpIcon color={ iLiked ? Colors.indigo900 : Colors.indigo200}  /></IconButton>
+           <FlatButton 
+              onTouchTap={this.startReply} 
+              label="Comentar"
+              style={ this.state.replying ? style.colorActive : style.colorNotActive }
+              icon={<ContentReply  />} />
+           <FlatButton 
+              onTouchTap={this.like}
+              label="Curtir"
+              style={ iLiked ? style.colorActive : style.colorNotActive }
+              icon={<ActionThumbUpIcon  />} />
            <a onClick={ this.showLikers }>{ postED.likes.length > 0 ? postED.likes.length : '' }</a>
+           {isMine ? 
+              <FlatButton 
+                onTouchTap={this.removePost}
+                label="Remover"
+                icon={<ActionDeleteIcon />} /> : null}
         </CardActions>
         {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={postED} onPostDone={this._replyDone} /></CardText>: null }
         {postED.replies.length > 0 ?
@@ -159,6 +190,12 @@ const TimeLine = React.createClass({
   componentDidMount() {
     this._loadInitialData(this.props);
     window.addEventListener('scroll', this.handleScroll);
+    window.setTimeout(this.checkNewPost.bind(this), 10000);
+  },
+
+  checkNewPost() {
+    this.updateTimeLine();
+    window.setTimeout(this.checkNewPost.bind(this), 10000);
   },
 
   componentWillReceiveProps(np){

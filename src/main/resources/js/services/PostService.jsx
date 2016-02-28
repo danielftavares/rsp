@@ -78,6 +78,19 @@ class PostService {
       }
     });
   }
+
+  deletePost(post, functionsuccess, comp) {
+    return reqwest({
+      url: '/rsp/apiv1/post/d/'+post.idPost,
+      method: 'POST',
+      headers: {
+        'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function (posted) {
+        functionsuccess.call(comp, posted);
+      }
+    });
+  }
 }
 
 export default new PostService()
