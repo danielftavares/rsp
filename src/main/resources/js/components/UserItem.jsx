@@ -12,9 +12,8 @@ const UserItem = React.createClass({
 
       return (<ListItem 
                   primaryText={ this.props.user.nome } 
-                  insetChildren={true} 
                   secondaryText={<UserFieldsValue user={this.props.user} />}
-                  rightIcon={<FollowBtn user={this.props.user} />}
+                  rightIconButton={<FollowBtn user={this.props.user} />}
                   leftAvatar={<UserAvatar user={this.props.user} />} /> )
    }
 });

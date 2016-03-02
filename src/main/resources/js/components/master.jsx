@@ -64,7 +64,7 @@ const Master  = React.createClass({
 
   getInitialState() {
     return {
-      muiTheme: ThemeManager.getMuiTheme(RSPTheme),
+      muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
 	    leftNavOpen: false,
       openSnackbar: false,
       snackbarMsg: '',

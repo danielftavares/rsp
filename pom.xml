@@ -70,6 +70,13 @@
 			<version>4.5.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sourceforge.htmlcleaner</groupId>
+			<artifactId>htmlcleaner</artifactId>
+			<version>2.16</version>
+		</dependency>
+
+
 
 	</dependencies>
 
@@ -135,6 +142,15 @@
 				<groupId>org.wildfly.plugins</groupId>
 				<artifactId>wildfly-maven-plugin</artifactId>
 				<version>1.1.0.Alpha6</version>
+				<configuration>
+					<javaOpts>
+						<javaOpt>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
+					</javaOpts>
+					<jvmArgs>
+						-Dhttp.proxyPort=3128,http.proxyHost=proxy.procergs.reders,http.proxyUser=daniel-tavares,http.proxyPassword=p201602,https.proxyPort=3128,https.proxyHost=proxy.procergs.reders,https.proxyUser=daniel-tavares,https.proxyPassword=p201602
+					</jvmArgs>
+
+				</configuration>
 			</plugin>
 
 
@@ -157,7 +173,7 @@
 						<id>ant-execute</id>
 						<configuration>
 							<target>
-								<touch file="${rsp.touch}" />
+								<touch file="${rsp.path}.dodeploy" />
 							</target>
 						</configuration>
 						<goals><goal>run</goal></goals>

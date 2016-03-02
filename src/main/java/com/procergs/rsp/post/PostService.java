@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -34,6 +36,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import com.procergs.rsp.opengraph.OpenGraph;
+import com.procergs.rsp.opengraph.OpenGraphService;
+import com.procergs.rsp.opengraph.ed.OpenGraphED;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
 import org.apache.lucene.document.Document;
@@ -71,6 +76,9 @@ public class PostService {
 
 	@EJB
 	ImageService imageService;
+
+  @EJB
+  OpenGraphService openGraphService;
 
 	@PostConstruct
 	public void init() {
@@ -134,12 +142,36 @@ public class PostService {
 				imageService.insert(imageED);
 			}
 
+			insertOGP(postED);
+
 			indexPost(postED);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return true;
+	}
+
+	private void insertOGP(PostED postED) {
+		String [] parts = postED.getTexto().split("\\s+");
+		for( String item : parts ) {
+			try {
+				URL url = new URL(item);
+				OpenGraph og = new OpenGraph(item, true);
+        OpenGraphED openGraphED = new OpenGraphED();
+        openGraphED.setTitle(og.getContent("title"));
+        openGraphED.setUrl(og.getContent("url"));
+        openGraphED.setDescription(og.getContent("description"));
+        openGraphED.setImage(og.getContent("image"));
+        openGraphService.insert(openGraphED);
+				// If possible then replace with anchor...
+				//System.out.print("<a href=\"" + url + "\">" + url + "</a> ");
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (Exception e){
+        e.printStackTrace();
+			}
+		}
 	}
 
 	private void indexPost(PostED postED) {

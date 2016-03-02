@@ -44,7 +44,6 @@ class LoginStore {
 
   _amIFollowingV(idUser, returncallback, comp){
     var f = false;
-    debugger;
     for (var i = this.following.length - 1; i >= 0; i--) {
       var u = this.following[i];
       if(u.idUsuario == idUser){

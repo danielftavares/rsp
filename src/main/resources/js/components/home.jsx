@@ -10,7 +10,6 @@ const Home = React.createClass({
 	},
 	
    _onPostDone() {
-      debugger;
       this.refs.timeLine.updateTimeLine();
    },
 

@@ -4,6 +4,9 @@ import UserService from '../services/UserService';
 import RaisedButton from 'material-ui/lib/raised-button';
 import { Link } from 'react-router';
 import SocialPersonAdd from 'material-ui/lib/svg-icons/social/person-add';
+import SocialPerson from 'material-ui/lib/svg-icons/social/person';
+import SocialPersonOutline from 'material-ui/lib/svg-icons/social/person-outline';
+import IconButton from 'material-ui/lib/icon-button';
 
 const FollowBtn = React.createClass({
    
@@ -48,14 +51,24 @@ const FollowBtn = React.createClass({
   },
 
    render(){
-      if (this.props.user.idUsuario == LoginStore.user.userEd.idUsuario){
+      if(this.props.isButton){
+        if (this.props.user.idUsuario == LoginStore.user.userEd.idUsuario){
          return  <Link to={'/u/e'}><RaisedButton label="Editar" linkButton={true} secondary={true} style={this.props.style} /></Link>
-      } else if (this.state.amIFollowing) {
-         return <RaisedButton  label="Deixar de Seguir" secondary={true} onTouchTap={this.unfollow} style={this.props.style}  />
+        } else if (this.state.amIFollowing) {
+           return <RaisedButton  label="Deixar de Seguir" secondary={true} onTouchTap={this.unfollow} style={this.props.style}  />
+        } else {
+           return <RaisedButton label="Seguir"           primary={true}   onTouchTap={this.follow} style={this.props.style}  icon={<SocialPersonAdd />} />
+        }
       } else {
-         return <RaisedButton label="Seguir"           primary={true}   onTouchTap={this.follow} style={this.props.style}  icon={<SocialPersonAdd />} />
+        if (this.props.user.idUsuario == LoginStore.user.userEd.idUsuario){
+          return <Link to={'/u/e'}><IconButton style={this.props.style} onTouchTap={this.unfollow} ><SocialPerson /></IconButton></Link>
+        } else if (this.state.amIFollowing) {
+          return <IconButton style={this.props.style} onTouchTap={this.unfollow} ><SocialPersonOutline /></IconButton>
+        } else {
+          return <IconButton style={this.props.style} onTouchTap={this.follow} ><SocialPersonAdd   /></IconButton>
+        }
+        
       }
-
    }
 });
 

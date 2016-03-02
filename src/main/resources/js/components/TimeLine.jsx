@@ -208,14 +208,15 @@ const TimeLine = React.createClass({
   updateTimeLine(){
 
     this.setState({loadingPosts: true});
+    
+    var data = {};
 
     var firstPost = null;
     if(this.state.itens && this.state.itens.length > 0){
-      firstPost = this.state.itens[0].idPost;
+      data['fp'] = this.state.itens[0].idPost;
     } 
 
 
-    var data = {fp: firstPost};
     if(this.props.list){
       data['l'] = this.props.list.idList
     }
