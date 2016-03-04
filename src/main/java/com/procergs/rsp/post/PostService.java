@@ -133,6 +133,9 @@ public class PostService {
 					postED.setParent(new PostED(idParentPost));
 				}
 			}
+
+			insertOGP(postED);
+
 			postBD.insert(postED);
 
 			List<ImageED> limages = RSPUtil.getImages(input, "pi");
@@ -141,8 +144,6 @@ public class PostService {
 				postED.addImage(imageED);
 				imageService.insert(imageED);
 			}
-
-			insertOGP(postED);
 
 			indexPost(postED);
 		} catch (IOException e) {
@@ -158,18 +159,27 @@ public class PostService {
 			try {
 				URL url = new URL(item);
 				OpenGraph og = new OpenGraph(item, true);
-        OpenGraphED openGraphED = new OpenGraphED();
-        openGraphED.setTitle(og.getContent("title"));
-        openGraphED.setUrl(og.getContent("url"));
-        openGraphED.setDescription(og.getContent("description"));
-        openGraphED.setImage(og.getContent("image"));
-        openGraphService.insert(openGraphED);
+				OpenGraphED openGraphED = new OpenGraphED();
+				openGraphED.setTitle(og.getContent("title"));
+				openGraphED.setUrl(og.getContent("url") == null ? og.getOriginalUrl(): og.getContent("url"));
+				openGraphED.setDescription(og.getContent("description"));
+				openGraphED.setImage(og.getContent("image"));
+
+				OpenGraphED openGraphEDInBase = openGraphService.findByUrl(openGraphED);
+				if(openGraphEDInBase == null){
+					openGraphService.insert(openGraphED);
+				} else {
+					openGraphED = openGraphEDInBase;
+				}
+
+				postED.setOpenGraphED(openGraphED);
+				return;
 				// If possible then replace with anchor...
 				//System.out.print("<a href=\"" + url + "\">" + url + "</a> ");
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (Exception e){
-        e.printStackTrace();
+        		e.printStackTrace();
 			}
 		}
 	}

@@ -146,9 +146,6 @@
 					<javaOpts>
 						<javaOpt>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>
 					</javaOpts>
-					<jvmArgs>
-						-Dhttp.proxyPort=3128,http.proxyHost=proxy.procergs.reders,http.proxyUser=daniel-tavares,http.proxyPassword=p201602,https.proxyPort=3128,https.proxyHost=proxy.procergs.reders,https.proxyUser=daniel-tavares,https.proxyPassword=p201602
-					</jvmArgs>
 
 				</configuration>
 			</plugin>

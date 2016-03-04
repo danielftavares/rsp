@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.procergs.rsp.image.ed.ImageED;
 import com.procergs.rsp.list.ed.ListED;
+import com.procergs.rsp.opengraph.ed.OpenGraphED;
 import com.procergs.rsp.user.ed.UserEd;
 
 @Entity
@@ -67,6 +68,10 @@ public class PostED {
 
 	@OneToMany(mappedBy = "parent", fetch=FetchType.EAGER)
 	private List<PostED> replies;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ID_OPEN_GRAPH")
+    private OpenGraphED openGraphED;
 
 
 	public Long getIdPost() {
@@ -175,5 +180,12 @@ public class PostED {
 		return true;
 	}
 
-	
+
+    public OpenGraphED getOpenGraphED() {
+        return openGraphED;
+    }
+
+    public void setOpenGraphED(OpenGraphED openGraphED) {
+        this.openGraphED = openGraphED;
+    }
 }

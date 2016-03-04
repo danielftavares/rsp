@@ -11,7 +11,7 @@ public class OpenGraphED {
 
   @Id
   @GeneratedValue(strategy= GenerationType.IDENTITY)
-  @Column(name = "ID_LIST")
+  @Column(name = "ID_OPEN_GRAPH")
   private Long idOpenGraph;
 
   @Column(name = "URL")

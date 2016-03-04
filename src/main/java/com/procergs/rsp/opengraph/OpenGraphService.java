@@ -26,4 +26,8 @@ public class OpenGraphService {
   public void insert(OpenGraphED openGraphED) {
     openGraphBd.insert(openGraphED);
   }
+
+  public OpenGraphED findByUrl(OpenGraphED openGraphED) {
+    return openGraphBd.findByUrl(openGraphED);
+  }
 }

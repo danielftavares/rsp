@@ -5,6 +5,7 @@ import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardText from 'material-ui/lib/card/card-text';
 import CardTitle from 'material-ui/lib/card/card-title';
+import CardMedia from 'material-ui/lib/card/card-media';
 import PostService from '../services/PostService';
 import Avatar from 'material-ui/lib/avatar';
 import { Link } from 'react-router'
@@ -129,8 +130,38 @@ var TimeLineItem = React.createClass({
           color: Colors.indigo900 
         }, 
         colorNotActive: {
-          color: Colors.indigo200
-        }, 
+          color: Colors.indigo400
+        },
+        ogimg:{
+          maxHeight: 300
+        },
+        ogcontainer:{
+          fontSize: 11
+        },
+        ogcontent:{
+          padding: 0
+        },
+        ogoverlay:{
+          //fontSize: 9
+        },
+        ogstyle:{
+          fontSize: 8,
+          padding: 0
+        },
+        ogtitlestyle: {
+          padding: 4
+
+        },
+        ogtitletitlestyle: {
+          fontSize: 16,
+          lineHeight: 1
+        },
+        ogsubtitletitlestyle: {
+          fontSize: 12,
+          lineHeight: 1
+        },
+
+
     }
 
     var postED = this._getPost();
@@ -153,6 +184,19 @@ var TimeLineItem = React.createClass({
           {postED.images.map(function(image){ return (<TimeLineItemImage image={image} />) })}
         </CardText>
         : ''
+        }
+        {postED.openGraphED ?
+          <a href={postED.openGraphED.url}>
+            <CardMedia
+              overlayContainerStyle={style.ogcontainer}
+              overlayContentStyle={style.ogcontent}
+              overlayStyle={style.ogoverlay}
+              style={style.ogstyle}
+              overlay={<CardTitle style={style.ogtitlestyle} titleStyle={style.ogtitletitlestyle} subtitleStyle={style.ogsubtitletitlestyle} title={postED.openGraphED.title} subtitle={postED.openGraphED.description} />} >
+              <img style={style.ogimg} src={postED.openGraphED.image} />
+            </CardMedia>
+          </a>
+            : ''
         }
         <CardActions style={style.action} >
            <FlatButton 
