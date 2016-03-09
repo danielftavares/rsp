@@ -5,6 +5,7 @@ import {Route, IndexRoute, Router } from 'react-router';
 import Home from './components/home';
 import Login from './components/login';
 import User from './components/user';
+import Search from './components/search';
 import UserFollowing from './components/userfollowing';
 import UserFollowers from './components/userfollowers';
 
@@ -36,6 +37,8 @@ var routes = (
 		  	<Route 	path="/u/:userId/*" 	component={User}/>
 		  	<Route 	path="/l/:listId" 	component={List}/>
 		  	<Route 	path="/l/:listId/*" 	component={List}/>
+		  	<Route 	path="/s" 	component={Search}/>
+		  	
 		  </Route>
 		);
 

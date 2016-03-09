@@ -13,6 +13,7 @@ import UserAvatar from './UserAvatar';
 import { Link } from 'react-router';
 import ActionSearchIcon from 'material-ui/lib/svg-icons/action/search';
 import PostService from '../services/PostService';
+import {Spacing,Typography,Colors} from 'material-ui/lib/styles';
 
 const style = {
 		  container: {
@@ -34,6 +35,9 @@ const find_user_indicator = (<RefreshIndicator
 const SearchBar = React.createClass({
 								
 	mixins: [LinkedStateMixin],
+    contextTypes: {
+        router: React.PropTypes.object
+    },
 
 	  getInitialState: function() {
 		    return  {searchResult: [], searchUser: [], searchList: [], loading: false, searchterm: ''};
@@ -73,6 +77,7 @@ const SearchBar = React.createClass({
 		    });
   },
   searchFull(){
+    this.context.router.push("/s")
   	PostService.doSearch(this.state.searchterm)
   },
 	  
@@ -108,17 +113,24 @@ const SearchBar = React.createClass({
 	}
 	  var style = {
 	  		autocompletestyle : {
-	  			backgroundColor: 'rgba(255, 255, 255, 0.3)',
-	  			borderRadius: 10,
-	  		}
+	  			backgroundColor: Colors.white,
+	  			borderRadius: 10
+	  		},
+            containerStyle:{
+                float: "left",
+                marginTop: 12
+            }
+
 	  }
     return (
-      <AutoComplete 
-      	style={style.autocompletestyle} 
-      	onNewRequest={this.makeSearch} 
-      	filter={AutoComplete.noFilter} 
-      	onUpdateInput={this.search} 
-      	dataSource={this.state.searchResult.map(renderListItem)} />
+        <span style={style.containerStyle}>
+          <AutoComplete 
+          	style={style.autocompletestyle} 
+          	onNewRequest={this.makeSearch} 
+          	filter={AutoComplete.noFilter} 
+          	onUpdateInput={this.search} 
+          	dataSource={this.state.searchResult.map(renderListItem)} />
+        </span>
     );
   }
 });

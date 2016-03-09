@@ -5125,7 +5125,7 @@ module.exports = flowRight;
 
 },{}],77:[function(require,module,exports){
 /**
- * lodash 3.0.8 (Custom Build) <https://lodash.com/>
+ * lodash 3.0.7 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -5228,7 +5228,8 @@ function isArguments(value) {
  * // => false
  */
 function isArrayLike(value) {
-  return value != null && isLength(getLength(value)) && !isFunction(value);
+  return value != null &&
+    !(typeof value == 'function' && isFunction(value)) && isLength(getLength(value));
 }
 
 /**
@@ -5276,8 +5277,8 @@ function isArrayLikeObject(value) {
  */
 function isFunction(value) {
   // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8 which returns 'object' for typed array and weak map constructors,
-  // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+  // in Safari 8 which returns 'object' for typed array constructors, and
+  // PhantomJS 1.9 which returns 'function' for `NodeList` instances.
   var tag = isObject(value) ? objectToString.call(value) : '';
   return tag == funcTag || tag == genTag;
 }
@@ -24514,7 +24515,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.slice().sort().map(function (val2) {
+			return val.sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -46942,7 +46943,7 @@ var FollowBtn = _react2['default'].createClass({
 exports['default'] = FollowBtn;
 module.exports = exports['default'];
 
-},{"../services/UserService":413,"../stores/LoginStore":414,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
+},{"../services/UserService":414,"../stores/LoginStore":415,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47123,7 +47124,7 @@ var PostArea = _react2['default'].createClass({
 exports['default'] = PostArea;
 module.exports = exports['default'];
 
-},{"../services/PostService":411,"./Upload":394,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-text":101,"material-ui/lib/circular-progress":104,"material-ui/lib/flat-button":111,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/content/add-box":167,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],392:[function(require,module,exports){
+},{"../services/PostService":412,"./Upload":394,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-text":101,"material-ui/lib/circular-progress":104,"material-ui/lib/flat-button":111,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/content/add-box":167,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47186,6 +47187,8 @@ var _servicesPostService = require('../services/PostService');
 
 var _servicesPostService2 = _interopRequireDefault(_servicesPostService);
 
+var _materialUiLibStyles = require('material-ui/lib/styles');
+
 var style = {
 	container: {
 		position: 'relative'
@@ -47207,6 +47210,9 @@ var SearchBar = _react2['default'].createClass({
 	displayName: 'SearchBar',
 
 	mixins: [_reactAddonsLinkedStateMixin2['default']],
+	contextTypes: {
+		router: _react2['default'].PropTypes.object
+	},
 
 	getInitialState: function getInitialState() {
 		return { searchResult: [], searchUser: [], searchList: [], loading: false, searchterm: '' };
@@ -47243,6 +47249,8 @@ var SearchBar = _react2['default'].createClass({
 		});
 	},
 	searchFull: function searchFull() {
+		debugger;
+		this.context.router.push("/s");
 		_servicesPostService2['default'].doSearch(this.state.searchterm);
 	},
 
@@ -47282,23 +47290,32 @@ var SearchBar = _react2['default'].createClass({
 		};
 		var style = {
 			autocompletestyle: {
-				backgroundColor: 'rgba(255, 255, 255, 0.3)',
+				backgroundColor: _materialUiLibStyles.Colors.white,
 				borderRadius: 10
+			},
+			containerStyle: {
+				float: "left",
+				marginTop: 12
 			}
+
 		};
-		return _react2['default'].createElement(_materialUiLibAutoComplete2['default'], {
-			style: style.autocompletestyle,
-			onNewRequest: this.makeSearch,
-			filter: _materialUiLibAutoComplete2['default'].noFilter,
-			onUpdateInput: this.search,
-			dataSource: this.state.searchResult.map(renderListItem) });
+		return _react2['default'].createElement(
+			'span',
+			{ style: style.containerStyle },
+			_react2['default'].createElement(_materialUiLibAutoComplete2['default'], {
+				style: style.autocompletestyle,
+				onNewRequest: this.makeSearch,
+				filter: _materialUiLibAutoComplete2['default'].noFilter,
+				onUpdateInput: this.search,
+				dataSource: this.state.searchResult.map(renderListItem) })
+		);
 	}
 });
 
 exports['default'] = SearchBar;
 module.exports = exports['default'];
 
-},{"../services/ListService":410,"../services/PostService":411,"../services/UserService":413,"./UserAvatar":395,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
+},{"../services/ListService":411,"../services/PostService":412,"../services/UserService":414,"./UserAvatar":395,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/styles":149,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47748,7 +47765,7 @@ var TimeLine = _react2['default'].createClass({
 exports['default'] = TimeLine;
 module.exports = exports['default'];
 
-},{"../services/PostService":411,"../stores/LoginStore":414,"./PostArea":391,"./UserAvatar":395,"./UserItem":397,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
+},{"../services/PostService":412,"../stores/LoginStore":415,"./PostArea":391,"./UserAvatar":395,"./UserItem":397,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47948,7 +47965,7 @@ var UserFieldsValue = _react2['default'].createClass({
 exports['default'] = UserFieldsValue;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":412,"material-ui/lib/styles/colors":147,"react":386}],397:[function(require,module,exports){
+},{"../services/ProfileService":413,"material-ui/lib/styles/colors":147,"react":386}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48122,7 +48139,7 @@ var UserLists = _react2['default'].createClass({
 exports['default'] = UserLists;
 module.exports = exports['default'];
 
-},{"../services/ListService":410,"../services/PostService":411,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],399:[function(require,module,exports){
+},{"../services/ListService":411,"../services/PostService":412,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48247,7 +48264,7 @@ var List = _react2['default'].createClass({
 exports['default'] = List;
 module.exports = exports['default'];
 
-},{"../services/ListService":410,"./PostArea":391,"./TimeLine":393,"material-ui/lib/flat-button":111,"react":386}],401:[function(require,module,exports){
+},{"../services/ListService":411,"./PostArea":391,"./TimeLine":393,"material-ui/lib/flat-button":111,"react":386}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48351,7 +48368,7 @@ var Login = _react2['default'].createClass({
 exports['default'] = Login;
 module.exports = exports['default'];
 
-},{"../services/AuthService":409,"material-ui/lib/dialog":106,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],402:[function(require,module,exports){
+},{"../services/AuthService":410,"material-ui/lib/dialog":106,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48522,8 +48539,10 @@ var Master = _react2['default'].createClass({
         position: 'fixed',
         // Needed to overlap the examples
         zIndex: this.state.muiTheme.zIndex.appBar + 1,
-        top: 0
+        top: 0,
+        backgroundColor: _materialUiLibStyles.Colors.black
       },
+      appBarImage: {},
       root: {
         paddingTop: _materialUiLibStyles.Spacing.desktopKeylineIncrement,
         minHeight: 400
@@ -48571,6 +48590,9 @@ var Master = _react2['default'].createClass({
       },
       avatarMen: {
         position: 'fixed'
+      },
+      menuIcon: {
+        float: "left"
       }
     };
 
@@ -48688,27 +48710,29 @@ var Master = _react2['default'].createClass({
     return _react2['default'].createElement(
       'div',
       null,
-      _react2['default'].createElement(_materialUiLibAppBar2['default'], {
-        onLeftIconButtonTouchTap: this.handleTouchTapLeftIconButton,
-        title: _react2['default'].createElement('img', { src: 'images/logorsp.png' }),
-        zDepth: 0,
-        style: styles.appBar,
-        showMenuIconButton: showMenuIconButton,
-        iconElementRight: _react2['default'].createElement(
-          'div',
-          null,
+      _react2['default'].createElement(
+        _materialUiLibAppBar2['default'],
+        {
+          onLeftIconButtonTouchTap: this.handleTouchTapLeftIconButton,
+          title: _react2['default'].createElement('img', { style: styles.appBarImage, src: 'images/logorsp.png' }),
+          zDepth: 0,
+          style: styles.appBar,
+          showMenuIconButton: showMenuIconButton },
+        _react2['default'].createElement(
+          _materialUiLibToolbarToolbarGroup2['default'],
+          { float: 'right' },
           _react2['default'].createElement(_SearchBar2['default'], { history: history }),
-          _react2['default'].createElement(_materialUiLibSvgIconsActionSearch2['default'], null),
           _react2['default'].createElement(
             _materialUiLibMenusIconMenu2['default'],
             {
+              style: styles.menuIcon,
               iconButtonElement: _react2['default'].createElement(
                 _materialUiLibIconButton2['default'],
-                { style: styles.btnAvatar },
+                null,
                 _react2['default'].createElement(_UserAvatar2['default'], { user: _storesLoginStore2['default']._user.userEd })
               ),
-              targetOrigin: { horizontal: 'right', vertical: 'top' },
-              anchorOrigin: { horizontal: 'right', vertical: 'top' } },
+              targetOrigin: { horizontal: 'right', vertical: 'bottom' },
+              anchorOrigin: { horizontal: 'right', vertical: 'bottom' } },
             _react2['default'].createElement(
               _reactRouter.Link,
               { to: '/u/e' },
@@ -48720,7 +48744,8 @@ var Master = _react2['default'].createClass({
               _react2['default'].createElement(_materialUiLibMenusMenuItem2['default'], { onTouchTap: this.logout, primaryText: 'Sair' })
             )
           )
-        ) }),
+        )
+      ),
       _react2['default'].createElement(
         'div',
         { style: this.prepareStyles(styles.root) },
@@ -48782,7 +48807,7 @@ var Master = _react2['default'].createClass({
 exports['default'] = Master;
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":414,"./SearchBar":392,"./UserAvatar":395,"./UserLists":398,"./rspTheme":403,"material-ui/lib/app-bar":92,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":164,"material-ui/lib/svg-icons/action/search":165,"material-ui/lib/svg-icons/navigation/expand-more":175,"material-ui/lib/svg-icons/navigation/menu":176,"material-ui/lib/svg-icons/navigation/more-vert":177,"material-ui/lib/toolbar/toolbar":186,"material-ui/lib/toolbar/toolbar-group":183,"material-ui/lib/toolbar/toolbar-separator":184,"material-ui/lib/toolbar/toolbar-title":185,"react":386,"react-router":237}],403:[function(require,module,exports){
+},{"../stores/LoginStore":415,"./SearchBar":392,"./UserAvatar":395,"./UserLists":398,"./rspTheme":403,"material-ui/lib/app-bar":92,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":164,"material-ui/lib/svg-icons/action/search":165,"material-ui/lib/svg-icons/navigation/expand-more":175,"material-ui/lib/svg-icons/navigation/menu":176,"material-ui/lib/svg-icons/navigation/more-vert":177,"material-ui/lib/toolbar/toolbar":186,"material-ui/lib/toolbar/toolbar-group":183,"material-ui/lib/toolbar/toolbar-separator":184,"material-ui/lib/toolbar/toolbar-title":185,"react":386,"react-router":237}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48829,6 +48854,47 @@ exports['default'] = {
 module.exports = exports['default'];
 
 },{"material-ui/lib/styles/colors":147,"material-ui/lib/styles/spacing":152,"material-ui/lib/styles/zIndex":161,"material-ui/lib/utils/color-manipulator":191}],404:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _PostArea = require('./PostArea');
+
+var _PostArea2 = _interopRequireDefault(_PostArea);
+
+var _TimeLine = require('./TimeLine');
+
+var _TimeLine2 = _interopRequireDefault(_TimeLine);
+
+var Search = _react2['default'].createClass({
+  displayName: 'Search',
+
+  render: function render() {
+    return _react2['default'].createElement(
+      'div',
+      null,
+      _react2['default'].createElement(
+        'h1',
+        null,
+        'Resultado da Pesquisa'
+      )
+    );
+  }
+
+});
+
+exports['default'] = Search;
+module.exports = exports['default'];
+
+},{"./PostArea":391,"./TimeLine":393,"react":386}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49039,7 +49105,7 @@ var User = _react2['default'].createClass({
 exports['default'] = User;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":412,"../services/UserService":413,"../stores/LoginStore":414,"./FollowBtn":390,"./TimeLine":393,"./UserAvatar":395,"./UserFieldsValue":396,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],405:[function(require,module,exports){
+},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./FollowBtn":390,"./TimeLine":393,"./UserAvatar":395,"./UserFieldsValue":396,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49186,7 +49252,7 @@ var UserEdit = _react2['default'].createClass({
 exports['default'] = UserEdit;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":412,"../services/UserService":413,"../stores/LoginStore":414,"./Upload":394,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-dom":209}],406:[function(require,module,exports){
+},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./Upload":394,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-dom":209}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49287,7 +49353,7 @@ var UserFollowers = _react2['default'].createClass({
 exports['default'] = UserFollowers;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":412,"../services/UserService":413,"../stores/LoginStore":414,"./UserAvatar":395,"./UserItem":397,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],407:[function(require,module,exports){
+},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./UserAvatar":395,"./UserItem":397,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],408:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49397,7 +49463,7 @@ var UserFollowing = _react2['default'].createClass({
 exports['default'] = UserFollowing;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":412,"../services/UserService":413,"../stores/LoginStore":414,"./FollowBtn":390,"./UserAvatar":395,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],408:[function(require,module,exports){
+},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./FollowBtn":390,"./UserAvatar":395,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],409:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -49427,6 +49493,10 @@ var _componentsLogin2 = _interopRequireDefault(_componentsLogin);
 var _componentsUser = require('./components/user');
 
 var _componentsUser2 = _interopRequireDefault(_componentsUser);
+
+var _componentsSearch = require('./components/search');
+
+var _componentsSearch2 = _interopRequireDefault(_componentsSearch);
 
 var _componentsUserfollowing = require('./components/userfollowing');
 
@@ -49474,7 +49544,8 @@ var routes = _react2['default'].createElement(
 		_react2['default'].createElement(_reactRouter.Route, { path: '/u/followers/:userId', component: _componentsUserfollowers2['default'] }),
 		_react2['default'].createElement(_reactRouter.Route, { path: '/u/:userId/*', component: _componentsUser2['default'] }),
 		_react2['default'].createElement(_reactRouter.Route, { path: '/l/:listId', component: _componentsList2['default'] }),
-		_react2['default'].createElement(_reactRouter.Route, { path: '/l/:listId/*', component: _componentsList2['default'] })
+		_react2['default'].createElement(_reactRouter.Route, { path: '/l/:listId/*', component: _componentsList2['default'] }),
+		_react2['default'].createElement(_reactRouter.Route, { path: '/s', component: _componentsSearch2['default'] })
 );
 
 var router = _react2['default'].createElement(
@@ -49487,7 +49558,7 @@ var router = _react2['default'].createElement(
 
 (0, _reactDom.render)(router, document.getElementById('app'));
 
-},{"./components/home":399,"./components/list":400,"./components/login":401,"./components/master":402,"./components/user":404,"./components/useredit":405,"./components/userfollowers":406,"./components/userfollowing":407,"./stores/LoginStore":414,"react":386,"react-dom":209,"react-router":237,"react-tap-event-plugin":248}],409:[function(require,module,exports){
+},{"./components/home":399,"./components/list":400,"./components/login":401,"./components/master":402,"./components/search":404,"./components/user":405,"./components/useredit":406,"./components/userfollowers":407,"./components/userfollowing":408,"./stores/LoginStore":415,"react":386,"react-dom":209,"react-router":237,"react-tap-event-plugin":248}],410:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49540,7 +49611,7 @@ var AuthService = (function () {
 exports['default'] = new AuthService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":414,"reqwest":387}],410:[function(require,module,exports){
+},{"../stores/LoginStore":415,"reqwest":387}],411:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49660,7 +49731,7 @@ var ListService = (function () {
 exports['default'] = new ListService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":414,"reqwest":387}],411:[function(require,module,exports){
+},{"../stores/LoginStore":415,"reqwest":387}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49803,7 +49874,7 @@ var PostService = (function () {
 exports['default'] = new PostService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":414,"reqwest":387}],412:[function(require,module,exports){
+},{"../stores/LoginStore":415,"reqwest":387}],413:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49881,7 +49952,7 @@ var ProfileService = (function () {
 exports['default'] = new ProfileService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":414,"reqwest":387}],413:[function(require,module,exports){
+},{"../stores/LoginStore":415,"reqwest":387}],414:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50012,7 +50083,7 @@ var UserService = (function () {
 exports['default'] = new UserService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":414,"reqwest":387}],414:[function(require,module,exports){
+},{"../stores/LoginStore":415,"reqwest":387}],415:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50100,4 +50171,4 @@ var LoginStore = (function () {
 exports['default'] = new LoginStore();
 module.exports = exports['default'];
 
-},{"../services/UserService":413}]},{},[408]);
+},{"../services/UserService":414}]},{},[409]);

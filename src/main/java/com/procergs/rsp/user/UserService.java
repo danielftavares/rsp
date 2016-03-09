@@ -119,7 +119,7 @@ public class UserService {
 				}
 				env = new Hashtable();
 				env.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-				env.put(javax.naming.Context.PROVIDER_URL, "ldap://sonora.procergs.reders:389");
+				env.put(javax.naming.Context.PROVIDER_URL, System.getProperty("rsp.ldap"));
 				env.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");
 		//
 //				// Authenticate as S. User and password "mysecret"

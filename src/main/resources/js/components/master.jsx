@@ -90,6 +90,10 @@ const Master  = React.createClass({
         // Needed to overlap the examples
         zIndex: this.state.muiTheme.zIndex.appBar + 1,
         top: 0,
+        backgroundColor: Colors.black,
+      },
+      appBarImage:{
+        
       },
       root: {
         paddingTop: Spacing.desktopKeylineIncrement,
@@ -138,6 +142,9 @@ const Master  = React.createClass({
       },
       avatarMen:{
         position: 'fixed'
+      },
+      menuIcon:{
+        float: "left"
       }
     };
 
@@ -250,25 +257,28 @@ const Master  = React.createClass({
 
         <AppBar
           onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}
-          title=<img src="images/logorsp.png" />
+          title=<img style={styles.appBarImage} src="images/logorsp.png" />
           zDepth={0}
           style={styles.appBar}
-          showMenuIconButton={showMenuIconButton} 
-          iconElementRight={ 
-            <div>
-            <SearchBar history={history} />
-            <ActionSearchIcon />
+          showMenuIconButton={showMenuIconButton}>
 
-            <IconMenu
-              iconButtonElement={ <IconButton style={ styles.btnAvatar }><UserAvatar user={LoginStore._user.userEd} /></IconButton>}
-              targetOrigin={{horizontal: 'right', vertical: 'top'}}
-              anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
-                  <Link to={'/u/e'}><MenuItem primaryText="Editar Perfil" /></Link>
-                  <Link to={'/login'}><MenuItem onTouchTap={this.logout} primaryText="Sair" /></Link>
-                </IconMenu>
-              </div>
+          <ToolbarGroup float="right">
+              <SearchBar history={history} />
 
-               } />
+              <IconMenu
+                style={styles.menuIcon}
+                iconButtonElement={ <IconButton><UserAvatar user={LoginStore._user.userEd} /></IconButton>}
+                targetOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                anchorOrigin={{horizontal: 'right', vertical: 'bottom'}} >
+                    <Link to={'/u/e'}><MenuItem primaryText="Editar Perfil" /></Link>
+                    <Link to={'/login'}><MenuItem onTouchTap={this.logout} primaryText="Sair" /></Link>
+                  </IconMenu>
+            </ToolbarGroup>
+
+        </AppBar>
+
+            
+
           
         <div style={this.prepareStyles(styles.root)}>
             <div style={this.prepareStyles(styles.content)}>

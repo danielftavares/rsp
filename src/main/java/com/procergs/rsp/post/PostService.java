@@ -41,6 +41,8 @@ import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -291,16 +293,17 @@ public class PostService {
             IndexReader reader = DirectoryReader.open(directory);
             IndexSearcher searcher = new IndexSearcher(reader);
             Analyzer analyzer = new PortugueseAnalyzer();
+					  QueryParser parser = new QueryParser("name", analyzer);
+					org.apache.lucene.search.Query query = parser.parse(searchTerm);
 
-
-            QueryBuilder queryBuilder = new QueryBuilder(analyzer);
-            MultiPhraseQuery query = new MultiPhraseQuery();
+            /*QueryBuilder queryBuilder = new QueryBuilder(analyzer);
+            org.apache.lucene.search.Query query = new MultiPhraseQuery();
             List<Term> termms = new ArrayList<>();
             for(String term :  searchTerm.split(" ")){
                 termms.add(new Term("name", term));
             }
             query.add(termms.toArray(new Term[termms.size()]));
-
+*/
 
             //FuzzyQuery query = new FuzzyQuery(new Term("name",searchTerm));
 
@@ -339,7 +342,9 @@ public class PostService {
 
         } catch (IOException e){
             e.printStackTrace();
-        } finally {
+        } catch (ParseException e) {
+					e.printStackTrace();
+				} finally {
 
         }
         return postSearchResult;
