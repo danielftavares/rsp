@@ -47182,6 +47182,10 @@ var _materialUiLibSvgIconsActionSearch = require('material-ui/lib/svg-icons/acti
 
 var _materialUiLibSvgIconsActionSearch2 = _interopRequireDefault(_materialUiLibSvgIconsActionSearch);
 
+var _servicesPostService = require('../services/PostService');
+
+var _servicesPostService2 = _interopRequireDefault(_servicesPostService);
+
 var style = {
 	container: {
 		position: 'relative'
@@ -47205,7 +47209,7 @@ var SearchBar = _react2['default'].createClass({
 	mixins: [_reactAddonsLinkedStateMixin2['default']],
 
 	getInitialState: function getInitialState() {
-		return { searchResult: [], searchUser: [], searchList: [], loading: false };
+		return { searchResult: [], searchUser: [], searchList: [], loading: false, searchterm: '' };
 	},
 
 	search: function search(t) {
@@ -47213,6 +47217,7 @@ var SearchBar = _react2['default'].createClass({
 			searchUser: [],
 			searchList: [],
 			loading: true,
+			searchterm: t,
 			searchResult: [{
 				text: t,
 				value: find_user_indicator
@@ -47226,7 +47231,7 @@ var SearchBar = _react2['default'].createClass({
 		this.setState({
 			searchUser: _listUsers,
 			loading: false,
-			searchResult: _listUsers.concat(this.state.searchList)
+			searchResult: _listUsers.concat(this.state.searchList).concat({ seemore: true })
 		});
 	},
 
@@ -47234,8 +47239,11 @@ var SearchBar = _react2['default'].createClass({
 		this.setState({
 			searchList: listLists,
 			loading: false,
-			searchResult: this.state.searchUser.concat(listLists)
+			searchResult: this.state.searchUser.concat(listLists).concat({ seemore: true })
 		});
+	},
+	searchFull: function searchFull() {
+		_servicesPostService2['default'].doSearch(this.state.searchterm);
 	},
 
 	makeSearch: function makeSearch(text, index, item) {
@@ -47247,6 +47255,7 @@ var SearchBar = _react2['default'].createClass({
 	},
 
 	render: function render() {
+		var searchFull = this.searchFull;
 		var renderListItem = function renderListItem(item) {
 			if (item.idUsuario) {
 				return { text: item.nome,
@@ -47258,7 +47267,7 @@ var SearchBar = _react2['default'].createClass({
 							leftAvatar: _react2['default'].createElement(_UserAvatar2['default'], { user: item })
 						})
 					) };
-			} else {
+			} else if (item.idList) {
 				return { text: item.name,
 					value: _react2['default'].createElement(
 						_reactRouter.Link,
@@ -47266,6 +47275,9 @@ var SearchBar = _react2['default'].createClass({
 						_react2['default'].createElement(_materialUiLibListsListItem2['default'], {
 							primaryText: item.name })
 					) };
+			} else {
+				return { text: "Pesquisar Todos",
+					value: _react2['default'].createElement(_materialUiLibListsListItem2['default'], { onTouchTap: searchFull, primaryText: 'Ver mais' }) };
 			}
 		};
 		var style = {
@@ -47286,7 +47298,7 @@ var SearchBar = _react2['default'].createClass({
 exports['default'] = SearchBar;
 module.exports = exports['default'];
 
-},{"../services/ListService":410,"../services/UserService":413,"./UserAvatar":395,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
+},{"../services/ListService":410,"../services/PostService":411,"../services/UserService":413,"./UserAvatar":395,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49760,6 +49772,21 @@ var PostService = (function () {
       return (0, _reqwest2['default'])({
         url: '/rsp/apiv1/post/d/' + post.idPost,
         method: 'POST',
+        headers: {
+          'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
+        },
+        success: function success(posted) {
+          functionsuccess.call(comp, posted);
+        }
+      });
+    }
+  }, {
+    key: 'doSearch',
+    value: function doSearch(searchTerm, functionsuccess, comp) {
+      return (0, _reqwest2['default'])({
+        url: '/rsp/apiv1/post/s',
+        method: 'POST',
+        data: { st: searchTerm },
         headers: {
           'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
         },

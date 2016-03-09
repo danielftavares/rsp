@@ -12,6 +12,7 @@ import Avatar from 'material-ui/lib/avatar';
 import UserAvatar from './UserAvatar';
 import { Link } from 'react-router';
 import ActionSearchIcon from 'material-ui/lib/svg-icons/action/search';
+import PostService from '../services/PostService';
 
 const style = {
 		  container: {
@@ -35,7 +36,7 @@ const SearchBar = React.createClass({
 	mixins: [LinkedStateMixin],
 
 	  getInitialState: function() {
-		    return  {searchResult: [], searchUser: [], searchList: [], loading: false};
+		    return  {searchResult: [], searchUser: [], searchList: [], loading: false, searchterm: ''};
 	  },
 
 	  search(t) {
@@ -43,6 +44,7 @@ const SearchBar = React.createClass({
 	    	searchUser: [],
 	    	searchList: [],
 	    	loading: true,
+	    	searchterm: t,
 	    	searchResult: [
 	    	               {
 	    	            	    text: t,
@@ -59,7 +61,7 @@ const SearchBar = React.createClass({
 		this.setState({
     		searchUser: listUsers,
     		loading: false,	
-			searchResult: listUsers.concat(this.state.searchList)
+			searchResult: listUsers.concat(this.state.searchList).concat({seemore: true})
 	    });
   },
 
@@ -67,9 +69,12 @@ const SearchBar = React.createClass({
 		this.setState({
 	    		searchList: listLists,
 	    		loading: false,	
-	    		searchResult: this.state.searchUser.concat(listLists)
+	    		searchResult: this.state.searchUser.concat(listLists).concat({seemore: true})
 		    });
-	  },
+  },
+  searchFull(){
+  	PostService.doSearch(this.state.searchterm)
+  },
 	  
 	  makeSearch(text, index, item){
 		  if(!item){
@@ -80,6 +85,7 @@ const SearchBar = React.createClass({
 	  },
 	  
   render() {
+  	var searchFull = this.searchFull;
 	var renderListItem = function(item){
 		if(item.idUsuario){
 			return {text: item.nome, 
@@ -89,12 +95,15 @@ const SearchBar = React.createClass({
 									leftAvatar={<UserAvatar user={item} /> }
 								 />
 							 </Link>) }
-		} else {
+		} else if (item.idList) {
 			return {text: item.name, 
 				value: ( <Link to={'/l/'+item.idList+'/'+item.name}>
 							<ListItem 
 								primaryText={item.name} />
 						 </Link>) }
+		} else {
+			return {text: "Pesquisar Todos", 
+				value: ( <ListItem onTouchTap={searchFull} primaryText="Ver mais" /> ) }
 		}
 	}
 	  var style = {

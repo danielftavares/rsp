@@ -91,6 +91,20 @@ class PostService {
       }
     });
   }
+
+  doSearch(searchTerm, functionsuccess, comp) {
+    return reqwest({
+      url: '/rsp/apiv1/post/s',
+      method: 'POST',
+      data: {st: searchTerm},
+      headers: {
+        'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function (posted) {
+        functionsuccess.call(comp, posted);
+      }
+    });
+  }
 }
 
 export default new PostService()

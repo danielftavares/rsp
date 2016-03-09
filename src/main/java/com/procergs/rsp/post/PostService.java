@@ -1,21 +1,15 @@
 package com.procergs.rsp.post;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -23,6 +17,7 @@ import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
@@ -39,16 +34,17 @@ import javax.ws.rs.core.MediaType;
 import com.procergs.rsp.opengraph.OpenGraph;
 import com.procergs.rsp.opengraph.OpenGraphService;
 import com.procergs.rsp.opengraph.ed.OpenGraphED;
+import com.procergs.rsp.post.ed.PostSearchResult;
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-import org.apache.lucene.index.IndexOptions;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.*;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.QueryBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.util.Types;
@@ -84,11 +80,10 @@ public class PostService {
 	public void init() {
 		postBD = new PostBD(em);
 		try {
-
 			// directory = FSDirectory.open(Paths.get(new
 			// URI("file:///"+System.getProperty("java.io.tmpdir")+File.separator
 			// + "rsp"+File.separator )));
-			directory = FSDirectory.open(Files.createTempDirectory("rsp"));
+			directory = FSDirectory.open(Paths.get(System.getProperty("rsp.lucene.path")));
 			// directory.create();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -186,12 +181,9 @@ public class PostService {
 
 	private void indexPost(PostED postED) {
 		Document d = new Document();
-		FieldType type = new FieldType();
-		type.setStored(true);
-		type.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
 
-		d.add(new Field("name", postED.getTexto(), type));
-		d.add(new Field("id", postED.getIdPost().toString(), Field.Store.YES, Field.Index.NO));
+		d.add(new TextField("name", postED.getTexto(), Field.Store.YES ));
+		d.add(new LongField("id", postED.getIdPost(), Field.Store.YES));
 
 		try {
 			IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(new PortugueseAnalyzer()));
@@ -280,6 +272,78 @@ public class PostService {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 		postBD.delete(idPost, user);
 	}
+
+    @POST
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Path("/s")
+    public PostSearchResult search(@FormParam("st") String searchTerm, @Context HttpServletRequest httpRequest) {
+        PostSearchResult postSearchResult = new PostSearchResult();
+        System.out.println(searchTerm);
+/*        Searcher indexSearcher = new IndexSearcher();
+        Term term = new Term("name",searchTerm);
+        Query termQuery = new TermQuery(term);
+        TopDocs topDocs = indexSearcher.search(termQuery,10);
+*/
+
+
+        try{
+
+            IndexReader reader = DirectoryReader.open(directory);
+            IndexSearcher searcher = new IndexSearcher(reader);
+            Analyzer analyzer = new PortugueseAnalyzer();
+
+
+            QueryBuilder queryBuilder = new QueryBuilder(analyzer);
+            MultiPhraseQuery query = new MultiPhraseQuery();
+            List<Term> termms = new ArrayList<>();
+            for(String term :  searchTerm.split(" ")){
+                termms.add(new Term("name", term));
+            }
+            query.add(termms.toArray(new Term[termms.size()]));
+
+
+            //FuzzyQuery query = new FuzzyQuery(new Term("name",searchTerm));
+
+            // Collect enough docs to show 5 pages
+            TopDocs results = searcher.search(query, 10);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            int numTotalHits = results.totalHits;
+            System.out.println(numTotalHits + " total matching documents");
+
+            int start = 0;
+            int end = Math.min(numTotalHits, 20);
+
+            List<PostED> listPosts = new ArrayList<>();
+            postSearchResult.setPosts(listPosts);
+
+            for (int i = start; i < end; i++) {
+                System.out.println("doc="+hits[i].doc+" score="+hits[i].score);
+
+                Document doc = searcher.doc(hits[i].doc);
+                String idPost = doc.get("id");
+                if (idPost != null) {
+                    listPosts.add(load(Long.valueOf(idPost), httpRequest));
+                    System.out.println((i+1) + ". " + idPost);
+                    String title = doc.get("name");
+                    if (title != null) {
+                        System.out.println("   Title: " + doc.get("name"));
+                    }
+                } else {
+                    System.out.println((i+1) + ". " + "No path for this document");
+                }
+
+            }
+
+            reader.close();
+
+        } catch (IOException e){
+            e.printStackTrace();
+        } finally {
+
+        }
+        return postSearchResult;
+    }
 
 
 }
