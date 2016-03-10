@@ -46943,7 +46943,7 @@ var FollowBtn = _react2['default'].createClass({
 exports['default'] = FollowBtn;
 module.exports = exports['default'];
 
-},{"../services/UserService":414,"../stores/LoginStore":415,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
+},{"../services/UserService":415,"../stores/LoginStore":416,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47124,7 +47124,7 @@ var PostArea = _react2['default'].createClass({
 exports['default'] = PostArea;
 module.exports = exports['default'];
 
-},{"../services/PostService":412,"./Upload":394,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-text":101,"material-ui/lib/circular-progress":104,"material-ui/lib/flat-button":111,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/content/add-box":167,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],392:[function(require,module,exports){
+},{"../services/PostService":413,"./Upload":395,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-text":101,"material-ui/lib/circular-progress":104,"material-ui/lib/flat-button":111,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/content/add-box":167,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47249,19 +47249,9 @@ var SearchBar = _react2['default'].createClass({
 		});
 	},
 	searchFull: function searchFull() {
-		debugger;
-		this.context.router.push("/s");
-		_servicesPostService2['default'].doSearch(this.state.searchterm);
+		this.context.searchTerm = this.state.searchterm;
+		this.context.router.push({ pathname: '/s', query: { searchTerm: this.state.searchterm } });
 	},
-
-	makeSearch: function makeSearch(text, index, item) {
-		if (!item) {
-			//TODO
-			alert("FAzer PESquisa!!");
-		}
-		return true;
-	},
-
 	render: function render() {
 		var searchFull = this.searchFull;
 		var renderListItem = function renderListItem(item) {
@@ -47315,7 +47305,223 @@ var SearchBar = _react2['default'].createClass({
 exports['default'] = SearchBar;
 module.exports = exports['default'];
 
-},{"../services/ListService":411,"../services/PostService":412,"../services/UserService":414,"./UserAvatar":395,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/styles":149,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
+},{"../services/ListService":412,"../services/PostService":413,"../services/UserService":415,"./UserAvatar":396,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/styles":149,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _materialUiLibFlatButton = require('material-ui/lib/flat-button');
+
+var _materialUiLibFlatButton2 = _interopRequireDefault(_materialUiLibFlatButton);
+
+var _materialUiLibCardCard = require('material-ui/lib/card/card');
+
+var _materialUiLibCardCard2 = _interopRequireDefault(_materialUiLibCardCard);
+
+var _materialUiLibCardCardActions = require('material-ui/lib/card/card-actions');
+
+var _materialUiLibCardCardActions2 = _interopRequireDefault(_materialUiLibCardCardActions);
+
+var _materialUiLibCardCardHeader = require('material-ui/lib/card/card-header');
+
+var _materialUiLibCardCardHeader2 = _interopRequireDefault(_materialUiLibCardCardHeader);
+
+var _materialUiLibCardCardText = require('material-ui/lib/card/card-text');
+
+var _materialUiLibCardCardText2 = _interopRequireDefault(_materialUiLibCardCardText);
+
+var _materialUiLibCardCardTitle = require('material-ui/lib/card/card-title');
+
+var _materialUiLibCardCardTitle2 = _interopRequireDefault(_materialUiLibCardCardTitle);
+
+var _materialUiLibCardCardMedia = require('material-ui/lib/card/card-media');
+
+var _materialUiLibCardCardMedia2 = _interopRequireDefault(_materialUiLibCardCardMedia);
+
+var _servicesPostService = require('../services/PostService');
+
+var _servicesPostService2 = _interopRequireDefault(_servicesPostService);
+
+var _materialUiLibAvatar = require('material-ui/lib/avatar');
+
+var _materialUiLibAvatar2 = _interopRequireDefault(_materialUiLibAvatar);
+
+var _reactRouter = require('react-router');
+
+var _UserAvatar = require('./UserAvatar');
+
+var _UserAvatar2 = _interopRequireDefault(_UserAvatar);
+
+var _materialUiLibIconButton = require('material-ui/lib/icon-button');
+
+var _materialUiLibIconButton2 = _interopRequireDefault(_materialUiLibIconButton);
+
+var _materialUiLibPaper = require('material-ui/lib/paper');
+
+var _materialUiLibPaper2 = _interopRequireDefault(_materialUiLibPaper);
+
+var _materialUiLibStylesColors = require('material-ui/lib/styles/colors');
+
+var _materialUiLibStylesColors2 = _interopRequireDefault(_materialUiLibStylesColors);
+
+var _materialUiLibUtilsColorManipulator = require('material-ui/lib/utils/color-manipulator');
+
+var _materialUiLibUtilsColorManipulator2 = _interopRequireDefault(_materialUiLibUtilsColorManipulator);
+
+var _materialUiLibSvgIconsActionThumbUp = require('material-ui/lib/svg-icons/action/thumb-up');
+
+var _materialUiLibSvgIconsActionThumbUp2 = _interopRequireDefault(_materialUiLibSvgIconsActionThumbUp);
+
+var _materialUiLibSvgIconsActionDelete = require('material-ui/lib/svg-icons/action/delete');
+
+var _materialUiLibSvgIconsActionDelete2 = _interopRequireDefault(_materialUiLibSvgIconsActionDelete);
+
+var _materialUiLibSvgIconsContentReply = require('material-ui/lib/svg-icons/content/reply');
+
+var _materialUiLibSvgIconsContentReply2 = _interopRequireDefault(_materialUiLibSvgIconsContentReply);
+
+var _materialUiLibListsList = require('material-ui/lib/lists/list');
+
+var _materialUiLibListsList2 = _interopRequireDefault(_materialUiLibListsList);
+
+var _UserItem = require('./UserItem');
+
+var _UserItem2 = _interopRequireDefault(_UserItem);
+
+var _PostArea = require('./PostArea');
+
+var _PostArea2 = _interopRequireDefault(_PostArea);
+
+var _TimeLineItem = require('./TimeLineItem');
+
+var _TimeLineItem2 = _interopRequireDefault(_TimeLineItem);
+
+var _storesLoginStore = require('../stores/LoginStore');
+
+var _storesLoginStore2 = _interopRequireDefault(_storesLoginStore);
+
+var TimeLine = _react2['default'].createClass({
+  displayName: 'TimeLine',
+
+  getInitialState: function getInitialState() {
+    return { itens: [], loadingPosts: true };
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._loadInitialData(this.props);
+    window.addEventListener('scroll', this.handleScroll);
+    window.setTimeout(this.checkNewPost.bind(this), 10000);
+  },
+
+  checkNewPost: function checkNewPost() {
+    this.updateTimeLine();
+    window.setTimeout(this.checkNewPost.bind(this), 10000);
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(np) {
+    if (np.list != this.props.list || np.idUsuario != this.props.idUsuario) {
+      this.setState({ itens: [], loadingPosts: true });
+      this._loadInitialData(np);
+    }
+  },
+
+  updateTimeLine: function updateTimeLine() {
+
+    this.setState({ loadingPosts: true });
+
+    var data = {};
+
+    var firstPost = null;
+    if (this.state.itens && this.state.itens.length > 0) {
+      data['fp'] = this.state.itens[0].idPost;
+    }
+
+    if (this.props.list) {
+      data['l'] = this.props.list.idList;
+    }
+    if (this.props.idUsuario) {
+      data['u'] = this.props.idUsuario;
+    }
+    _servicesPostService2['default'].list(data, this.fillTimeLineTopPosts, this);
+  },
+
+  fillTimeLineTopPosts: function fillTimeLineTopPosts(posts) {
+    this.setState({ itens: posts.concat(this.state.itens), loadingPosts: false });
+  },
+
+  _loadInitialData: function _loadInitialData(props) {
+    var data = {};
+    if (props.list) {
+      data['l'] = props.list.idList;
+    }
+    if (props.idUsuario) {
+      data['u'] = props.idUsuario;
+    }
+    _servicesPostService2['default'].list(data, this.fillTimeLine, this);
+  },
+
+  fillTimeLine: function fillTimeLine(posts) {
+    this.setState({ itens: posts, loadingPosts: false });
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+
+  fillTimeLineExtraPosts: function fillTimeLineExtraPosts(posts) {
+    if (posts.length == 0) {
+      window.removeEventListener('scroll', this.handleScroll);
+    }
+    this.setState({ itens: this.state.itens.concat(posts), loadingPosts: false });
+  },
+
+  handleScroll: function handleScroll(e) {
+
+    function getDocHeight() {
+      var D = document;
+      return Math.max(D.body.scrollHeight, D.documentElement.scrollHeight, D.body.offsetHeight, D.documentElement.offsetHeight, D.body.clientHeight, D.documentElement.clientHeight);
+    }
+
+    if (window.innerHeight + window.scrollY >= getDocHeight()) {
+      if (!this.state.loadingPosts) {
+        this.setState({ loadingPosts: true });
+        var lastPost = this.state.itens[this.state.itens.length - 1].idPost;
+
+        var data = { lp: lastPost };
+        if (this.props.list) {
+          data['l'] = this.props.list.idList;
+        }
+        if (this.props.idUsuario) {
+          data['u'] = this.props.idUsuario;
+        }
+        _servicesPostService2['default'].list(data, this.fillTimeLineExtraPosts, this);
+      }
+    }
+  },
+
+  render: function render() {
+    return _react2['default'].createElement(
+      'div',
+      null,
+      this.state.itens.map(function (post) {
+        return _react2['default'].createElement(_TimeLineItem2['default'], { post: post });
+      })
+    );
+  }
+});
+
+exports['default'] = TimeLine;
+module.exports = exports['default'];
+
+},{"../services/PostService":413,"../stores/LoginStore":416,"./PostArea":391,"./TimeLineItem":394,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47652,120 +47858,10 @@ var TimeLineItem = _react2['default'].createClass({
   }
 });
 
-var TimeLine = _react2['default'].createClass({
-  displayName: 'TimeLine',
-
-  getInitialState: function getInitialState() {
-    return { itens: [], loadingPosts: true };
-  },
-
-  componentDidMount: function componentDidMount() {
-    this._loadInitialData(this.props);
-    window.addEventListener('scroll', this.handleScroll);
-    window.setTimeout(this.checkNewPost.bind(this), 10000);
-  },
-
-  checkNewPost: function checkNewPost() {
-    this.updateTimeLine();
-    window.setTimeout(this.checkNewPost.bind(this), 10000);
-  },
-
-  componentWillReceiveProps: function componentWillReceiveProps(np) {
-    if (np.list != this.props.list || np.idUsuario != this.props.idUsuario) {
-      this.setState({ itens: [], loadingPosts: true });
-      this._loadInitialData(np);
-    }
-  },
-
-  updateTimeLine: function updateTimeLine() {
-
-    this.setState({ loadingPosts: true });
-
-    var data = {};
-
-    var firstPost = null;
-    if (this.state.itens && this.state.itens.length > 0) {
-      data['fp'] = this.state.itens[0].idPost;
-    }
-
-    if (this.props.list) {
-      data['l'] = this.props.list.idList;
-    }
-    if (this.props.idUsuario) {
-      data['u'] = this.props.idUsuario;
-    }
-    _servicesPostService2['default'].list(data, this.fillTimeLineTopPosts, this);
-  },
-
-  fillTimeLineTopPosts: function fillTimeLineTopPosts(posts) {
-    this.setState({ itens: posts.concat(this.state.itens), loadingPosts: false });
-  },
-
-  _loadInitialData: function _loadInitialData(props) {
-    var data = {};
-    if (props.list) {
-      data['l'] = props.list.idList;
-    }
-    if (props.idUsuario) {
-      data['u'] = props.idUsuario;
-    }
-    _servicesPostService2['default'].list(data, this.fillTimeLine, this);
-  },
-
-  fillTimeLine: function fillTimeLine(posts) {
-    this.setState({ itens: posts, loadingPosts: false });
-  },
-
-  componentWillUnmount: function componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
-  },
-
-  fillTimeLineExtraPosts: function fillTimeLineExtraPosts(posts) {
-    if (posts.length == 0) {
-      window.removeEventListener('scroll', this.handleScroll);
-    }
-    this.setState({ itens: this.state.itens.concat(posts), loadingPosts: false });
-  },
-
-  handleScroll: function handleScroll(e) {
-
-    function getDocHeight() {
-      var D = document;
-      return Math.max(D.body.scrollHeight, D.documentElement.scrollHeight, D.body.offsetHeight, D.documentElement.offsetHeight, D.body.clientHeight, D.documentElement.clientHeight);
-    }
-
-    if (window.innerHeight + window.scrollY >= getDocHeight()) {
-      if (!this.state.loadingPosts) {
-        this.setState({ loadingPosts: true });
-        var lastPost = this.state.itens[this.state.itens.length - 1].idPost;
-
-        var data = { lp: lastPost };
-        if (this.props.list) {
-          data['l'] = this.props.list.idList;
-        }
-        if (this.props.idUsuario) {
-          data['u'] = this.props.idUsuario;
-        }
-        _servicesPostService2['default'].list(data, this.fillTimeLineExtraPosts, this);
-      }
-    }
-  },
-
-  render: function render() {
-    return _react2['default'].createElement(
-      'div',
-      null,
-      this.state.itens.map(function (post) {
-        return _react2['default'].createElement(TimeLineItem, { post: post });
-      })
-    );
-  }
-});
-
-exports['default'] = TimeLine;
+exports['default'] = TimeLineItem;
 module.exports = exports['default'];
 
-},{"../services/PostService":412,"../stores/LoginStore":415,"./PostArea":391,"./UserAvatar":395,"./UserItem":397,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
+},{"../services/PostService":413,"../stores/LoginStore":416,"./PostArea":391,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47841,7 +47937,7 @@ var Upload = _react2['default'].createClass({
 exports['default'] = Upload;
 module.exports = exports['default'];
 
-},{"material-ui/lib/flat-button":111,"material-ui/lib/svg-icons/image/add-a-photo":171,"react":386,"react-dom":209}],395:[function(require,module,exports){
+},{"material-ui/lib/flat-button":111,"material-ui/lib/svg-icons/image/add-a-photo":171,"react":386,"react-dom":209}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47874,7 +47970,7 @@ var UserAvatar = _react2['default'].createClass({
 exports['default'] = UserAvatar;
 module.exports = exports['default'];
 
-},{"material-ui/lib/avatar":94,"material-ui/lib/svg-icons/social/person":180,"react":386}],396:[function(require,module,exports){
+},{"material-ui/lib/avatar":94,"material-ui/lib/svg-icons/social/person":180,"react":386}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47965,7 +48061,7 @@ var UserFieldsValue = _react2['default'].createClass({
 exports['default'] = UserFieldsValue;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":413,"material-ui/lib/styles/colors":147,"react":386}],397:[function(require,module,exports){
+},{"../services/ProfileService":414,"material-ui/lib/styles/colors":147,"react":386}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48010,7 +48106,7 @@ var UserItem = _react2['default'].createClass({
 exports['default'] = UserItem;
 module.exports = exports['default'];
 
-},{"./FollowBtn":390,"./UserAvatar":395,"./UserFieldsValue":396,"material-ui/lib/lists/list-item":116,"react":386}],398:[function(require,module,exports){
+},{"./FollowBtn":390,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/lists/list-item":116,"react":386}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48139,7 +48235,7 @@ var UserLists = _react2['default'].createClass({
 exports['default'] = UserLists;
 module.exports = exports['default'];
 
-},{"../services/ListService":411,"../services/PostService":412,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],399:[function(require,module,exports){
+},{"../services/ListService":412,"../services/PostService":413,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48188,7 +48284,7 @@ var Home = _react2['default'].createClass({
 exports['default'] = Home;
 module.exports = exports['default'];
 
-},{"./PostArea":391,"./TimeLine":393,"react":386}],400:[function(require,module,exports){
+},{"./PostArea":391,"./TimeLine":393,"react":386}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48264,7 +48360,7 @@ var List = _react2['default'].createClass({
 exports['default'] = List;
 module.exports = exports['default'];
 
-},{"../services/ListService":411,"./PostArea":391,"./TimeLine":393,"material-ui/lib/flat-button":111,"react":386}],401:[function(require,module,exports){
+},{"../services/ListService":412,"./PostArea":391,"./TimeLine":393,"material-ui/lib/flat-button":111,"react":386}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48368,7 +48464,7 @@ var Login = _react2['default'].createClass({
 exports['default'] = Login;
 module.exports = exports['default'];
 
-},{"../services/AuthService":410,"material-ui/lib/dialog":106,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],402:[function(require,module,exports){
+},{"../services/AuthService":411,"material-ui/lib/dialog":106,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48807,7 +48903,7 @@ var Master = _react2['default'].createClass({
 exports['default'] = Master;
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":415,"./SearchBar":392,"./UserAvatar":395,"./UserLists":398,"./rspTheme":403,"material-ui/lib/app-bar":92,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":164,"material-ui/lib/svg-icons/action/search":165,"material-ui/lib/svg-icons/navigation/expand-more":175,"material-ui/lib/svg-icons/navigation/menu":176,"material-ui/lib/svg-icons/navigation/more-vert":177,"material-ui/lib/toolbar/toolbar":186,"material-ui/lib/toolbar/toolbar-group":183,"material-ui/lib/toolbar/toolbar-separator":184,"material-ui/lib/toolbar/toolbar-title":185,"react":386,"react-router":237}],403:[function(require,module,exports){
+},{"../stores/LoginStore":416,"./SearchBar":392,"./UserAvatar":396,"./UserLists":399,"./rspTheme":404,"material-ui/lib/app-bar":92,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":164,"material-ui/lib/svg-icons/action/search":165,"material-ui/lib/svg-icons/navigation/expand-more":175,"material-ui/lib/svg-icons/navigation/menu":176,"material-ui/lib/svg-icons/navigation/more-vert":177,"material-ui/lib/toolbar/toolbar":186,"material-ui/lib/toolbar/toolbar-group":183,"material-ui/lib/toolbar/toolbar-separator":184,"material-ui/lib/toolbar/toolbar-title":185,"react":386,"react-router":237}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48853,7 +48949,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"material-ui/lib/styles/colors":147,"material-ui/lib/styles/spacing":152,"material-ui/lib/styles/zIndex":161,"material-ui/lib/utils/color-manipulator":191}],404:[function(require,module,exports){
+},{"material-ui/lib/styles/colors":147,"material-ui/lib/styles/spacing":152,"material-ui/lib/styles/zIndex":161,"material-ui/lib/utils/color-manipulator":191}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48866,16 +48962,28 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _PostArea = require('./PostArea');
+var _servicesPostService = require('../services/PostService');
 
-var _PostArea2 = _interopRequireDefault(_PostArea);
+var _servicesPostService2 = _interopRequireDefault(_servicesPostService);
 
-var _TimeLine = require('./TimeLine');
+var _TimeLineItem = require('./TimeLineItem');
 
-var _TimeLine2 = _interopRequireDefault(_TimeLine);
+var _TimeLineItem2 = _interopRequireDefault(_TimeLineItem);
 
 var Search = _react2['default'].createClass({
   displayName: 'Search',
+
+  getInitialState: function getInitialState() {
+    return { posts: [] };
+  },
+
+  componentDidMount: function componentDidMount() {
+    _servicesPostService2['default'].doSearch(this.props.location.query.searchTerm, this.loadPosts, this);
+  },
+
+  loadPosts: function loadPosts(resulSearch) {
+    this.setState({ posts: resulSearch.posts });
+  },
 
   render: function render() {
     return _react2['default'].createElement(
@@ -48885,7 +48993,10 @@ var Search = _react2['default'].createClass({
         'h1',
         null,
         'Resultado da Pesquisa'
-      )
+      ),
+      this.state.posts.map(function (post) {
+        return _react2['default'].createElement(_TimeLineItem2['default'], { key: post.idPost, post: post });
+      })
     );
   }
 
@@ -48894,7 +49005,7 @@ var Search = _react2['default'].createClass({
 exports['default'] = Search;
 module.exports = exports['default'];
 
-},{"./PostArea":391,"./TimeLine":393,"react":386}],405:[function(require,module,exports){
+},{"../services/PostService":413,"./TimeLineItem":394,"react":386}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49105,7 +49216,7 @@ var User = _react2['default'].createClass({
 exports['default'] = User;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./FollowBtn":390,"./TimeLine":393,"./UserAvatar":395,"./UserFieldsValue":396,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],406:[function(require,module,exports){
+},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./FollowBtn":390,"./TimeLine":393,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49252,7 +49363,7 @@ var UserEdit = _react2['default'].createClass({
 exports['default'] = UserEdit;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./Upload":394,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-dom":209}],407:[function(require,module,exports){
+},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./Upload":395,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-dom":209}],408:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49353,7 +49464,7 @@ var UserFollowers = _react2['default'].createClass({
 exports['default'] = UserFollowers;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./UserAvatar":395,"./UserItem":397,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],408:[function(require,module,exports){
+},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],409:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49463,7 +49574,7 @@ var UserFollowing = _react2['default'].createClass({
 exports['default'] = UserFollowing;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":413,"../services/UserService":414,"../stores/LoginStore":415,"./FollowBtn":390,"./UserAvatar":395,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],409:[function(require,module,exports){
+},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./FollowBtn":390,"./UserAvatar":396,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],410:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -49558,7 +49669,7 @@ var router = _react2['default'].createElement(
 
 (0, _reactDom.render)(router, document.getElementById('app'));
 
-},{"./components/home":399,"./components/list":400,"./components/login":401,"./components/master":402,"./components/search":404,"./components/user":405,"./components/useredit":406,"./components/userfollowers":407,"./components/userfollowing":408,"./stores/LoginStore":415,"react":386,"react-dom":209,"react-router":237,"react-tap-event-plugin":248}],410:[function(require,module,exports){
+},{"./components/home":400,"./components/list":401,"./components/login":402,"./components/master":403,"./components/search":405,"./components/user":406,"./components/useredit":407,"./components/userfollowers":408,"./components/userfollowing":409,"./stores/LoginStore":416,"react":386,"react-dom":209,"react-router":237,"react-tap-event-plugin":248}],411:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49611,7 +49722,7 @@ var AuthService = (function () {
 exports['default'] = new AuthService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":415,"reqwest":387}],411:[function(require,module,exports){
+},{"../stores/LoginStore":416,"reqwest":387}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49731,7 +49842,7 @@ var ListService = (function () {
 exports['default'] = new ListService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":415,"reqwest":387}],412:[function(require,module,exports){
+},{"../stores/LoginStore":416,"reqwest":387}],413:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49861,8 +49972,8 @@ var PostService = (function () {
         headers: {
           'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
         },
-        success: function success(posted) {
-          functionsuccess.call(comp, posted);
+        success: function success(postsed) {
+          functionsuccess.call(comp, postsed);
         }
       });
     }
@@ -49874,7 +49985,7 @@ var PostService = (function () {
 exports['default'] = new PostService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":415,"reqwest":387}],413:[function(require,module,exports){
+},{"../stores/LoginStore":416,"reqwest":387}],414:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49952,7 +50063,7 @@ var ProfileService = (function () {
 exports['default'] = new ProfileService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":415,"reqwest":387}],414:[function(require,module,exports){
+},{"../stores/LoginStore":416,"reqwest":387}],415:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50083,7 +50194,7 @@ var UserService = (function () {
 exports['default'] = new UserService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":415,"reqwest":387}],415:[function(require,module,exports){
+},{"../stores/LoginStore":416,"reqwest":387}],416:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50171,4 +50282,4 @@ var LoginStore = (function () {
 exports['default'] = new LoginStore();
 module.exports = exports['default'];
 
-},{"../services/UserService":414}]},{},[409]);
+},{"../services/UserService":415}]},{},[410]);

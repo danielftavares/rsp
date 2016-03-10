@@ -77,18 +77,9 @@ const SearchBar = React.createClass({
 		    });
   },
   searchFull(){
-    this.context.router.push("/s")
-  	PostService.doSearch(this.state.searchterm)
+    this.context.searchTerm = this.state.searchterm;
+    this.context.router.push({pathname: '/s',query: { searchTerm: this.state.searchterm } })
   },
-	  
-	  makeSearch(text, index, item){
-		  if(!item){
-			  //TODO
-			  alert("FAzer PESquisa!!");
-		  }
-		  return true;
-	  },
-	  
   render() {
   	var searchFull = this.searchFull;
 	var renderListItem = function(item){

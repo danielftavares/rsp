@@ -100,8 +100,8 @@ class PostService {
       headers: {
         'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
-      success: function (posted) {
-        functionsuccess.call(comp, posted);
+      success: function (postsed) {
+        functionsuccess.call(comp, postsed);
       }
     });
   }
