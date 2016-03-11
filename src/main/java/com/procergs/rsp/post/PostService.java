@@ -46,6 +46,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.QueryBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
@@ -184,8 +185,9 @@ public class PostService {
 	private void indexPost(PostED postED) {
 		Document d = new Document();
 
-		d.add(new TextField("name", postED.getTexto(), Field.Store.YES ));
+		d.add(new TextField("text", postED.getTexto(), Field.Store.YES ));
 		d.add(new LongField("id", postED.getIdPost(), Field.Store.YES));
+		d.add(new SortedNumericDocValuesField("date", postED.getData().getTimeInMillis()));
 
 		try {
 			IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(new PortugueseAnalyzer()));
@@ -293,8 +295,8 @@ public class PostService {
             IndexReader reader = DirectoryReader.open(directory);
             IndexSearcher searcher = new IndexSearcher(reader);
             Analyzer analyzer = new PortugueseAnalyzer();
-					  QueryParser parser = new QueryParser("name", analyzer);
-					org.apache.lucene.search.Query query = parser.parse(searchTerm);
+			QueryParser parser = new QueryParser("text", analyzer);
+			org.apache.lucene.search.Query query = parser.parse(searchTerm);
 
             /*QueryBuilder queryBuilder = new QueryBuilder(analyzer);
             org.apache.lucene.search.Query query = new MultiPhraseQuery();
@@ -308,7 +310,10 @@ public class PostService {
             //FuzzyQuery query = new FuzzyQuery(new Term("name",searchTerm));
 
             // Collect enough docs to show 5 pages
-            TopDocs results = searcher.search(query, 10);
+			Sort sort = new Sort();
+			sort.setSort(new SortedNumericSortField("date", SortField.Type.LONG));
+
+            TopDocs results = searcher.search(query, 10, sort);
             ScoreDoc[] hits = results.scoreDocs;
 
             int numTotalHits = results.totalHits;
@@ -326,11 +331,14 @@ public class PostService {
                 Document doc = searcher.doc(hits[i].doc);
                 String idPost = doc.get("id");
                 if (idPost != null) {
-                    listPosts.add(load(Long.valueOf(idPost), httpRequest));
+					PostED postED = load(Long.valueOf(idPost), httpRequest);
+					if(postED != null){
+						listPosts.add(postED);
+					}
                     System.out.println((i+1) + ". " + idPost);
-                    String title = doc.get("name");
+                    String title = doc.get("text");
                     if (title != null) {
-                        System.out.println("   Title: " + doc.get("name"));
+                        System.out.println("   Title: " + doc.get("text"));
                     }
                 } else {
                     System.out.println((i+1) + ". " + "No path for this document");
@@ -344,7 +352,7 @@ public class PostService {
             e.printStackTrace();
         } catch (ParseException e) {
 					e.printStackTrace();
-				} finally {
+		} finally {
 
         }
         return postSearchResult;
