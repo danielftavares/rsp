@@ -99,6 +99,9 @@ const Master  = React.createClass({
         paddingTop: Spacing.desktopKeylineIncrement,
         minHeight: 400,
       },
+      leftNav: {
+        backgroundColor: Colors.black
+      },
       title: {
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -236,9 +239,7 @@ const Master  = React.createClass({
       leftNavOpen = true;
       showMenuIconButton = false;
       
-      styles.leftNav = {
-        zIndex: styles.appBar.zIndex - 1,
-      };
+      styles.leftNav.zIndex= styles.appBar.zIndex - 1,
       styles.root.paddingLeft = 256;
       styles.footer.paddingLeft = 256;
     }
@@ -316,7 +317,7 @@ const Master  = React.createClass({
             <img src="images/logorsp.png" />
           </div>
 
-          <Link to={'/'}><MenuItem>Início</MenuItem></Link>
+          <Link to={'/'}><MenuItem style={{color: Colors.white}} >Início</MenuItem></Link>
 
           <UserLists history={history}  />
         </LeftNav>

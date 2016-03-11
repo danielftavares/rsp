@@ -43,10 +43,14 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.xml.QueryBuilderFactory;
+import org.apache.lucene.queryparser.xml.builders.FilteredQueryBuilder;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.BytesRefBuilder;
+import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.QueryBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
@@ -274,7 +278,30 @@ public class PostService {
 	@Path("/d/{idpost}")
 	public void delete(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
-		postBD.delete(idPost, user);
+		PostED postED = load(idPost, httpRequest);
+		if(postED.getUserEd().equals(user)){
+			deletePost(postED);
+		}
+
+
+
+	}
+	private void deletePost(PostED postED){
+		for(PostED pr: postED.getReplies()){
+            deletePost(pr);
+		}
+
+        postBD.delete(postED);
+        try {
+            IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(new PortugueseAnalyzer()));
+            BytesRefBuilder ref = new BytesRefBuilder();
+            NumericUtils.longToPrefixCoded( postED.getIdPost(), 0, ref );
+            writer.deleteDocuments(new Term("id", ref));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 	}
 
     @POST
@@ -283,11 +310,6 @@ public class PostService {
     public PostSearchResult search(@FormParam("st") String searchTerm, @Context HttpServletRequest httpRequest) {
         PostSearchResult postSearchResult = new PostSearchResult();
         System.out.println(searchTerm);
-/*        Searcher indexSearcher = new IndexSearcher();
-        Term term = new Term("name",searchTerm);
-        Query termQuery = new TermQuery(term);
-        TopDocs topDocs = indexSearcher.search(termQuery,10);
-*/
 
 
         try{
@@ -298,18 +320,6 @@ public class PostService {
 			QueryParser parser = new QueryParser("text", analyzer);
 			org.apache.lucene.search.Query query = parser.parse(searchTerm);
 
-            /*QueryBuilder queryBuilder = new QueryBuilder(analyzer);
-            org.apache.lucene.search.Query query = new MultiPhraseQuery();
-            List<Term> termms = new ArrayList<>();
-            for(String term :  searchTerm.split(" ")){
-                termms.add(new Term("name", term));
-            }
-            query.add(termms.toArray(new Term[termms.size()]));
-*/
-
-            //FuzzyQuery query = new FuzzyQuery(new Term("name",searchTerm));
-
-            // Collect enough docs to show 5 pages
 			Sort sort = new Sort();
 			sort.setSort(new SortedNumericSortField("date", SortField.Type.LONG));
 

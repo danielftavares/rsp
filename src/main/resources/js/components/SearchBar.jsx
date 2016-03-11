@@ -84,7 +84,7 @@ const SearchBar = React.createClass({
   	var searchFull = this.searchFull;
 	var renderListItem = function(item){
 		if(item.idUsuario){
-			return {text: item.nome, 
+			return {text: item.nome,
 					value: ( <Link to={'/u/'+item.idUsuario+'/'+item.nome}>
 								<ListItem 
 									primaryText={item.nome}

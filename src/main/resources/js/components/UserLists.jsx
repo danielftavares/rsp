@@ -9,6 +9,7 @@ import TextField from 'material-ui/lib/text-field';
 import ListService from '../services/ListService'
 import LinkedStateMixin from 'react-addons-linked-state-mixin'
 import { Link } from 'react-router'
+import {Spacing,Typography,Colors} from 'material-ui/lib/styles';
 
 
 const UserLists = React.createClass({
@@ -58,12 +59,12 @@ const UserLists = React.createClass({
 	                       onTouchTap={this.handleInsetList} />,
 	                   ];
 	var renderListItem = function(lt){
-		return <Link to={'/l/'+lt.idList+'/'+lt.name}><ListItem primaryText={lt.name}  /></Link>
+		return <Link key={lt.idList} to={'/l/'+lt.idList+'/'+lt.name}><ListItem style={{color: Colors.white}} primaryText={lt.name}  /></Link>
 	}
     return (
     	<span>
-			<List subheader="Listas" insetSubheader={true}>
-		      <ListItem primaryText="Criar Lista" onTouchTap={this.handleOpenInsetList} />
+			<List subheader="Listas" subheaderStyle={{color: Colors.white}}  insetSubheader={true} style={{backgroundColor: Colors.black}} >
+		      <ListItem primaryText="Criar Lista" onTouchTap={this.handleOpenInsetList} style={{color: Colors.white}}  />
 		      {this.state.lists.map(renderListItem)}
 		    </List>
 		    <Dialog

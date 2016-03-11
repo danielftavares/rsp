@@ -47418,12 +47418,12 @@ var TimeLine = _react2['default'].createClass({
   componentDidMount: function componentDidMount() {
     this._loadInitialData(this.props);
     window.addEventListener('scroll', this.handleScroll);
-    window.setTimeout(this.checkNewPost.bind(this), 10000);
+    window.setTimeout(this.checkNewPost, 10000);
   },
 
   checkNewPost: function checkNewPost() {
     this.updateTimeLine();
-    window.setTimeout(this.checkNewPost.bind(this), 10000);
+    window.setTimeout(this.checkNewPost, 10000);
   },
 
   componentWillReceiveProps: function componentWillReceiveProps(np) {
@@ -47512,7 +47512,7 @@ var TimeLine = _react2['default'].createClass({
       'div',
       null,
       this.state.itens.map(function (post) {
-        return _react2['default'].createElement(_TimeLineItem2['default'], { post: post });
+        return _react2['default'].createElement(_TimeLineItem2['default'], { key: post.idPost, post: post });
       })
     );
   }
@@ -47667,7 +47667,7 @@ var TimeLineItem = _react2['default'].createClass({
       _materialUiLibListsList2['default'],
       { subheader: 'Seguidores' },
       this._getPost().likes.map(function (l) {
-        return _react2['default'].createElement(_UserItem2['default'], { user: l.userEd });
+        return _react2['default'].createElement(_UserItem2['default'], { key: l.user.idUsuario, user: l.userEd });
       })
     );
     this.context.showDialog("Usuarios que curtiram", listlikers);
@@ -47802,7 +47802,7 @@ var TimeLineItem = _react2['default'].createClass({
         _materialUiLibCardCardText2['default'],
         { style: style.images },
         postED.images.map(function (image) {
-          return _react2['default'].createElement(TimeLineItemImage, { image: image });
+          return _react2['default'].createElement(TimeLineItemImage, { key: image.idImage, image: image });
         })
       ) : '',
       postED.openGraphED ? _react2['default'].createElement(
@@ -47851,7 +47851,7 @@ var TimeLineItem = _react2['default'].createClass({
         _materialUiLibCardCardText2['default'],
         { style: style.childPost },
         postED.replies.map(function (post) {
-          return _react2['default'].createElement(TimeLineItem, { post: post });
+          return _react2['default'].createElement(TimeLineItem, { key: post.idPost, post: post });
         })
       ) : ''
     );
@@ -48157,6 +48157,8 @@ var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedSta
 
 var _reactRouter = require('react-router');
 
+var _materialUiLibStyles = require('material-ui/lib/styles');
+
 var UserLists = _react2['default'].createClass({
 	displayName: 'UserLists',
 
@@ -48203,8 +48205,8 @@ var UserLists = _react2['default'].createClass({
 		var renderListItem = function renderListItem(lt) {
 			return _react2['default'].createElement(
 				_reactRouter.Link,
-				{ to: '/l/' + lt.idList + '/' + lt.name },
-				_react2['default'].createElement(_materialUiLibListsListItem2['default'], { primaryText: lt.name })
+				{ key: lt.idList, to: '/l/' + lt.idList + '/' + lt.name },
+				_react2['default'].createElement(_materialUiLibListsListItem2['default'], { style: { color: _materialUiLibStyles.Colors.white }, primaryText: lt.name })
 			);
 		};
 		return _react2['default'].createElement(
@@ -48212,8 +48214,8 @@ var UserLists = _react2['default'].createClass({
 			null,
 			_react2['default'].createElement(
 				_materialUiLibListsList2['default'],
-				{ subheader: 'Listas', insetSubheader: true },
-				_react2['default'].createElement(_materialUiLibListsListItem2['default'], { primaryText: 'Criar Lista', onTouchTap: this.handleOpenInsetList }),
+				{ subheader: 'Listas', subheaderStyle: { color: _materialUiLibStyles.Colors.white }, insetSubheader: true, style: { backgroundColor: _materialUiLibStyles.Colors.black } },
+				_react2['default'].createElement(_materialUiLibListsListItem2['default'], { primaryText: 'Criar Lista', onTouchTap: this.handleOpenInsetList, style: { color: _materialUiLibStyles.Colors.white } }),
 				this.state.lists.map(renderListItem)
 			),
 			_react2['default'].createElement(
@@ -48235,7 +48237,7 @@ var UserLists = _react2['default'].createClass({
 exports['default'] = UserLists;
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"../services/PostService":413,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],400:[function(require,module,exports){
+},{"../services/ListService":412,"../services/PostService":413,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles":149,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48643,6 +48645,9 @@ var Master = _react2['default'].createClass({
         paddingTop: _materialUiLibStyles.Spacing.desktopKeylineIncrement,
         minHeight: 400
       },
+      leftNav: {
+        backgroundColor: _materialUiLibStyles.Colors.black
+      },
       title: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -48779,10 +48784,7 @@ var Master = _react2['default'].createClass({
       leftNavOpen = true;
       showMenuIconButton = false;
 
-      styles.leftNav = {
-        zIndex: styles.appBar.zIndex - 1
-      };
-      styles.root.paddingLeft = 256;
+      styles.leftNav.zIndex = styles.appBar.zIndex - 1, styles.root.paddingLeft = 256;
       styles.footer.paddingLeft = 256;
     }
 
@@ -48890,7 +48892,7 @@ var Master = _react2['default'].createClass({
           { to: '/' },
           _react2['default'].createElement(
             _materialUiLibMenusMenuItem2['default'],
-            null,
+            { style: { color: _materialUiLibStyles.Colors.white } },
             'Início'
           )
         ),
@@ -49159,7 +49161,7 @@ var User = _react2['default'].createClass({
         _react2['default'].createElement(
           'div',
           null,
-          _react2['default'].createElement(_FollowBtn2['default'], { user: this.state.user })
+          _react2['default'].createElement(_FollowBtn2['default'], { isButton: true, user: this.state.user })
         ),
         _react2['default'].createElement(_UserFieldsValue2['default'], { user: this.state.user }),
         _react2['default'].createElement(

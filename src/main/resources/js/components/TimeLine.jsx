@@ -34,12 +34,12 @@ const TimeLine = React.createClass({
   componentDidMount() {
     this._loadInitialData(this.props);
     window.addEventListener('scroll', this.handleScroll);
-    window.setTimeout(this.checkNewPost.bind(this), 10000);
+    window.setTimeout(this.checkNewPost, 10000);
   },
 
   checkNewPost() {
     this.updateTimeLine();
-    window.setTimeout(this.checkNewPost.bind(this), 10000);
+    window.setTimeout(this.checkNewPost, 10000);
   },
 
   componentWillReceiveProps(np){
@@ -133,7 +133,7 @@ const TimeLine = React.createClass({
   render() {
     return (
       <div>
-      	{this.state.itens.map(function(post){ return (<TimeLineItem post={post} />) })}
+      	{this.state.itens.map(function(post){ return (<TimeLineItem key={post.idPost} post={post} />) })}
       </div>
     );
   }

@@ -67,7 +67,7 @@ var TimeLineItem = React.createClass({
   showLikers(){
     var listlikers = (<List subheader="Seguidores">
             {this._getPost().likes.map(function(l){
-               return <UserItem user={l.userEd} />;
+               return <UserItem key={l.user.idUsuario} user={l.userEd} />;
             })}
           </List>)
     this.context.showDialog("Usuarios que curtiram", listlikers)
@@ -182,7 +182,7 @@ var TimeLineItem = React.createClass({
         </CardText>
         {postED.images.length > 0 ?
         <CardText style={style.images} >
-          {postED.images.map(function(image){ return (<TimeLineItemImage image={image} />) })}
+          {postED.images.map(function(image){ return (<TimeLineItemImage key={image.idImage} image={image} />) })}
         </CardText>
         : ''
         }
@@ -219,7 +219,7 @@ var TimeLineItem = React.createClass({
         </CardActions>
         {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={postED} onPostDone={this._replyDone} /></CardText>: null }
         {postED.replies.length > 0 ?
-          <CardText style={style.childPost} >{postED.replies.map(function(post){ return (<TimeLineItem post={post} />) })}</CardText>
+          <CardText style={style.childPost} >{postED.replies.map(function(post){ return (<TimeLineItem key={post.idPost} post={post} />) })}</CardText>
           : ''}
       </Card>)
   }

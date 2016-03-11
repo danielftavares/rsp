@@ -93,7 +93,7 @@ const User = React.createClass({
     		<UserAvatar user={this.state.user} size={150} />
       		<h2>{this.state.user.nome}</h2>
       		<div>
-            <FollowBtn user={this.state.user} />
+            <FollowBtn isButton={true} user={this.state.user} />
       		</div>
           <UserFieldsValue user={this.state.user} />
       		<div>
