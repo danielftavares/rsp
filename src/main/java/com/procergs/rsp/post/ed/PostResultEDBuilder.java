@@ -1,6 +1,7 @@
 package com.procergs.rsp.post.ed;
 
 import com.procergs.rsp.image.ed.ImageED;
+import com.procergs.rsp.list.ed.ListED;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -41,13 +42,9 @@ public class PostResultEDBuilder {
             resultED.setProfileImageType(postED.getUserEd().getProfileImage().getType());
         }
 
-        if(postED.getListED() != null){
-            ListResultED listResultED = new ListResultED();
-            listResultED.setName(postED.getListED().getName());
-            listResultED.setIdList(postED.getListED().getIdList());
-            resultED.setListED(listResultED);
+        if(postED.getLists() != null && !postED.getLists().isEmpty()){
+            resultED.setLists(postED.getLists().stream().map(listED -> buildListResultED(listED)).collect(Collectors.toList()));
         }
-
 
         resultED.setLikes(likes.stream().map(likeED -> buildLikeResultED(likeED)).collect(Collectors.toList()));
         resultED.setImages (images.stream().map(imageED -> buildImageResultED(imageED)).collect(Collectors.toList()));
@@ -70,5 +67,12 @@ public class PostResultEDBuilder {
             likeResultED.setProfileImageType(likeED.getUserEd().getProfileImage().getType());
         }
         return likeResultED;
+    }
+
+    private ListResultED buildListResultED(ListED listED){
+        ListResultED listResultED = new ListResultED();
+        listResultED.setName(listED.getName());
+        listResultED.setIdList(listED.getIdList());
+        return listResultED;
     }
 }

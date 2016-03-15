@@ -41,4 +41,14 @@ public class ListBD {
 		return (Collection<ListED>) query.getResultList();
 	}
 
+	public ListED findByName(String name) {
+		Query query = em.createQuery("SELECT l FROM ListED l WHERE l.name = :u ");
+		query.setParameter("u", name);
+		List<ListED> lr = (List<ListED>) query.getResultList();
+		if(!lr.isEmpty()){
+			return lr.get(0);
+		} else {
+			return null;
+		}
+	}
 }

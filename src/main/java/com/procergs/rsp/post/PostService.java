@@ -26,6 +26,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import com.procergs.rsp.list.ListService;
 import com.procergs.rsp.opengraph.OpenGraph;
 import com.procergs.rsp.opengraph.OpenGraphService;
 import com.procergs.rsp.opengraph.ed.OpenGraphED;
@@ -57,6 +58,9 @@ import com.procergs.rsp.util.RSPUtil;
 @Path("post")
 public class PostService {
 
+	public static final String POST_INSERT_LIST_NAME = "ln";
+	public static final String POST_INSERT_LIST_ID = "l";
+
 	@PersistenceContext(unitName = "RSP_PU")
 	EntityManager em;
 
@@ -66,6 +70,9 @@ public class PostService {
 
 	@EJB
 	ImageService imageService;
+
+	@EJB
+	ListService listService;
 
   @EJB
   OpenGraphService openGraphService;
@@ -109,11 +116,27 @@ public class PostService {
 			postED.setUserEd(((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd());
 			postED.setData(Calendar.getInstance());
 
-			if (uploadForm.containsKey("l")) {
-				Long idList = uploadForm.get("l").get(0).getBody(Long.class, null);
+			if (uploadForm.containsKey(POST_INSERT_LIST_ID)) {
+				Long idList = uploadForm.get(POST_INSERT_LIST_ID).get(0).getBody(Long.class, null);
 				if (idList != null) {
-					postED.setListED(new ListED(idList));
+					postED.setLists(Arrays.asList(new ListED(idList)));
 				}
+			} else if(uploadForm.containsKey(POST_INSERT_LIST_NAME)) {
+				List<InputPart> listsNames = uploadForm.get(POST_INSERT_LIST_NAME);
+				List<ListED> lists = new ArrayList<>();
+				for (InputPart listsNamePart: listsNames){
+					String listName = listsNamePart.getBodyAsString();
+					if(listName == null || listName.isEmpty()){
+						continue;
+					}
+					ListED listed = listService.findByName(listName);
+					if(listed == null){
+						listed = new ListED(listName);
+						listService.insert(listed);
+					}
+					lists.add(listed);
+				}
+				postED.setLists(lists);
 			}
 			
 			if (uploadForm.containsKey("pp")) {
@@ -176,8 +199,7 @@ public class PostService {
 		Document d = new Document();
 
 		d.add(new TextField("text", postED.getTexto(), Field.Store.YES ));
-		d.add(new LongField("id", postED.getIdPost(), Field.Store.YES));
-		d.add(new SortedNumericDocValuesField("date", postED.getData().getTimeInMillis()));
+		d.add(new SortedNumericDocValuesField("id", postED.getIdPost() ));
 
 		try {
 			IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(new PortugueseAnalyzer()));
@@ -303,7 +325,7 @@ public class PostService {
 			org.apache.lucene.search.Query query = parser.parse(searchTerm);
 
 			Sort sort = new Sort();
-			sort.setSort(new SortedNumericSortField("date", SortField.Type.LONG));
+			sort.setSort(new SortedNumericSortField("id", SortField.Type.LONG, true));
             TopDocs results = searcher.search(query, 10, sort);
             ScoreDoc[] hits = results.scoreDocs;
 

@@ -5125,7 +5125,7 @@ module.exports = flowRight;
 
 },{}],77:[function(require,module,exports){
 /**
- * lodash 3.0.8 (Custom Build) <https://lodash.com/>
+ * lodash 3.0.7 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -5228,7 +5228,8 @@ function isArguments(value) {
  * // => false
  */
 function isArrayLike(value) {
-  return value != null && isLength(getLength(value)) && !isFunction(value);
+  return value != null &&
+    !(typeof value == 'function' && isFunction(value)) && isLength(getLength(value));
 }
 
 /**
@@ -5276,8 +5277,8 @@ function isArrayLikeObject(value) {
  */
 function isFunction(value) {
   // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8 which returns 'object' for typed array and weak map constructors,
-  // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+  // in Safari 8 which returns 'object' for typed array constructors, and
+  // PhantomJS 1.9 which returns 'function' for `NodeList` instances.
   var tag = isObject(value) ? objectToString.call(value) : '';
   return tag == funcTag || tag == genTag;
 }
@@ -24514,7 +24515,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.slice().sort().map(function (val2) {
+			return val.sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -47762,6 +47763,8 @@ var TimeLineItem = _react2['default'].createClass({
     var postED = this._getPost();
     var iLiked = this._iLiked();
     var isMine = this._isMine();
+
+    var deleteBtn = false;
     return _react2['default'].createElement(
       _materialUiLibCardCard2['default'],
       { style: style.item },
@@ -47775,15 +47778,19 @@ var TimeLineItem = _react2['default'].createClass({
             { to: '/u/' + postED.idUser },
             postED.name
           ),
-          postED.listED ? _react2['default'].createElement(
+          postED.lists ? _react2['default'].createElement(
             'span',
             null,
-            ' em ',
-            _react2['default'].createElement(
-              _reactRouter.Link,
-              { to: '/l/' + postED.listED.idList },
-              postED.listED.name
-            )
+            ' em  ',
+            postED.lists.map(function (listr) {
+              return _react2['default'].createElement(
+                _reactRouter.Link,
+                { key: listr.idList, to: '/l/' + listr.idList },
+                listr.name,
+                ' '
+              );
+            }),
+            ' '
           ) : ''
         ),
         subtitle: new Date(postED.data).toLocaleString(),
@@ -47832,10 +47839,11 @@ var TimeLineItem = _react2['default'].createClass({
           { onClick: this.showLikers },
           postED.likes.length > 0 ? postED.likes.length : ''
         ),
-        isMine ? _react2['default'].createElement(_materialUiLibFlatButton2['default'], {
+        _react2['default'].createElement(_materialUiLibFlatButton2['default'], {
+          style: isMine ? null : { display: "none" },
           onTouchTap: this.removePost,
           label: 'Remover',
-          icon: _react2['default'].createElement(_materialUiLibSvgIconsActionDelete2['default'], null) }) : null
+          icon: _react2['default'].createElement(_materialUiLibSvgIconsActionDelete2['default'], null) })
       ),
       this.state.replying ? _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],

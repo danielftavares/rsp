@@ -168,12 +168,14 @@ var TimeLineItem = React.createClass({
     var postED = this._getPost();
     var iLiked = this._iLiked();
     var isMine = this._isMine();
+
+    var deleteBtn = false;
     return (<Card style={style.item} >
         <CardHeader
           style={style.header}
           title={(<span><Link  to={'/u/'+postED.idUser} >{postED.name}</Link>
-            {postED.listED ? 
-              (<span> em <Link  to={'/l/'+postED.listED.idList}>{postED.listED.name}</Link></span>) : 
+            {postED.lists ? 
+              (<span> em  {postED.lists.map(function(listr){return <Link key={listr.idList}  to={'/l/'+listr.idList}>{listr.name} </Link> }) } </span>) : 
               '' }</span>) }
           subtitle={ new Date(postED.data).toLocaleString() }
           avatar={ <UserAvatar idUser={postED.idUser} idProfileImage={postED.idProfileImage} profileImageType={postED.profileImageType}  /> }  />
@@ -211,11 +213,11 @@ var TimeLineItem = React.createClass({
               style={ iLiked ? style.colorActive : style.colorNotActive }
               icon={<ActionThumbUpIcon  />} />
            <a onClick={ this.showLikers }>{ postED.likes.length > 0 ? postED.likes.length : '' }</a>
-           {isMine ? 
-              <FlatButton 
-                onTouchTap={this.removePost}
-                label="Remover"
-                icon={<ActionDeleteIcon />} /> : null}
+           <FlatButton 
+                    style={isMine ? null : {display: "none"} }
+                    onTouchTap={this.removePost}
+                    label="Remover"
+                    icon={<ActionDeleteIcon />} />
         </CardActions>
         {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={postED} onPostDone={this._replyDone} /></CardText>: null }
         {postED.replies.length ?

@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import com.procergs.rsp.list.ed.ListED;
 import com.procergs.rsp.post.ed.LikeED;
 import com.procergs.rsp.post.ed.PostED;
 import com.procergs.rsp.user.ed.FollowED;
@@ -27,35 +28,37 @@ public class PostBD {
 	}
 
 	public Collection<PostED> list(UserEd user, Long idLastPost, Long idFirstPost) {
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
-		Root<PostED> root = q.from(PostED.class);
+		StringBuilder sql = new StringBuilder();
+		sql.append(" select * from post ");
+		sql.append(" where post.ID_POST_PARENT is null and (post.ID_USUARIO = ? ");
+		sql.append(" or exists ( ");
+		sql.append("		select 1 from FOLLOW ");
+		sql.append(" where FOLLOW.ID_FOLLOWER = ? ");
+		sql.append(" and (post.ID_USUARIO  = FOLLOW.ID_FOLLOWED ");
+		sql.append(" 		OR EXISTS (select 1 FROM LIST_POST ");
+		sql.append(" 					WHERE LIST_POST.ID_POST = post.ID_POST ");
+		sql.append(" 					and LIST_POST.ID_LIST = FOLLOW.ID_LIST_FOLLOWED ) ");
+		sql.append(" 	 ) ");
+		sql.append(" )) ");
+		if(idLastPost != null){
+			sql.append(" AND post.ID_POST < ? ");
+		}
+		if(idFirstPost != null){
+			sql.append(" AND post.ID_POST > ? ");
+		}
+		sql.append(" order by post.ID_POST desc ");
 
-		Subquery<FollowED> subqueryuf = q.subquery(FollowED.class);
-		Root<FollowED> subqueryRoot = subqueryuf.from(FollowED.class);
-		subqueryuf.select(subqueryRoot);
-		subqueryuf.where(builder.and(builder.or(builder.equal(subqueryRoot.get("followed"), root.get("userEd")),
-				builder.equal(subqueryRoot.get("listFollowed"), root.get("listED"))),
-
-				builder.equal(subqueryRoot.get("follower"), user)));
-
-		if (idLastPost != null) {
-			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
-								builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf)),
-								builder.isNull(root.get("parent"))));
-		} else if (idFirstPost != null) {
-			q.where(builder.and(builder.gt(root.get("idPost"), idFirstPost),
-					builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf)),
-					builder.isNull(root.get("parent"))));
-		} else {
-			q.where(builder.and(
-						builder.isNull(root.get("parent")),
-						builder.or(builder.equal(root.get("userEd"), user), builder.exists(subqueryuf))));
+		Query query =  em.createNativeQuery(sql.toString(), PostED.class);
+		int index = 1;
+		query.setParameter(index++, user.getIdUsuario());
+		query.setParameter(index++, user.getIdUsuario());
+		if(idLastPost != null){
+			query.setParameter(index++, idLastPost);
+		}
+		if(idFirstPost != null){
+			query.setParameter(index++, idFirstPost);
 		}
 
-		q.orderBy(builder.desc(root.get("data")));
-
-		Query query = em.createQuery(q);
 		query.setMaxResults(10);
 
 		List<PostED> l = query.getResultList();
@@ -63,27 +66,31 @@ public class PostBD {
 	}
 
 	public Collection<PostED> listPostList(Long idList, Long idLastPost, Long idFirstPost) {
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
-		Root<PostED> root = q.from(PostED.class);
 
-		if (idLastPost != null) {
-			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
-								builder.equal(root.get("listED").get("idList"), idList),
-								builder.isNull(root.get("parent"))));
-		} if (idFirstPost!= null){
-			q.where(builder.and(builder.gt(root.get("idPost"), idFirstPost),
-					builder.equal(root.get("listED").get("idList"), idList),
-					builder.isNull(root.get("parent"))));
-		} else {
-			q.where(builder.and(
-						builder.isNull(root.get("parent")),
-						builder.equal(root.get("listED").get("idList"), idList)));
+		StringBuilder sql = new StringBuilder();
+		sql.append(" select * from post ");
+		sql.append(" where post.ID_POST_PARENT is null and  ");
+		sql.append(" EXISTS (select 1 FROM LIST_POST ");
+		sql.append(" WHERE LIST_POST.ID_POST = post.ID_POST ");
+		sql.append(" and LIST_POST.ID_LIST = ? ) ");
+		if(idLastPost != null){
+			sql.append(" AND post.ID_POST < ? ");
+		}
+		if(idFirstPost != null){
+			sql.append(" AND post.ID_POST > ? ");
+		}
+		sql.append(" order by post.ID_POST desc ");
+
+		Query query =  em.createNativeQuery(sql.toString(), PostED.class);
+		int index = 1;
+		query.setParameter(index++, idList);
+		if(idLastPost != null){
+			query.setParameter(index++, idLastPost);
+		}
+		if(idFirstPost != null){
+			query.setParameter(index++, idFirstPost);
 		}
 
-		q.orderBy(builder.desc(root.get("data")));
-
-		Query query = em.createQuery(q);
 		query.setMaxResults(10);
 
 		List<PostED> l = query.getResultList();
@@ -91,28 +98,27 @@ public class PostBD {
 	}
 
 	public Collection<PostED> listPostUser(Long idUser, Long idLastPost, Long idFirstPost) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(" select * from post ");
+		sql.append(" where post.ID_POST_PARENT is null and post.ID_USUARIO = ? ");
+		if(idLastPost != null){
+			sql.append(" AND post.ID_POST < ? ");
+		}
+		if(idFirstPost != null){
+			sql.append(" AND post.ID_POST > ? ");
+		}
+		sql.append(" order by post.ID_POST desc ");
 
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<PostED> q = builder.createQuery(PostED.class);
-		Root<PostED> root = q.from(PostED.class);
-
-		if (idLastPost != null) {
-			q.where(builder.and(builder.lt(root.get("idPost"), idLastPost),
-							builder.equal(root.get("userEd").get("idUsuario"), idUser),
-							builder.isNull(root.get("parent"))));
-		} else if (idFirstPost != null) {
-			q.where(builder.and(builder.gt(root.get("idPost"), idFirstPost),
-					builder.equal(root.get("userEd").get("idUsuario"), idUser),
-					builder.isNull(root.get("parent"))));
-		} else {
-			q.where(builder.and(
-						builder.equal(root.get("userEd").get("idUsuario"), idUser),
-						builder.isNull(root.get("parent"))));
+		Query query =  em.createNativeQuery(sql.toString(), PostED.class);
+		int index = 1;
+		query.setParameter(index++, idUser);
+		if(idLastPost != null){
+			query.setParameter(index++, idLastPost);
+		}
+		if(idFirstPost != null){
+			query.setParameter(index++, idFirstPost);
 		}
 
-		q.orderBy(builder.desc(root.get("data")));
-
-		Query query = em.createQuery(q);
 		query.setMaxResults(10);
 
 		List<PostED> l = query.getResultList();

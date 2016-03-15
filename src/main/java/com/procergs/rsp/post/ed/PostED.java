@@ -1,18 +1,9 @@
 package com.procergs.rsp.post.ed;
 
 import java.util.Calendar;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.procergs.rsp.list.ed.ListED;
@@ -46,9 +37,11 @@ public class PostED {
 	@JoinColumn(name = "ID_USUARIO")
 	private UserEd userEd;
 
-	@ManyToOne
-	@JoinColumn(name = "ID_LIST")
-	private ListED listED;
+	@ManyToMany
+	@JoinTable( name="LIST_POST",
+			joinColumns=@JoinColumn(name="ID_POST"),
+			inverseJoinColumns=@JoinColumn(name="ID_LIST"))
+	private List<ListED> lists;
 
 //	@OneToMany(mappedBy = "postED", fetch=FetchType.EAGER)
 //	private List<ImageED> images;
@@ -101,14 +94,6 @@ public class PostED {
 		this.userEd = userEd;
 	}
 
-	public ListED getListED() {
-		return listED;
-	}
-
-	public void setListED(ListED listED) {
-		this.listED = listED;
-	}
-
 	@XmlTransient
 	public PostED getParent() {
 		return parent;
@@ -116,6 +101,14 @@ public class PostED {
 
 	public void setParent(PostED parent) {
 		this.parent = parent;
+	}
+
+	public List<ListED> getLists() {
+		return lists;
+	}
+
+	public void setLists(List<ListED> lists) {
+		this.lists = lists;
 	}
 
 	@Override

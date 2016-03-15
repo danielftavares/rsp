@@ -88,4 +88,12 @@ public class ListService {
 		FollowED f = new FollowED(follower, followed);
 		listBD.insertFollow(f);
 	}
+
+	public ListED findByName(String name) {
+		return  listBD.findByName(name);
+	}
+
+	public void insert(ListED listED) {
+		listBD.insert(listED);
+	}
 }

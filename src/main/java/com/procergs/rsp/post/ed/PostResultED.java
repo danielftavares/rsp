@@ -1,6 +1,7 @@
 package com.procergs.rsp.post.ed;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,15 +29,7 @@ public class PostResultED {
 
     private Collection<PostResultED> replies;
 
-    public ListResultED getListED() {
-        return listED;
-    }
-
-    public void setListED(ListResultED listED) {
-        this.listED = listED;
-    }
-
-    private ListResultED listED;
+    private Collection<ListResultED> lists;
 
     public Long getIdPost() {
         return idPost;
@@ -116,5 +109,13 @@ public class PostResultED {
 
     public void setProfileImageType(String profileImageType) {
         this.profileImageType = profileImageType;
+    }
+
+    public Collection<ListResultED> getLists() {
+        return lists;
+    }
+
+    public void setLists(Collection<ListResultED> lists) {
+        this.lists = lists;
     }
 }

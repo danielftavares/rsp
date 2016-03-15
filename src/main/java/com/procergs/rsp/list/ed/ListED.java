@@ -26,6 +26,10 @@ public class ListED {
 		this.idList = idList;
 	}
 
+	public ListED(String name) {
+		this.name = name;
+	}
+
 	public Long getIdList() {
 		return idList;
 	}
