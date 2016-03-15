@@ -14,6 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.procergs.rsp.image.ed.ImageED;
+import com.procergs.rsp.post.ed.PostED;
+
+import java.util.Collection;
 
 @Stateless
 @Named
@@ -66,5 +69,8 @@ public class ImageService {
 	public void insert(ImageED imageED) {
 		imageBD.save(imageED);
 	}
-	  
+
+	public Collection<ImageED> listImages(PostED postED) {
+		return imageBD.listImages(postED);
+	}
 }

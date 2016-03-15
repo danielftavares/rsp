@@ -90,14 +90,14 @@ var TimeLineItem = React.createClass({
   _iLiked(){
     var postED = this._getPost();
     for (var i = postED.likes.length - 1; i >= 0; i--) {
-      if(postED.likes[i].userEd.idUsuario == LoginStore.user.userEd.idUsuario){
+      if(postED.likes[i].idUser == LoginStore.user.userEd.idUsuario){
         return true;
       }
     };
     return false;
   },
   _isMine(){
-    return this._getPost().userEd.idUsuario == LoginStore.user.userEd.idUsuario;
+    return this._getPost().idUser == LoginStore.user.userEd.idUsuario;
   },
   render(){
     let style = {
@@ -171,12 +171,12 @@ var TimeLineItem = React.createClass({
     return (<Card style={style.item} >
         <CardHeader
           style={style.header}
-          title={(<span><Link  to={'/u/'+postED.userEd.idUsuario} >{postED.userEd.nome}</Link>
+          title={(<span><Link  to={'/u/'+postED.idUser} >{postED.name}</Link>
             {postED.listED ? 
               (<span> em <Link  to={'/l/'+postED.listED.idList}>{postED.listED.name}</Link></span>) : 
               '' }</span>) }
           subtitle={ new Date(postED.data).toLocaleString() }
-          avatar={ <UserAvatar user={postED.userEd} /> }  />
+          avatar={ <UserAvatar idUser={postED.idUser} idProfileImage={postED.idProfileImage} profileImageType={postED.profileImageType}  /> }  />
         <CardText style={style.textmsg} >
           {postED.texto}
         </CardText>
@@ -218,7 +218,7 @@ var TimeLineItem = React.createClass({
                 icon={<ActionDeleteIcon />} /> : null}
         </CardActions>
         {this.state.replying ? <CardText><PostArea ref="pareply" onStopPosting={this.stopReply} parentPost={postED} onPostDone={this._replyDone} /></CardText>: null }
-        {postED.replies.length > 0 ?
+        {postED.replies.length ?
           <CardText style={style.childPost} >{postED.replies.map(function(post){ return (<TimeLineItem key={post.idPost} post={post} />) })}</CardText>
           : ''}
       </Card>)

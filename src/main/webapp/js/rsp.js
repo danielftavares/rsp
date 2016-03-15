@@ -5125,7 +5125,7 @@ module.exports = flowRight;
 
 },{}],77:[function(require,module,exports){
 /**
- * lodash 3.0.7 (Custom Build) <https://lodash.com/>
+ * lodash 3.0.8 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -5228,8 +5228,7 @@ function isArguments(value) {
  * // => false
  */
 function isArrayLike(value) {
-  return value != null &&
-    !(typeof value == 'function' && isFunction(value)) && isLength(getLength(value));
+  return value != null && isLength(getLength(value)) && !isFunction(value);
 }
 
 /**
@@ -5277,8 +5276,8 @@ function isArrayLikeObject(value) {
  */
 function isFunction(value) {
   // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8 which returns 'object' for typed array constructors, and
-  // PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+  // in Safari 8 which returns 'object' for typed array and weak map constructors,
+  // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
   var tag = isObject(value) ? objectToString.call(value) : '';
   return tag == funcTag || tag == genTag;
 }
@@ -24515,7 +24514,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.sort().map(function (val2) {
+			return val.slice().sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -47356,10 +47355,6 @@ var _materialUiLibAvatar2 = _interopRequireDefault(_materialUiLibAvatar);
 
 var _reactRouter = require('react-router');
 
-var _UserAvatar = require('./UserAvatar');
-
-var _UserAvatar2 = _interopRequireDefault(_UserAvatar);
-
 var _materialUiLibIconButton = require('material-ui/lib/icon-button');
 
 var _materialUiLibIconButton2 = _interopRequireDefault(_materialUiLibIconButton);
@@ -47521,7 +47516,7 @@ var TimeLine = _react2['default'].createClass({
 exports['default'] = TimeLine;
 module.exports = exports['default'];
 
-},{"../services/PostService":413,"../stores/LoginStore":416,"./PostArea":391,"./TimeLineItem":394,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
+},{"../services/PostService":413,"../stores/LoginStore":416,"./PostArea":391,"./TimeLineItem":394,"./UserItem":398,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47690,14 +47685,14 @@ var TimeLineItem = _react2['default'].createClass({
   _iLiked: function _iLiked() {
     var postED = this._getPost();
     for (var i = postED.likes.length - 1; i >= 0; i--) {
-      if (postED.likes[i].userEd.idUsuario == _storesLoginStore2['default'].user.userEd.idUsuario) {
+      if (postED.likes[i].idUser == _storesLoginStore2['default'].user.userEd.idUsuario) {
         return true;
       }
     };
     return false;
   },
   _isMine: function _isMine() {
-    return this._getPost().userEd.idUsuario == _storesLoginStore2['default'].user.userEd.idUsuario;
+    return this._getPost().idUser == _storesLoginStore2['default'].user.userEd.idUsuario;
   },
   render: function render() {
     var style = {
@@ -47777,8 +47772,8 @@ var TimeLineItem = _react2['default'].createClass({
           null,
           _react2['default'].createElement(
             _reactRouter.Link,
-            { to: '/u/' + postED.userEd.idUsuario },
-            postED.userEd.nome
+            { to: '/u/' + postED.idUser },
+            postED.name
           ),
           postED.listED ? _react2['default'].createElement(
             'span',
@@ -47792,7 +47787,7 @@ var TimeLineItem = _react2['default'].createClass({
           ) : ''
         ),
         subtitle: new Date(postED.data).toLocaleString(),
-        avatar: _react2['default'].createElement(_UserAvatar2['default'], { user: postED.userEd }) }),
+        avatar: _react2['default'].createElement(_UserAvatar2['default'], { idUser: postED.idUser, idProfileImage: postED.idProfileImage, profileImageType: postED.profileImageType }) }),
       _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
         { style: style.textmsg },
@@ -47847,7 +47842,7 @@ var TimeLineItem = _react2['default'].createClass({
         null,
         _react2['default'].createElement(_PostArea2['default'], { ref: 'pareply', onStopPosting: this.stopReply, parentPost: postED, onPostDone: this._replyDone })
       ) : null,
-      postED.replies.length > 0 ? _react2['default'].createElement(
+      postED.replies.length ? _react2['default'].createElement(
         _materialUiLibCardCardText2['default'],
         { style: style.childPost },
         postED.replies.map(function (post) {
@@ -47941,7 +47936,7 @@ module.exports = exports['default'];
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
-	value: true
+		value: true
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -47959,11 +47954,11 @@ var _materialUiLibSvgIconsSocialPerson = require('material-ui/lib/svg-icons/soci
 var _materialUiLibSvgIconsSocialPerson2 = _interopRequireDefault(_materialUiLibSvgIconsSocialPerson);
 
 var UserAvatar = _react2['default'].createClass({
-	displayName: 'UserAvatar',
+		displayName: 'UserAvatar',
 
-	render: function render() {
-		return this.props.user.profileImage ? _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, src: 'apiv1/image/' + this.props.user.idUsuario + '/' + this.props.user.profileImage.idImage + '.jpg' }) : _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, icon: _react2['default'].createElement(_materialUiLibSvgIconsSocialPerson2['default'], null) });
-	}
+		render: function render() {
+				return this.props.user && this.props.user.profileImage ? _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, src: 'apiv1/image/' + this.props.user.idUsuario + '/' + this.props.user.profileImage.idImage + '.jpg' }) : this.props.idProfileImage ? _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, src: 'apiv1/image/' + this.props.idProfileImage + '.' + this.props.profileImageType }) : _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, icon: _react2['default'].createElement(_materialUiLibSvgIconsSocialPerson2['default'], null) });
+		}
 
 });
 

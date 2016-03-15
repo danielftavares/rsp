@@ -145,4 +145,16 @@ public class PostBD {
 
 		em.remove(postED);
 	}
+
+	public Collection<PostED> listReplies(PostED postED) {
+		Query q = em.createQuery("SELECT p FROM PostED p WHERE p.parent = :p ORDER BY p.data");
+		q.setParameter("p", postED);
+		return q.getResultList();
+	}
+
+	public Collection<LikeED> listLikes(PostED postED) {
+		Query q = em.createQuery("SELECT l FROM LikeED l WHERE l.postED = :p");
+		q.setParameter("p", postED);
+		return q.getResultList();
+	}
 }

@@ -1,15 +1,11 @@
 package com.procergs.rsp.post;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -17,7 +13,6 @@ import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
@@ -34,33 +29,25 @@ import javax.ws.rs.core.MediaType;
 import com.procergs.rsp.opengraph.OpenGraph;
 import com.procergs.rsp.opengraph.OpenGraphService;
 import com.procergs.rsp.opengraph.ed.OpenGraphED;
-import com.procergs.rsp.post.ed.PostSearchResult;
+import com.procergs.rsp.post.ed.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.pt.PortugueseAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.xml.QueryBuilderFactory;
-import org.apache.lucene.queryparser.xml.builders.FilteredQueryBuilder;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.BytesRefBuilder;
 import org.apache.lucene.util.NumericUtils;
-import org.apache.lucene.util.QueryBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-import org.jboss.resteasy.util.Types;
 
 import com.procergs.rsp.image.ImageService;
 import com.procergs.rsp.image.ed.ImageED;
 import com.procergs.rsp.list.ed.ListED;
-import com.procergs.rsp.post.ed.LikeED;
-import com.procergs.rsp.post.ed.PostED;
 import com.procergs.rsp.user.ed.UserEd;
 import com.procergs.rsp.user.ed.UserRequestED;
 import com.procergs.rsp.util.RSPUtil;
@@ -143,7 +130,6 @@ public class PostService {
 			List<ImageED> limages = RSPUtil.getImages(input, "pi");
 			for (ImageED imageED : limages) {
 				imageED.setPostED(postED);
-				postED.addImage(imageED);
 				imageService.insert(imageED);
 			}
 
@@ -210,8 +196,8 @@ public class PostService {
 	 */
 	@GET
 	@Produces( MediaType.APPLICATION_JSON)
-	public Collection<PostED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser,
-			@QueryParam("lp") Long idLastPost, @QueryParam("fp") Long idFirstPost, @Context HttpServletRequest httpRequest) {
+	public Collection<PostResultED> list(@QueryParam("l") Long idList, @QueryParam("u") Long idUser,
+										 @QueryParam("lp") Long idLastPost, @QueryParam("fp") Long idFirstPost, @Context HttpServletRequest httpRequest) {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 
 		Collection<PostED> list = null;
@@ -222,32 +208,32 @@ public class PostService {
 		} else {
 			list = postBD.list(user, idLastPost, idFirstPost);
 		}
-		
-		for (PostED postED : list) {
-			populatePostAttrs(user, postED);
-		}
-		return list;
+
+
+		return list.stream().map(postED -> populatePostResult(postED)).collect(Collectors.toList());
 	}
 
-	private void populatePostAttrs(UserEd user, PostED postED) {
-		postED.getReplies().size();
-		postED.getLikes().size();
-		postED.getImages().size();
+	private PostResultED populatePostResult(PostED postED) {
+		PostResultEDBuilder builder = new PostResultEDBuilder(postED,
+															postBD.listReplies(postED).stream().map(postEDChild -> populatePostResult(postEDChild) ),
+															imageService.listImages(postED),
+															postBD.listLikes(postED));
+		return builder.build();
 	}
-	
+
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/{idpost}")
-	public PostED load(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+	public PostResultED load(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		PostED posted = postBD.load(idPost);
-		return posted;
+		return populatePostResult(posted);
 	}
 	
 
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/l/{idpost}")
-	public PostED like(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+	public PostResultED like(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		LikeED likeED = new LikeED();
 		likeED.setDate(Calendar.getInstance());
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
@@ -261,7 +247,7 @@ public class PostService {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/dl/{idpost}")
-	public PostED dislike(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
+	public PostResultED dislike(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		LikeED likeED = new LikeED();
 		likeED.setDate(Calendar.getInstance());
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
@@ -278,7 +264,7 @@ public class PostService {
 	@Path("/d/{idpost}")
 	public void delete(@PathParam("idpost") Long idPost, @Context HttpServletRequest httpRequest) {
 		UserEd user = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
-		PostED postED = load(idPost, httpRequest);
+		PostED postED = postBD.load(idPost);
 		if(postED.getUserEd().equals(user)){
 			deletePost(postED);
 		}
@@ -287,9 +273,8 @@ public class PostService {
 
 	}
 	private void deletePost(PostED postED){
-		for(PostED pr: postED.getReplies()){
-            deletePost(pr);
-		}
+		Collection<PostED> replies = postBD.listReplies(postED);
+		replies.forEach(postED1 -> deletePost(postED1));
 
         postBD.delete(postED);
         try {
@@ -307,13 +292,10 @@ public class PostService {
     @POST
     @Produces({ MediaType.APPLICATION_JSON })
     @Path("/s")
-    public PostSearchResult search(@FormParam("st") String searchTerm, @Context HttpServletRequest httpRequest) {
-        PostSearchResult postSearchResult = new PostSearchResult();
-        System.out.println(searchTerm);
-
+    public PostSearchResultED search(@FormParam("st") String searchTerm, @Context HttpServletRequest httpRequest) {
+        PostSearchResultED postSearchResult = new PostSearchResultED();
 
         try{
-
             IndexReader reader = DirectoryReader.open(directory);
             IndexSearcher searcher = new IndexSearcher(reader);
             Analyzer analyzer = new PortugueseAnalyzer();
@@ -322,7 +304,6 @@ public class PostService {
 
 			Sort sort = new Sort();
 			sort.setSort(new SortedNumericSortField("date", SortField.Type.LONG));
-
             TopDocs results = searcher.search(query, 10, sort);
             ScoreDoc[] hits = results.scoreDocs;
 
@@ -332,7 +313,7 @@ public class PostService {
             int start = 0;
             int end = Math.min(numTotalHits, 20);
 
-            List<PostED> listPosts = new ArrayList<>();
+            Set<PostResultED> listPosts = new HashSet<>();
             postSearchResult.setPosts(listPosts);
 
             for (int i = start; i < end; i++) {
@@ -341,7 +322,7 @@ public class PostService {
                 Document doc = searcher.doc(hits[i].doc);
                 String idPost = doc.get("id");
                 if (idPost != null) {
-					PostED postED = load(Long.valueOf(idPost), httpRequest);
+					PostResultED postED = loadParent(Long.valueOf(idPost), httpRequest);
 					if(postED != null){
 						listPosts.add(postED);
 					}
@@ -367,6 +348,19 @@ public class PostService {
         }
         return postSearchResult;
     }
+
+	private PostResultED loadParent(Long idPost, HttpServletRequest httpRequest) {
+		PostED postED = postBD.load(idPost);
+		if(postED == null){
+			return  null;
+		}
+
+		while (postED.getParent() != null){
+			postED = postED.getParent();
+		}
+
+		return populatePostResult(postED);
+	}
 
 
 }
