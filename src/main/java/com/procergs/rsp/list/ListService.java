@@ -89,6 +89,15 @@ public class ListService {
 		listBD.insertFollow(f);
 	}
 
+	@GET
+	@Path("/uf/{idList}")
+	public void unfollow(@PathParam("idList") Long idlist, @Context HttpServletRequest httpRequest) {
+		ListED followed = new ListED(idlist) ;
+		UserEd follower = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
+		FollowED f = new FollowED(follower, followed);
+		listBD.deleteFollow(f);
+	}
+
 	public ListED findByName(String name) {
 		return  listBD.findByName(name);
 	}

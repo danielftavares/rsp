@@ -53,9 +53,9 @@ class ListService {
     });
   }
   
-   follow(idList, callback, comp){
+   follow(listp, callback, comp){
   	return reqwest({
-      url: '/rsp/apiv1/list/f/'+idList,
+      url: '/rsp/apiv1/list/f/'+listp.idList,
       method: 'GET',
       crossOrigin: true,
       type: 'json',
@@ -63,7 +63,24 @@ class ListService {
     	  'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
       },
       success: function (list) {
-    	 callback.call(comp, list);
+    	   LoginStore.clearFollowing();
+         callback.call(comp);
+      }
+    });
+  }
+
+  unfollow(listp, callback, comp){
+    return reqwest({
+      url: '/rsp/apiv1/list/uf/'+listp.idList,
+      method: 'GET',
+      crossOrigin: true,
+      type: 'json',
+      headers: {
+        'Authorization': 'RSPUT '+ LoginStore.user.userEd.idUsuario + ':' + LoginStore.user.token
+      },
+      success: function (list) {
+         LoginStore.clearFollowing();
+         callback.call(comp);
       }
     });
   }

@@ -51,4 +51,11 @@ public class ListBD {
 			return null;
 		}
 	}
+
+	public void deleteFollow(FollowED f) {
+		Query q = em.createQuery("DELETE FROM FollowED f WHERE f.follower = :follower AND f.listFollowed = :listFollowed ");
+		q.setParameter("follower", f.getFollower());
+		q.setParameter("listFollowed", f.getListFollowed());
+		q.executeUpdate();
+	}
 }

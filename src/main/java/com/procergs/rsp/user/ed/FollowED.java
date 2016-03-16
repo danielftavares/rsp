@@ -71,8 +71,12 @@ public class FollowED {
 	public void setFollowed(UserEd followed) {
 		this.followed = followed;
 	}
-	
-	
-	
 
+	public ListED getListFollowed() {
+		return listFollowed;
+	}
+
+	public void setListFollowed(ListED listFollowed) {
+		this.listFollowed = listFollowed;
+	}
 }

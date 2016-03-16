@@ -10,6 +10,7 @@ import ListService from '../services/ListService'
 import LinkedStateMixin from 'react-addons-linked-state-mixin'
 import { Link } from 'react-router'
 import {Spacing,Typography,Colors} from 'material-ui/lib/styles';
+import LoginStore from '../stores/LoginStore'
 
 
 const UserLists = React.createClass({
@@ -29,22 +30,26 @@ const UserLists = React.createClass({
   },
   
   handleInsetList() {
-	  ListService.insertList(this.state.nomelista, this, this.callbackUncluiLista);
+	  ListService.insertList(this.state.nomelista, this, this.callbackIncluiLista);
   },
   
-  callbackUncluiLista(lt){
+  callbackIncluiLista(lt){
 	  this.handleCloseInsetList ();
 	  this.componentDidMount();
 	  this.props.history.replaceState(null, '/l/'+lt.idList+'/'+lt.name);
   },
   
   componentDidMount() {
-	  ListService.list(this.fillLists, this);
+	  LoginStore.amIFollowingList(null, this.fillLists, this);
+	  LoginStore.setListListener(this);
   },
 
+  onListsChange(){
+	this.componentDidMount();
+  },
 
   fillLists(lts){
-  	this.setState({ lists: lts });
+  	this.setState({ lists: LoginStore.listfollowing });
   },
   
   render() {

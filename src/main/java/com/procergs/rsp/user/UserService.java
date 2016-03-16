@@ -183,7 +183,7 @@ public class UserService {
 
 	@GET
 	@Path("/uf/{idUser}")
-	public void infollow(@PathParam("idUser") Long idUser, @Context HttpServletRequest httpRequest) {
+	public void unfollow(@PathParam("idUser") Long idUser, @Context HttpServletRequest httpRequest) {
 		UserEd followed = userBd.find(idUser);
 		UserEd follower = ((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd();
 		FollowED f = new FollowED(follower, followed);

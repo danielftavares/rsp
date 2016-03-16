@@ -1,5 +1,5 @@
 import React from 'react';
-import FlatButton from 'material-ui/lib/flat-button';
+import FollowBtn from './FollowBtn';
 import ListService from '../services/ListService';
 import PostArea from './PostArea';
 import TimeLine from './TimeLine';
@@ -23,20 +23,15 @@ const List = React.createClass({
   },
   
   loadList(list) {
-      this.setState({
-      list: list
-    })
-  },
-
-  follow(){
-    ListService.follow(this.list.listId);
+      this.setState({ list: list })
   },
 
   render() {
     return (
       <div>
         <h2>{this.state.list.name}</h2>
-        <FlatButton label="Seguir" secondary={true} onTouchTap={this.follow}/>
+        
+        <FollowBtn isButton={true} list={this.state.list} />
         <PostArea list={this.state.list} />
         <TimeLine list={this.state.list} />
       </div>

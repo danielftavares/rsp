@@ -5125,7 +5125,7 @@ module.exports = flowRight;
 
 },{}],77:[function(require,module,exports){
 /**
- * lodash 3.0.7 (Custom Build) <https://lodash.com/>
+ * lodash 3.0.8 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -5228,8 +5228,7 @@ function isArguments(value) {
  * // => false
  */
 function isArrayLike(value) {
-  return value != null &&
-    !(typeof value == 'function' && isFunction(value)) && isLength(getLength(value));
+  return value != null && isLength(getLength(value)) && !isFunction(value);
 }
 
 /**
@@ -5277,8 +5276,8 @@ function isArrayLikeObject(value) {
  */
 function isFunction(value) {
   // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8 which returns 'object' for typed array constructors, and
-  // PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+  // in Safari 8 which returns 'object' for typed array and weak map constructors,
+  // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
   var tag = isObject(value) ? objectToString.call(value) : '';
   return tag == funcTag || tag == genTag;
 }
@@ -24515,7 +24514,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.sort().map(function (val2) {
+			return val.slice().sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -46857,6 +46856,10 @@ var _materialUiLibIconButton = require('material-ui/lib/icon-button');
 
 var _materialUiLibIconButton2 = _interopRequireDefault(_materialUiLibIconButton);
 
+var _servicesListService = require('../services/ListService');
+
+var _servicesListService2 = _interopRequireDefault(_servicesListService);
+
 var FollowBtn = _react2['default'].createClass({
    displayName: 'FollowBtn',
 
@@ -46874,11 +46877,19 @@ var FollowBtn = _react2['default'].createClass({
       if (this.props.user && this.props.user.idUsuario) {
          _storesLoginStore2['default'].amIFollowing(this.props.user.idUsuario, this.loadAmIFollowing, this);
       }
+
+      if (this.props.list && this.props.list.idList) {
+         _storesLoginStore2['default'].amIFollowingList(this.props.list.idList, this.loadAmIFollowing, this);
+      }
    },
 
    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-      if (nextProps.user.idUsuario) {
+      if (nextProps.user && nextProps.user.idUsuario) {
          _storesLoginStore2['default'].amIFollowing(nextProps.user.idUsuario, this.loadAmIFollowing, this);
+      }
+
+      if (nextProps.list && nextProps.list.idList) {
+         _storesLoginStore2['default'].amIFollowingList(nextProps.list.idList, this.loadAmIFollowing, this);
       }
    },
    loadAmIFollowing: function loadAmIFollowing(bamIFollowing) {
@@ -46888,20 +46899,36 @@ var FollowBtn = _react2['default'].createClass({
    },
 
    follow: function follow() {
-      _servicesUserService2['default'].follow(this.props.user, function () {
-         this.context.showMessageBar("Seguindo " + this.props.user.nome);
-      }, this);
+      if (this.props.user) {
+         _servicesUserService2['default'].follow(this.props.user, function () {
+            this.context.showMessageBar("Seguindo " + this.props.user.nome);
+         }, this);
+      }
+
+      if (this.props.list) {
+         _servicesListService2['default'].follow(this.props.list, function () {
+            this.context.showMessageBar("Seguindo " + this.props.list.name);
+         }, this);
+      }
    },
 
    unfollow: function unfollow() {
-      _servicesUserService2['default'].unfollow(this.props.user, function () {
-         this.context.showMessageBar("Parou de seguir " + this.props.user.nome);
-      }, this);
+      if (this.props.user) {
+         _servicesUserService2['default'].unfollow(this.props.user, function () {
+            this.context.showMessageBar("Parou de seguir " + this.props.user.nome);
+         }, this);
+      }
+
+      if (this.props.list) {
+         _servicesListService2['default'].unfollow(this.props.list, function () {
+            this.context.showMessageBar("Parou de seguir " + this.props.list.name);
+         }, this);
+      }
    },
 
    render: function render() {
       if (this.props.isButton) {
-         if (this.props.user.idUsuario == _storesLoginStore2['default'].user.userEd.idUsuario) {
+         if (this.props.user && this.props.user.idUsuario == _storesLoginStore2['default'].user.userEd.idUsuario) {
             return _react2['default'].createElement(
                _reactRouter.Link,
                { to: '/u/e' },
@@ -46913,7 +46940,7 @@ var FollowBtn = _react2['default'].createClass({
             return _react2['default'].createElement(_materialUiLibRaisedButton2['default'], { label: 'Seguir', primary: true, onTouchTap: this.follow, style: this.props.style, icon: _react2['default'].createElement(_materialUiLibSvgIconsSocialPersonAdd2['default'], null) });
          }
       } else {
-         if (this.props.user.idUsuario == _storesLoginStore2['default'].user.userEd.idUsuario) {
+         if (this.props.user && this.props.user.idUsuario == _storesLoginStore2['default'].user.userEd.idUsuario) {
             return _react2['default'].createElement(
                _reactRouter.Link,
                { to: '/u/e' },
@@ -46943,7 +46970,7 @@ var FollowBtn = _react2['default'].createClass({
 exports['default'] = FollowBtn;
 module.exports = exports['default'];
 
-},{"../services/UserService":415,"../stores/LoginStore":416,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
+},{"../services/ListService":412,"../services/UserService":415,"../stores/LoginStore":416,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48162,6 +48189,10 @@ var _reactRouter = require('react-router');
 
 var _materialUiLibStyles = require('material-ui/lib/styles');
 
+var _storesLoginStore = require('../stores/LoginStore');
+
+var _storesLoginStore2 = _interopRequireDefault(_storesLoginStore);
+
 var UserLists = _react2['default'].createClass({
 	displayName: 'UserLists',
 
@@ -48180,21 +48211,26 @@ var UserLists = _react2['default'].createClass({
 	},
 
 	handleInsetList: function handleInsetList() {
-		_servicesListService2['default'].insertList(this.state.nomelista, this, this.callbackUncluiLista);
+		_servicesListService2['default'].insertList(this.state.nomelista, this, this.callbackIncluiLista);
 	},
 
-	callbackUncluiLista: function callbackUncluiLista(lt) {
+	callbackIncluiLista: function callbackIncluiLista(lt) {
 		this.handleCloseInsetList();
 		this.componentDidMount();
 		this.props.history.replaceState(null, '/l/' + lt.idList + '/' + lt.name);
 	},
 
 	componentDidMount: function componentDidMount() {
-		_servicesListService2['default'].list(this.fillLists, this);
+		_storesLoginStore2['default'].amIFollowingList(null, this.fillLists, this);
+		_storesLoginStore2['default'].setListListener(this);
+	},
+
+	onListsChange: function onListsChange() {
+		this.componentDidMount();
 	},
 
 	fillLists: function fillLists(lts) {
-		this.setState({ lists: lts });
+		this.setState({ lists: _storesLoginStore2['default'].listfollowing });
 	},
 
 	render: function render() {
@@ -48240,7 +48276,7 @@ var UserLists = _react2['default'].createClass({
 exports['default'] = UserLists;
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"../services/PostService":413,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles":149,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],400:[function(require,module,exports){
+},{"../services/ListService":412,"../services/PostService":413,"../stores/LoginStore":416,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles":149,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48302,9 +48338,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _materialUiLibFlatButton = require('material-ui/lib/flat-button');
+var _FollowBtn = require('./FollowBtn');
 
-var _materialUiLibFlatButton2 = _interopRequireDefault(_materialUiLibFlatButton);
+var _FollowBtn2 = _interopRequireDefault(_FollowBtn);
 
 var _servicesListService = require('../services/ListService');
 
@@ -48336,13 +48372,7 @@ var List = _react2['default'].createClass({
   },
 
   loadList: function loadList(list) {
-    this.setState({
-      list: list
-    });
-  },
-
-  follow: function follow() {
-    _servicesListService2['default'].follow(this.list.listId);
+    this.setState({ list: list });
   },
 
   render: function render() {
@@ -48354,7 +48384,7 @@ var List = _react2['default'].createClass({
         null,
         this.state.list.name
       ),
-      _react2['default'].createElement(_materialUiLibFlatButton2['default'], { label: 'Seguir', secondary: true, onTouchTap: this.follow }),
+      _react2['default'].createElement(_FollowBtn2['default'], { isButton: true, list: this.state.list }),
       _react2['default'].createElement(_PostArea2['default'], { list: this.state.list }),
       _react2['default'].createElement(_TimeLine2['default'], { list: this.state.list })
     );
@@ -48365,7 +48395,7 @@ var List = _react2['default'].createClass({
 exports['default'] = List;
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"./PostArea":391,"./TimeLine":393,"material-ui/lib/flat-button":111,"react":386}],402:[function(require,module,exports){
+},{"../services/ListService":412,"./FollowBtn":390,"./PostArea":391,"./TimeLine":393,"react":386}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49806,9 +49836,9 @@ var ListService = (function () {
     }
   }, {
     key: 'follow',
-    value: function follow(idList, callback, comp) {
+    value: function follow(listp, callback, comp) {
       return (0, _reqwest2['default'])({
-        url: '/rsp/apiv1/list/f/' + idList,
+        url: '/rsp/apiv1/list/f/' + listp.idList,
         method: 'GET',
         crossOrigin: true,
         type: 'json',
@@ -49816,7 +49846,25 @@ var ListService = (function () {
           'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
         },
         success: function success(list) {
-          callback.call(comp, list);
+          _storesLoginStore2['default'].clearFollowing();
+          callback.call(comp);
+        }
+      });
+    }
+  }, {
+    key: 'unfollow',
+    value: function unfollow(listp, callback, comp) {
+      return (0, _reqwest2['default'])({
+        url: '/rsp/apiv1/list/uf/' + listp.idList,
+        method: 'GET',
+        crossOrigin: true,
+        type: 'json',
+        headers: {
+          'Authorization': 'RSPUT ' + _storesLoginStore2['default'].user.userEd.idUsuario + ':' + _storesLoginStore2['default'].user.token
+        },
+        success: function success(list) {
+          _storesLoginStore2['default'].clearFollowing();
+          callback.call(comp);
         }
       });
     }
@@ -50216,12 +50264,18 @@ var _servicesUserService = require('../services/UserService');
 
 var _servicesUserService2 = _interopRequireDefault(_servicesUserService);
 
+var _servicesListService = require('../services/ListService');
+
+var _servicesListService2 = _interopRequireDefault(_servicesListService);
+
 var LoginStore = (function () {
   function LoginStore() {
     _classCallCheck(this, LoginStore);
 
     var userBase = localStorage.getItem('userLoginED');
     this.following = [];
+    this.listfollowing = [];
+    this.listListener = null;
     if (userBase) {
       this._user = JSON.parse(userBase);
     } else {
@@ -50250,6 +50304,10 @@ var LoginStore = (function () {
     key: 'clearFollowing',
     value: function clearFollowing() {
       this.following = [];
+      this.listfollowing = [];
+      if (this.listListener) {
+        this.listListener.onListsChange();
+      }
     }
   }, {
     key: 'amIFollowing',
@@ -50260,6 +50318,17 @@ var LoginStore = (function () {
         }, this);
       } else {
         this._amIFollowingV(idUser, returncallback, comp);
+      }
+    }
+  }, {
+    key: 'amIFollowingList',
+    value: function amIFollowingList(idList, returncallback, comp) {
+      if (this.following.length == 0) {
+        _servicesListService2['default'].list(function (l) {
+          this.listfollowing = l;this._amIFollowingListV(idList, returncallback, comp);
+        }, this);
+      } else {
+        this._amIFollowingV(idList, returncallback, comp);
       }
     }
   }, {
@@ -50275,6 +50344,23 @@ var LoginStore = (function () {
       returncallback.call(comp, f);
     }
   }, {
+    key: '_amIFollowingListV',
+    value: function _amIFollowingListV(idList, returncallback, comp) {
+      var f = false;
+      for (var i = this.listfollowing.length - 1; i >= 0; i--) {
+        var l = this.listfollowing[i];
+        if (l.idList == idList) {
+          f = true;
+        }
+      }
+      returncallback.call(comp, f);
+    }
+  }, {
+    key: 'setListListener',
+    value: function setListListener(listListener) {
+      this.listListener = listListener;
+    }
+  }, {
     key: 'user',
     get: function get() {
       return this._user;
@@ -50287,4 +50373,4 @@ var LoginStore = (function () {
 exports['default'] = new LoginStore();
 module.exports = exports['default'];
 
-},{"../services/UserService":415}]},{},[410]);
+},{"../services/ListService":412,"../services/UserService":415}]},{},[410]);
