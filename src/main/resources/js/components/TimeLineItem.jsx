@@ -67,7 +67,7 @@ var TimeLineItem = React.createClass({
   showLikers(){
     var listlikers = (<List subheader="Seguidores">
             {this._getPost().likes.map(function(l){
-               return <UserItem key={l.user.idUsuario} user={l.userEd} />;
+               return <UserItem key={l.idUser} user={ {idUsuario: l.idUsuario, nome: l.name, profileImage:{idImage:l.idProfileImage} } } />;
             })}
           </List>)
     this.context.showDialog("Usuarios que curtiram", listlikers)

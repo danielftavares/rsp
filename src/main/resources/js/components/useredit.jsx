@@ -56,6 +56,7 @@ const UserEdit = React.createClass({
 
 
   saveProfile(){
+    debugger;
 	  var f = this.refs.upload.getFile();
 	  var formData = new FormData(ReactDOM.findDOMNode(this.refs.form));
 	  

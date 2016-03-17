@@ -10,6 +10,7 @@ import { Link } from 'react-router';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import FollowBtn from './FollowBtn';
+import UserItem from './UserItem'
 
 
 const UserFollowing = React.createClass({
@@ -43,17 +44,11 @@ const UserFollowing = React.createClass({
   },
 
    render() {
-      var renderUserItem = function(user){
-        return ( <ListItem 
-                    primaryText={ user.nome } 
-                    insetChildren={true} 
-                    rightIcon={<FollowBtn user={user} />}
-                    leftAvatar={<UserAvatar user={user} />} /> )
-
-      }
       return (<div>
           <List subheader="Seguindo">
-            {this.state.followingList.map(renderUserItem)}
+            {this.state.followingList.map(function(u){
+               return <UserItem user={u} />;
+            })}
           </List>
         </div>)
    }

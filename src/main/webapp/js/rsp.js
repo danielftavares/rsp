@@ -47690,7 +47690,7 @@ var TimeLineItem = _react2['default'].createClass({
       _materialUiLibListsList2['default'],
       { subheader: 'Seguidores' },
       this._getPost().likes.map(function (l) {
-        return _react2['default'].createElement(_UserItem2['default'], { key: l.user.idUsuario, user: l.userEd });
+        return _react2['default'].createElement(_UserItem2['default'], { key: l.idUser, user: { idUsuario: l.idUsuario, nome: l.name, profileImage: { idImage: l.idProfileImage } } });
       })
     );
     this.context.showDialog("Usuarios que curtiram", listlikers);
@@ -47992,7 +47992,7 @@ var UserAvatar = _react2['default'].createClass({
 		displayName: 'UserAvatar',
 
 		render: function render() {
-				return this.props.user && this.props.user.profileImage ? _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, src: 'apiv1/image/' + this.props.user.idUsuario + '/' + this.props.user.profileImage.idImage + '.jpg' }) : this.props.idProfileImage ? _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, src: 'apiv1/image/' + this.props.idProfileImage + '.' + this.props.profileImageType }) : _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, icon: _react2['default'].createElement(_materialUiLibSvgIconsSocialPerson2['default'], null) });
+				return this.props.user && this.props.user.profileImage ? _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, src: 'apiv1/image/' + this.props.user.profileImage.idImage + '.jpg' }) : this.props.idProfileImage ? _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, src: 'apiv1/image/' + this.props.idProfileImage + '.' + this.props.profileImageType }) : _react2['default'].createElement(_materialUiLibAvatar2['default'], { size: this.props.size, style: this.props.style, icon: _react2['default'].createElement(_materialUiLibSvgIconsSocialPerson2['default'], null) });
 		}
 
 });
@@ -48120,13 +48120,19 @@ var _UserFieldsValue = require('./UserFieldsValue');
 
 var _UserFieldsValue2 = _interopRequireDefault(_UserFieldsValue);
 
+var _reactRouter = require('react-router');
+
 var UserItem = _react2['default'].createClass({
    displayName: 'UserItem',
 
    render: function render() {
 
       return _react2['default'].createElement(_materialUiLibListsListItem2['default'], {
-         primaryText: this.props.user.nome,
+         primaryText: _react2['default'].createElement(
+            _reactRouter.Link,
+            { to: '/u/' + this.props.user.idUsuario },
+            this.props.user.nome
+         ),
          secondaryText: _react2['default'].createElement(_UserFieldsValue2['default'], { user: this.props.user }),
          rightIconButton: _react2['default'].createElement(_FollowBtn2['default'], { user: this.props.user }),
          leftAvatar: _react2['default'].createElement(_UserAvatar2['default'], { user: this.props.user }) });
@@ -48136,7 +48142,7 @@ var UserItem = _react2['default'].createClass({
 exports['default'] = UserItem;
 module.exports = exports['default'];
 
-},{"./FollowBtn":390,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/lists/list-item":116,"react":386}],399:[function(require,module,exports){
+},{"./FollowBtn":390,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/lists/list-item":116,"react":386,"react-router":237}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49345,6 +49351,7 @@ var UserEdit = _react2['default'].createClass({
   },
 
   saveProfile: function saveProfile() {
+    debugger;
     var f = this.refs.upload.getFile();
     var formData = new FormData(_reactDom2['default'].findDOMNode(this.refs.form));
 
@@ -49439,8 +49446,6 @@ var _storesLoginStore = require('../stores/LoginStore');
 
 var _storesLoginStore2 = _interopRequireDefault(_storesLoginStore);
 
-var _reactRouter = require('react-router');
-
 var _materialUiLibListsList = require('material-ui/lib/lists/list');
 
 var _materialUiLibListsList2 = _interopRequireDefault(_materialUiLibListsList);
@@ -49499,7 +49504,7 @@ var UserFollowers = _react2['default'].createClass({
 exports['default'] = UserFollowers;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],409:[function(require,module,exports){
+},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386}],409:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49554,6 +49559,10 @@ var _FollowBtn = require('./FollowBtn');
 
 var _FollowBtn2 = _interopRequireDefault(_FollowBtn);
 
+var _UserItem = require('./UserItem');
+
+var _UserItem2 = _interopRequireDefault(_UserItem);
+
 var UserFollowing = _react2['default'].createClass({
    displayName: 'UserFollowing',
 
@@ -49586,20 +49595,15 @@ var UserFollowing = _react2['default'].createClass({
    },
 
    render: function render() {
-      var renderUserItem = function renderUserItem(user) {
-         return _react2['default'].createElement(_materialUiLibListsListItem2['default'], {
-            primaryText: user.nome,
-            insetChildren: true,
-            rightIcon: _react2['default'].createElement(_FollowBtn2['default'], { user: user }),
-            leftAvatar: _react2['default'].createElement(_UserAvatar2['default'], { user: user }) });
-      };
       return _react2['default'].createElement(
          'div',
          null,
          _react2['default'].createElement(
             _materialUiLibListsList2['default'],
             { subheader: 'Seguindo' },
-            this.state.followingList.map(renderUserItem)
+            this.state.followingList.map(function (u) {
+               return _react2['default'].createElement(_UserItem2['default'], { user: u });
+            })
          )
       );
    }
@@ -49609,7 +49613,7 @@ var UserFollowing = _react2['default'].createClass({
 exports['default'] = UserFollowing;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./FollowBtn":390,"./UserAvatar":396,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],410:[function(require,module,exports){
+},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./FollowBtn":390,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],410:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }

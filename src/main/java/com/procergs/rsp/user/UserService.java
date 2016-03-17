@@ -227,7 +227,7 @@ public class UserService {
 					boolean haveValue = false;
 					for (ProfileFieldValue profileValue : values) {
 						if (profileValue.getProfileField().equals(profileField)) {
-							profileValue.setValue(inputPart.getBodyAsString());
+							profileValue.setValue(RSPUtil.getInputPartValue(inputPart));
 							profileService.updateFieldValue(profileValue);
 							haveValue = true;
 						}
@@ -236,7 +236,7 @@ public class UserService {
 						ProfileFieldValue profileFieldValue = new ProfileFieldValue();
 						profileFieldValue.setProfile(userED);
 						profileFieldValue.setProfileField(profileField);
-						profileFieldValue.setValue(inputPart.getBodyAsString());
+						profileFieldValue.setValue(RSPUtil.getInputPartValue(inputPart));
 						profileService.insertProfileFieldValue(profileFieldValue);
 					}
 				} else {

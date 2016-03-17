@@ -48,6 +48,8 @@ public class PostResultEDBuilder {
 
         resultED.setLikes(likes.stream().map(likeED -> buildLikeResultED(likeED)).collect(Collectors.toList()));
         resultED.setImages (images.stream().map(imageED -> buildImageResultED(imageED)).collect(Collectors.toList()));
+
+        resultED.setOpenGraphED(postED.getOpenGraphED());
         return resultED;
     }
 

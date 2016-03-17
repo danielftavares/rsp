@@ -1,4 +1,6 @@
 package com.procergs.rsp.post.ed;
+import com.procergs.rsp.opengraph.ed.OpenGraphED;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +32,8 @@ public class PostResultED {
     private Collection<PostResultED> replies;
 
     private Collection<ListResultED> lists;
+
+    private OpenGraphED openGraphED;
 
     public Long getIdPost() {
         return idPost;
@@ -117,5 +121,13 @@ public class PostResultED {
 
     public void setLists(Collection<ListResultED> lists) {
         this.lists = lists;
+    }
+
+    public OpenGraphED getOpenGraphED() {
+        return openGraphED;
+    }
+
+    public void setOpenGraphED(OpenGraphED openGraphED) {
+        this.openGraphED = openGraphED;
     }
 }

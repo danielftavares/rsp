@@ -105,14 +105,7 @@ public class PostService {
 		try {
 			Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
 			PostED postED = new PostED();
-			
-			InputStream istream = uploadForm.get("t").get(0).getBody(InputStream.class, null);
-			
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(istream, writer, "UTF8");
-			String post = writer.toString();
-			
-			postED.setTexto(post);
+			postED.setTexto(RSPUtil.getParameterValue(input, "t"));
 			postED.setUserEd(((UserRequestED) httpRequest.getAttribute(UserRequestED.ATRIBUTO_REQ_USER)).getUserEd());
 			postED.setData(Calendar.getInstance());
 
