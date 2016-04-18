@@ -11,7 +11,6 @@ import Avatar from 'material-ui/lib/avatar';
 import { Link } from 'react-router'
 import IconButton from 'material-ui/lib/icon-button';
 import Paper from 'material-ui/lib/paper';
-import Colors from 'material-ui/lib/styles/colors';
 import ColorManipulator from 'material-ui/lib/utils/color-manipulator';
 import ActionThumbUpIcon from 'material-ui/lib/svg-icons/action/thumb-up';
 import ActionDeleteIcon from 'material-ui/lib/svg-icons/action/delete';

@@ -57,6 +57,16 @@ class LoginStore {
     }
   }
 
+  getFollowingAndFollowers(callback){
+    if(this.following.length == 0){
+      UserService.listFollowingAndFollowers(this._user.userEd.idUsuario, function(l){ this.following = l.following; callback(l) }, this);
+    } else {
+      // this._amIFollowingV(idUser, returncallback, comp);
+      alert("OKOK")
+    }
+
+  }
+
   _amIFollowingV(idUser, returncallback, comp){
     var f = false;
     for (var i = this.following.length - 1; i >= 0; i--) {

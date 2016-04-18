@@ -34,6 +34,7 @@ import FlatButton from 'material-ui/lib/flat-button';
 
 import RSPTheme from './rspTheme';
 import UserAvatar from './UserAvatar';
+import UserInfo from  './UserInfo';
 import ActionSearchIcon from 'material-ui/lib/svg-icons/action/search';
 
 const Master  = React.createClass({
@@ -320,6 +321,7 @@ const Master  = React.createClass({
           <Link to={'/'}><MenuItem style={{color: Colors.white}} >Início</MenuItem></Link>
 
           <UserLists history={history}  />
+          <UserInfo />
         </LeftNav>
         
       </div>

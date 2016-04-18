@@ -104,23 +104,28 @@ const SearchBar = React.createClass({
 	}
 	  var style = {
 	  		autocompletestyle : {
-	  			backgroundColor: Colors.white,
-	  			borderRadius: 10
+	  			color: Colors.darkWhite
 	  		},
             containerStyle:{
                 float: "left",
                 marginTop: 12
+            }, 
+            icon:{
+                position: "absolute",
+                top: 22,
+                left: 230
             }
 
 	  }
     return (
         <span style={style.containerStyle}>
           <AutoComplete 
-          	style={style.autocompletestyle} 
+          	inputStyle={style.autocompletestyle} 
           	onNewRequest={this.makeSearch} 
           	filter={AutoComplete.noFilter} 
           	onUpdateInput={this.search} 
           	dataSource={this.state.searchResult.map(renderListItem)} />
+          <ActionSearchIcon style={style.icon} color={Colors.darkWhite} />
         </span>
     );
   }

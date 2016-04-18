@@ -20,7 +20,7 @@ const User = React.createClass({
   getInitialState() {
     return {
     		user: {}, 
-    		followingFollowers: [], 
+    		followingFollowers: {following: [], followers:[] }, 
     		followingList: [],
     		followersList: [],
         amIFollowing: false };
@@ -97,11 +97,11 @@ const User = React.createClass({
       		</div>
           <UserFieldsValue user={this.state.user} />
       		<div>
-      			<label>Seguindo (<Link to={'/u/following/'+this.state.user.idUsuario}>{ this.state.followingList.length }</Link>):</label>
+      			<label>Seguindo (<Link to={'/u/following/'+this.state.user.idUsuario}>{ this.state.followingFollowers.following.length }</Link>):</label>
       			<div>{this.state.followingList.map(renderUserAvatarLink)}</div>
       		</div>
       		<div>
-	  			<label>Seguido (<Link to={'/u/followers/'+this.state.user.idUsuario}>{ this.state.followersList.length }</Link>):</label>
+	  			<label>Seguido (<Link to={'/u/followers/'+this.state.user.idUsuario}>{ this.state.followingFollowers.followers.length }</Link>):</label>
 	  			<div>{this.state.followersList.map(renderUserAvatarLink)}</div>
 	  		</div>
     	</div>

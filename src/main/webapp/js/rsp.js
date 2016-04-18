@@ -5125,7 +5125,7 @@ module.exports = flowRight;
 
 },{}],77:[function(require,module,exports){
 /**
- * lodash 3.0.8 (Custom Build) <https://lodash.com/>
+ * lodash 3.0.7 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -5228,7 +5228,8 @@ function isArguments(value) {
  * // => false
  */
 function isArrayLike(value) {
-  return value != null && isLength(getLength(value)) && !isFunction(value);
+  return value != null &&
+    !(typeof value == 'function' && isFunction(value)) && isLength(getLength(value));
 }
 
 /**
@@ -5276,8 +5277,8 @@ function isArrayLikeObject(value) {
  */
 function isFunction(value) {
   // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8 which returns 'object' for typed array and weak map constructors,
-  // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+  // in Safari 8 which returns 'object' for typed array constructors, and
+  // PhantomJS 1.9 which returns 'function' for `NodeList` instances.
   var tag = isObject(value) ? objectToString.call(value) : '';
   return tag == funcTag || tag == genTag;
 }
@@ -24514,7 +24515,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.slice().sort().map(function (val2) {
+			return val.sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -46970,7 +46971,7 @@ var FollowBtn = _react2['default'].createClass({
 exports['default'] = FollowBtn;
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"../services/UserService":415,"../stores/LoginStore":416,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
+},{"../services/ListService":413,"../services/UserService":416,"../stores/LoginStore":417,"material-ui/lib/icon-button":114,"material-ui/lib/raised-button":137,"material-ui/lib/svg-icons/social/person":180,"material-ui/lib/svg-icons/social/person-add":178,"material-ui/lib/svg-icons/social/person-outline":179,"react":386,"react-router":237}],391:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47151,7 +47152,7 @@ var PostArea = _react2['default'].createClass({
 exports['default'] = PostArea;
 module.exports = exports['default'];
 
-},{"../services/PostService":413,"./Upload":395,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-text":101,"material-ui/lib/circular-progress":104,"material-ui/lib/flat-button":111,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/content/add-box":167,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],392:[function(require,module,exports){
+},{"../services/PostService":414,"./Upload":395,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-text":101,"material-ui/lib/circular-progress":104,"material-ui/lib/flat-button":111,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/content/add-box":167,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],392:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47307,12 +47308,16 @@ var SearchBar = _react2['default'].createClass({
 		};
 		var style = {
 			autocompletestyle: {
-				backgroundColor: _materialUiLibStyles.Colors.white,
-				borderRadius: 10
+				color: _materialUiLibStyles.Colors.darkWhite
 			},
 			containerStyle: {
 				float: "left",
 				marginTop: 12
+			},
+			icon: {
+				position: "absolute",
+				top: 22,
+				left: 230
 			}
 
 		};
@@ -47320,11 +47325,12 @@ var SearchBar = _react2['default'].createClass({
 			'span',
 			{ style: style.containerStyle },
 			_react2['default'].createElement(_materialUiLibAutoComplete2['default'], {
-				style: style.autocompletestyle,
+				inputStyle: style.autocompletestyle,
 				onNewRequest: this.makeSearch,
 				filter: _materialUiLibAutoComplete2['default'].noFilter,
 				onUpdateInput: this.search,
-				dataSource: this.state.searchResult.map(renderListItem) })
+				dataSource: this.state.searchResult.map(renderListItem) }),
+			_react2['default'].createElement(_materialUiLibSvgIconsActionSearch2['default'], { style: style.icon, color: _materialUiLibStyles.Colors.darkWhite })
 		);
 	}
 });
@@ -47332,7 +47338,7 @@ var SearchBar = _react2['default'].createClass({
 exports['default'] = SearchBar;
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"../services/PostService":413,"../services/UserService":415,"./UserAvatar":396,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/styles":149,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
+},{"../services/ListService":413,"../services/PostService":414,"../services/UserService":416,"./UserAvatar":396,"material-ui/lib/auto-complete":93,"material-ui/lib/avatar":94,"material-ui/lib/lists/list-item":116,"material-ui/lib/menus/menu":125,"material-ui/lib/menus/menu-item":124,"material-ui/lib/refresh-indicator":138,"material-ui/lib/styles":149,"material-ui/lib/svg-icons/action/search":165,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],393:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47390,10 +47396,6 @@ var _materialUiLibIconButton2 = _interopRequireDefault(_materialUiLibIconButton)
 var _materialUiLibPaper = require('material-ui/lib/paper');
 
 var _materialUiLibPaper2 = _interopRequireDefault(_materialUiLibPaper);
-
-var _materialUiLibStylesColors = require('material-ui/lib/styles/colors');
-
-var _materialUiLibStylesColors2 = _interopRequireDefault(_materialUiLibStylesColors);
 
 var _materialUiLibUtilsColorManipulator = require('material-ui/lib/utils/color-manipulator');
 
@@ -47544,7 +47546,7 @@ var TimeLine = _react2['default'].createClass({
 exports['default'] = TimeLine;
 module.exports = exports['default'];
 
-},{"../services/PostService":413,"../stores/LoginStore":416,"./PostArea":391,"./TimeLineItem":394,"./UserItem":398,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
+},{"../services/PostService":414,"../stores/LoginStore":417,"./PostArea":391,"./TimeLineItem":394,"./UserItem":399,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],394:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -47891,7 +47893,7 @@ var TimeLineItem = _react2['default'].createClass({
 exports['default'] = TimeLineItem;
 module.exports = exports['default'];
 
-},{"../services/PostService":413,"../stores/LoginStore":416,"./PostArea":391,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],395:[function(require,module,exports){
+},{"../services/PostService":414,"../stores/LoginStore":417,"./PostArea":391,"./UserAvatar":396,"./UserItem":399,"material-ui/lib/avatar":94,"material-ui/lib/card/card":103,"material-ui/lib/card/card-actions":97,"material-ui/lib/card/card-header":99,"material-ui/lib/card/card-media":100,"material-ui/lib/card/card-text":101,"material-ui/lib/card/card-title":102,"material-ui/lib/flat-button":111,"material-ui/lib/icon-button":114,"material-ui/lib/lists/list":117,"material-ui/lib/paper":134,"material-ui/lib/styles/colors":147,"material-ui/lib/svg-icons/action/delete":163,"material-ui/lib/svg-icons/action/thumb-up":166,"material-ui/lib/svg-icons/content/reply":168,"material-ui/lib/utils/color-manipulator":191,"react":386,"react-router":237}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48091,7 +48093,138 @@ var UserFieldsValue = _react2['default'].createClass({
 exports['default'] = UserFieldsValue;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":414,"material-ui/lib/styles/colors":147,"react":386}],398:[function(require,module,exports){
+},{"../services/ProfileService":415,"material-ui/lib/styles/colors":147,"react":386}],398:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _storesLoginStore = require('../stores/LoginStore');
+
+var _storesLoginStore2 = _interopRequireDefault(_storesLoginStore);
+
+var _reactRouter = require('react-router');
+
+var _UserAvatar = require('./UserAvatar');
+
+var _UserAvatar2 = _interopRequireDefault(_UserAvatar);
+
+var _materialUiLibStylesColors = require('material-ui/lib/styles/colors');
+
+var _materialUiLibStylesColors2 = _interopRequireDefault(_materialUiLibStylesColors);
+
+var UserInfo = _react2['default'].createClass({
+  displayName: 'UserInfo',
+
+  getInitialState: function getInitialState() {
+    return {
+      user: _storesLoginStore2['default'].user.userEd,
+      followingFollowers: { following: [], followers: [] },
+      followingList: [],
+      followersList: []
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    _storesLoginStore2['default'].getFollowingAndFollowers(this.loadFollowingFollowers);
+    // UserService.findUserById(this.props.params.userId, this.loadUser, this );
+    // UserService.listFollowingAndFollowers(this.props.params.userId, this.loadFollowingFollowers, this );
+  },
+
+  loadFollowingFollowers: function loadFollowingFollowers(list) {
+    this.setState({
+      followingFollowers: list,
+      followingList: this.getRandomSubarray(list.following, 3),
+      followersList: this.getRandomSubarray(list.followers, 3)
+    });
+  },
+
+  getRandomSubarray: function getRandomSubarray(arr, size) {
+    var shuffled = arr.slice(0),
+        i = arr.length,
+        temp,
+        index;
+    while (i--) {
+      index = Math.floor((i + 1) * Math.random());
+      temp = shuffled[index];
+      shuffled[index] = shuffled[i];
+      shuffled[i] = temp;
+    }
+    return shuffled.slice(0, size);
+  },
+
+  render: function render() {
+    var renderUserAvatarLink = function renderUserAvatarLink(u) {
+      return _react2['default'].createElement(
+        _reactRouter.Link,
+        { to: '/u/' + u.idUsuario + '/' + u.nome },
+        ' ',
+        _react2['default'].createElement(_UserAvatar2['default'], { user: u, size: 40 })
+      );
+    };
+
+    var styles = {
+      color: _materialUiLibStylesColors2['default'].darkWhite
+    };
+    return _react2['default'].createElement(
+      'div',
+      { style: styles },
+      _react2['default'].createElement(
+        'div',
+        null,
+        _react2['default'].createElement(
+          'label',
+          null,
+          'Seguindo (',
+          _react2['default'].createElement(
+            _reactRouter.Link,
+            { to: '/u/following/' + this.state.user.idUsuario },
+            this.state.followingFollowers.following.length
+          ),
+          '):'
+        ),
+        _react2['default'].createElement(
+          'div',
+          null,
+          this.state.followingList.map(renderUserAvatarLink)
+        )
+      ),
+      _react2['default'].createElement(
+        'div',
+        null,
+        _react2['default'].createElement(
+          'label',
+          null,
+          'Seguido (',
+          _react2['default'].createElement(
+            _reactRouter.Link,
+            { to: '/u/followers/' + this.state.user.idUsuario },
+            this.state.followingFollowers.followers.length
+          ),
+          '):'
+        ),
+        _react2['default'].createElement(
+          'div',
+          null,
+          this.state.followersList.map(renderUserAvatarLink)
+        )
+      )
+    );
+  }
+
+});
+
+exports['default'] = UserInfo;
+module.exports = exports['default'];
+
+},{"../stores/LoginStore":417,"./UserAvatar":396,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48142,7 +48275,7 @@ var UserItem = _react2['default'].createClass({
 exports['default'] = UserItem;
 module.exports = exports['default'];
 
-},{"./FollowBtn":390,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/lists/list-item":116,"react":386,"react-router":237}],399:[function(require,module,exports){
+},{"./FollowBtn":390,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/lists/list-item":116,"react":386,"react-router":237}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48282,7 +48415,7 @@ var UserLists = _react2['default'].createClass({
 exports['default'] = UserLists;
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"../services/PostService":413,"../stores/LoginStore":416,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles":149,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],400:[function(require,module,exports){
+},{"../services/ListService":413,"../services/PostService":414,"../stores/LoginStore":417,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles":149,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-router":237}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48331,7 +48464,7 @@ var Home = _react2['default'].createClass({
 exports['default'] = Home;
 module.exports = exports['default'];
 
-},{"./PostArea":391,"./TimeLine":393,"react":386}],401:[function(require,module,exports){
+},{"./PostArea":391,"./TimeLine":393,"react":386}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48401,7 +48534,7 @@ var List = _react2['default'].createClass({
 exports['default'] = List;
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"./FollowBtn":390,"./PostArea":391,"./TimeLine":393,"react":386}],402:[function(require,module,exports){
+},{"../services/ListService":413,"./FollowBtn":390,"./PostArea":391,"./TimeLine":393,"react":386}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48505,7 +48638,7 @@ var Login = _react2['default'].createClass({
 exports['default'] = Login;
 module.exports = exports['default'];
 
-},{"../services/AuthService":411,"material-ui/lib/dialog":106,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],403:[function(require,module,exports){
+},{"../services/AuthService":412,"material-ui/lib/dialog":106,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48623,6 +48756,10 @@ var _rspTheme2 = _interopRequireDefault(_rspTheme);
 var _UserAvatar = require('./UserAvatar');
 
 var _UserAvatar2 = _interopRequireDefault(_UserAvatar);
+
+var _UserInfo = require('./UserInfo');
+
+var _UserInfo2 = _interopRequireDefault(_UserInfo);
 
 var _materialUiLibSvgIconsActionSearch = require('material-ui/lib/svg-icons/action/search');
 
@@ -48935,7 +49072,8 @@ var Master = _react2['default'].createClass({
             'Início'
           )
         ),
-        _react2['default'].createElement(_UserLists2['default'], { history: history })
+        _react2['default'].createElement(_UserLists2['default'], { history: history }),
+        _react2['default'].createElement(_UserInfo2['default'], null)
       )
     );
   }
@@ -48944,7 +49082,7 @@ var Master = _react2['default'].createClass({
 exports['default'] = Master;
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":416,"./SearchBar":392,"./UserAvatar":396,"./UserLists":399,"./rspTheme":404,"material-ui/lib/app-bar":92,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":164,"material-ui/lib/svg-icons/action/search":165,"material-ui/lib/svg-icons/navigation/expand-more":175,"material-ui/lib/svg-icons/navigation/menu":176,"material-ui/lib/svg-icons/navigation/more-vert":177,"material-ui/lib/toolbar/toolbar":186,"material-ui/lib/toolbar/toolbar-group":183,"material-ui/lib/toolbar/toolbar-separator":184,"material-ui/lib/toolbar/toolbar-title":185,"react":386,"react-router":237}],404:[function(require,module,exports){
+},{"../stores/LoginStore":417,"./SearchBar":392,"./UserAvatar":396,"./UserInfo":398,"./UserLists":400,"./rspTheme":405,"material-ui/lib/app-bar":92,"material-ui/lib/dialog":106,"material-ui/lib/flat-button":111,"material-ui/lib/floating-action-button":112,"material-ui/lib/icon-button":114,"material-ui/lib/left-nav":115,"material-ui/lib/menus/icon-menu":123,"material-ui/lib/menus/menu-item":124,"material-ui/lib/mixins":128,"material-ui/lib/snackbar":143,"material-ui/lib/styles":149,"material-ui/lib/styles/raw-themes/dark-raw-theme":150,"material-ui/lib/styles/raw-themes/light-raw-theme":151,"material-ui/lib/styles/theme-manager":154,"material-ui/lib/svg-icons/action/home":164,"material-ui/lib/svg-icons/action/search":165,"material-ui/lib/svg-icons/navigation/expand-more":175,"material-ui/lib/svg-icons/navigation/menu":176,"material-ui/lib/svg-icons/navigation/more-vert":177,"material-ui/lib/toolbar/toolbar":186,"material-ui/lib/toolbar/toolbar-group":183,"material-ui/lib/toolbar/toolbar-separator":184,"material-ui/lib/toolbar/toolbar-title":185,"react":386,"react-router":237}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -48990,7 +49128,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"material-ui/lib/styles/colors":147,"material-ui/lib/styles/spacing":152,"material-ui/lib/styles/zIndex":161,"material-ui/lib/utils/color-manipulator":191}],405:[function(require,module,exports){
+},{"material-ui/lib/styles/colors":147,"material-ui/lib/styles/spacing":152,"material-ui/lib/styles/zIndex":161,"material-ui/lib/utils/color-manipulator":191}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49046,7 +49184,7 @@ var Search = _react2['default'].createClass({
 exports['default'] = Search;
 module.exports = exports['default'];
 
-},{"../services/PostService":413,"./TimeLineItem":394,"react":386}],406:[function(require,module,exports){
+},{"../services/PostService":414,"./TimeLineItem":394,"react":386}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49111,7 +49249,7 @@ var User = _react2['default'].createClass({
   getInitialState: function getInitialState() {
     return {
       user: {},
-      followingFollowers: [],
+      followingFollowers: { following: [], followers: [] },
       followingList: [],
       followersList: [],
       amIFollowing: false };
@@ -49213,7 +49351,7 @@ var User = _react2['default'].createClass({
             _react2['default'].createElement(
               _reactRouter.Link,
               { to: '/u/following/' + this.state.user.idUsuario },
-              this.state.followingList.length
+              this.state.followingFollowers.following.length
             ),
             '):'
           ),
@@ -49233,7 +49371,7 @@ var User = _react2['default'].createClass({
             _react2['default'].createElement(
               _reactRouter.Link,
               { to: '/u/followers/' + this.state.user.idUsuario },
-              this.state.followersList.length
+              this.state.followingFollowers.followers.length
             ),
             '):'
           ),
@@ -49257,7 +49395,7 @@ var User = _react2['default'].createClass({
 exports['default'] = User;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./FollowBtn":390,"./TimeLine":393,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],407:[function(require,module,exports){
+},{"../services/ProfileService":415,"../services/UserService":416,"../stores/LoginStore":417,"./FollowBtn":390,"./TimeLine":393,"./UserAvatar":396,"./UserFieldsValue":397,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],408:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49405,7 +49543,7 @@ var UserEdit = _react2['default'].createClass({
 exports['default'] = UserEdit;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./Upload":395,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-dom":209}],408:[function(require,module,exports){
+},{"../services/ProfileService":415,"../services/UserService":416,"../stores/LoginStore":417,"./Upload":395,"material-ui/lib/flat-button":111,"material-ui/lib/raised-button":137,"material-ui/lib/text-field":181,"react":386,"react-addons-linked-state-mixin":205,"react-dom":209}],409:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49504,7 +49642,7 @@ var UserFollowers = _react2['default'].createClass({
 exports['default'] = UserFollowers;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386}],409:[function(require,module,exports){
+},{"../services/ProfileService":415,"../services/UserService":416,"../stores/LoginStore":417,"./UserAvatar":396,"./UserItem":399,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386}],410:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49613,7 +49751,7 @@ var UserFollowing = _react2['default'].createClass({
 exports['default'] = UserFollowing;
 module.exports = exports['default'];
 
-},{"../services/ProfileService":414,"../services/UserService":415,"../stores/LoginStore":416,"./FollowBtn":390,"./UserAvatar":396,"./UserItem":398,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],410:[function(require,module,exports){
+},{"../services/ProfileService":415,"../services/UserService":416,"../stores/LoginStore":417,"./FollowBtn":390,"./UserAvatar":396,"./UserItem":399,"material-ui/lib/flat-button":111,"material-ui/lib/lists/list":117,"material-ui/lib/lists/list-item":116,"material-ui/lib/raised-button":137,"material-ui/lib/styles/colors":147,"react":386,"react-router":237}],411:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -49708,7 +49846,7 @@ var router = _react2['default'].createElement(
 
 (0, _reactDom.render)(router, document.getElementById('app'));
 
-},{"./components/home":400,"./components/list":401,"./components/login":402,"./components/master":403,"./components/search":405,"./components/user":406,"./components/useredit":407,"./components/userfollowers":408,"./components/userfollowing":409,"./stores/LoginStore":416,"react":386,"react-dom":209,"react-router":237,"react-tap-event-plugin":248}],411:[function(require,module,exports){
+},{"./components/home":401,"./components/list":402,"./components/login":403,"./components/master":404,"./components/search":406,"./components/user":407,"./components/useredit":408,"./components/userfollowers":409,"./components/userfollowing":410,"./stores/LoginStore":417,"react":386,"react-dom":209,"react-router":237,"react-tap-event-plugin":248}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49761,7 +49899,7 @@ var AuthService = (function () {
 exports['default'] = new AuthService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":416,"reqwest":387}],412:[function(require,module,exports){
+},{"../stores/LoginStore":417,"reqwest":387}],413:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49899,7 +50037,7 @@ var ListService = (function () {
 exports['default'] = new ListService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":416,"reqwest":387}],413:[function(require,module,exports){
+},{"../stores/LoginStore":417,"reqwest":387}],414:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50042,7 +50180,7 @@ var PostService = (function () {
 exports['default'] = new PostService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":416,"reqwest":387}],414:[function(require,module,exports){
+},{"../stores/LoginStore":417,"reqwest":387}],415:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50120,7 +50258,7 @@ var ProfileService = (function () {
 exports['default'] = new ProfileService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":416,"reqwest":387}],415:[function(require,module,exports){
+},{"../stores/LoginStore":417,"reqwest":387}],416:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50251,7 +50389,7 @@ var UserService = (function () {
 exports['default'] = new UserService();
 module.exports = exports['default'];
 
-},{"../stores/LoginStore":416,"reqwest":387}],416:[function(require,module,exports){
+},{"../stores/LoginStore":417,"reqwest":387}],417:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50336,6 +50474,18 @@ var LoginStore = (function () {
       }
     }
   }, {
+    key: 'getFollowingAndFollowers',
+    value: function getFollowingAndFollowers(callback) {
+      if (this.following.length == 0) {
+        _servicesUserService2['default'].listFollowingAndFollowers(this._user.userEd.idUsuario, function (l) {
+          this.following = l.following;callback(l);
+        }, this);
+      } else {
+        // this._amIFollowingV(idUser, returncallback, comp);
+        alert("OKOK");
+      }
+    }
+  }, {
     key: '_amIFollowingV',
     value: function _amIFollowingV(idUser, returncallback, comp) {
       var f = false;
@@ -50377,4 +50527,4 @@ var LoginStore = (function () {
 exports['default'] = new LoginStore();
 module.exports = exports['default'];
 
-},{"../services/ListService":412,"../services/UserService":415}]},{},[410]);
+},{"../services/ListService":413,"../services/UserService":416}]},{},[411]);
